@@ -44,7 +44,8 @@ class ImageRewardScorer:
         self.n_calls = 0
         self.provenance = {"hf_repo": IR_HF_REPO, "revision": rev, "ckpt_sha256": file_sha256(ckpt),
                            "med_config_sha256": file_sha256(med), "missing_keys": self.missing,
-                           "unexpected_keys": self.unexpected, "bert_tokenizer": "bert-base-uncased (resolved by BLIP init)"}
+                           "unexpected_keys": self.unexpected, "bert_tokenizer": "bert-base-uncased (resolved by BLIP init)",
+                           "device": str(device)}
 
     def score(self, prompt: str, images: list) -> list[float]:
         """Same math as ImageReward.score_batched: BLIP(ViT-L) + cross-attn text encoder + MLP, z-normalised."""

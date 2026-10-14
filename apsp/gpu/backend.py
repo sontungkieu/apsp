@@ -21,6 +21,10 @@ def add_backend_args(ap: argparse.ArgumentParser) -> None:
     ap.add_argument("--revision", default=None, help="model revision (defaults to config model_revision, else resolves main)")
     ap.add_argument("--preview-dtype", choices=["fp16", "fp32"], default=None)
     ap.add_argument("--local-files-only", action="store_true")
+    ap.add_argument("--rm-device", choices=["cuda", "cpu"], default="cuda",
+                    help="ImageReward device; 'cpu' only for small-VRAM technical smoke (recorded in EPH)")
+    ap.add_argument("--vae-chunk", type=int, default=None,
+                    help="override vae_decode_chunk (engineering setting, recorded in EPH)")
 
 
 def build_backend(args) -> tuple:
@@ -36,12 +40,16 @@ def build_backend(args) -> tuple:
     dev = require_cuda()
     rt = configure_determinism()
     cfg = load_config(args.config)
+    if getattr(args, "vae_chunk", None):
+        cfg["vae_decode_chunk"] = int(args.vae_chunk)
     from apsp.gpu.model import load_generator
     from apsp.gpu.scoring import ImageRewardScorer
     b = load_generator(cfg, dev, revision=args.revision, preview_dtype=args.preview_dtype,
                        local_files_only=args.local_files_only)
     cfg["preview_dtype"] = b.provenance["preview_dtype"]
-    s = ImageRewardScorer(dev, local_files_only=args.local_files_only)
+    import torch
+    rm_dev = dev if getattr(args, "rm_device", "cuda") == "cuda" else torch.device("cpu")
+    s = ImageRewardScorer(rm_dev, local_files_only=args.local_files_only)
     return cfg, b, s, ScoringPath(b, s, cfg.get("vae_decode_chunk")), rt
 
 

@@ -13,6 +13,7 @@ hf_token*
 
 # --- python / virtualenvs / caches ---
 .venv/
+.venv*/
 venv*/
 
 __pycache__/

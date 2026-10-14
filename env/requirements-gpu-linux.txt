@@ -1,0 +1,38 @@
+# GPU environment for the generator / ImageReward / HPS on Linux + CUDA (Python 3.10).
+# Pins follow the pinned PSP base (third_party/psp/Fk-Diffusion-Steering/requirements.txt @ 590f59f5).
+# Status: UNVERIFIED on a Linux GPU box until docs/GPU_FIRST_RUN.md step 3 has been run there.
+# After install, `pip freeze > env/env.lock.linux-gpu.txt` records the resolved set (research freezes it).
+#
+# torch / torchvision come from the CUDA 12.1 wheel index (installed by env/setup_gpu_linux.sh):
+#   torch==2.4.0 torchvision==0.19.0 --index-url https://download.pytorch.org/whl/cu121
+torch==2.4.0
+torchvision==0.19.0
+diffusers @ git+https://github.com/huggingface/diffusers@af28ae2d5ba0ef80d99fff7859ebea730e1cf3f8
+transformers==4.38.2
+tokenizers==0.15.2
+accelerate==1.2.1
+huggingface-hub==0.27.1
+safetensors==0.5.2
+numpy==1.26.3
+pandas==2.2.1
+pyarrow==18.1.0
+scipy==1.13.1
+pillow==11.1.0
+PyYAML==6.0.2
+timm==1.0.13
+fairscale==0.4.13
+ftfy==6.3.1
+regex==2024.11.6
+einops==0.8.0
+tqdm==4.66.4
+protobuf==3.20.3
+sentencepiece==0.2.0
+datasets==3.2.0
+hpsv2==1.2.0
+psutil
+pytest==7.2.0
+# Imported (not used) by the PSP reference pipeline's rewards module; the base leaves it unpinned.
+google-genai
+# Installed with --no-deps by the setup script (their own setup.py pulls a floating CLIP main.zip):
+#   git+https://github.com/openai/CLIP.git@dcba3cb2e2827b402d2701e7e1c7d9fed8a20ef1
+#   git+https://github.com/THUDM/ImageReward.git@2ca71bac4ed86b922fe53ddaec3109fe94d45fd3
