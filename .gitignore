@@ -1,0 +1,62 @@
+# --- credentials (never commit) ---
+github_token.txt
+*token*.txt
+.env
+.env.*
+*.pem
+*.key
+credentials*
+secrets*
+.netrc
+.huggingface/
+hf_token*
+
+# --- python / virtualenvs / caches ---
+.venv/
+venv*/
+
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.cache/
+hf_cache/
+.uv-cache/
+
+# --- model weights / large binaries ---
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+*.bin
+*.onnx
+/weights/
+/models/
+
+# --- data: banks, images, latents, runs (keep small configs/reports) ---
+/data/
+*.npy
+*.npz
+*.parquet
+*.png
+*.jpg
+*.jpeg
+*.webp
+/runs/
+/outputs/
+wandb/
+smoke_out/
+
+# allow small committed fixtures under tests/fixtures if ever needed
+!tests/fixtures/**
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

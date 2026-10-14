@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "adaptive-psp"
+version = "0.1.0"
+description = "Adaptive PSP: budgeted verifier purchase and seed pruning for diffusion inference (spec apsp-v1.1.1)"
+readme = "README.md"
+requires-python = ">=3.10"
+# Core (CPU) dependencies: contracts, DP, replay, policies, stats. Must import without CUDA.
+dependencies = [
+    "numpy>=1.26",
+    "pandas>=2.1",
+    "pyarrow>=14",
+    "pyyaml>=6",
+    "scipy>=1.11",
+]
+
+[project.optional-dependencies]
+# REINFORCE controller (CPU torch is enough). On the GPU box torch comes from env/requirements-gpu-linux.txt.
+rl = ["torch>=2.2"]
+dev = ["pytest>=7.2"]
+# GPU engine. Exact pins live in env/requirements-gpu-linux.txt (do not resolve from here on the GPU box).
+gpu = ["torch>=2.2", "diffusers", "transformers", "accelerate", "safetensors", "huggingface-hub", "pillow", "psutil"]
+
+[tool.setuptools.packages.find]
+include = ["apsp*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "gpu: requires CUDA and model weights (skipped otherwise)",
+    "slow: longer synthetic runs",
+]
