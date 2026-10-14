@@ -1,0 +1,21 @@
+# Machine registry. Facts are detected by `python -m apsp.gpu.env_check`; research chooses the
+# measurement machine and fills the spending budget. Agents never invent a budget.
+machines:
+  local-win-dev:
+    role: development            # NOT a measurement machine
+    detected_report: reports/env_local-win-dev.json
+    cpu: AMD Ryzen 7 6800HS Creator Edition (16 logical)
+    gpu: NVIDIA GeForce RTX 3050 Ti Laptop GPU, 4 GB (driver 531.88, CUDA 12.1 driver API)
+    ram_gb: 13.7
+    os: Windows 11
+    agent_access: claude-code
+    pilot_gpu_hours_budget: null
+  measurement-gpu:
+    role: measurement            # to be filled after the rented Linux GPU box is chosen
+    detected_report: null
+    cpu: null
+    gpu: null
+    ram_gb: null
+    os: null
+    agent_access: null
+    pilot_gpu_hours_budget: null  # research fills this; required before bank collection

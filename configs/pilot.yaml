@@ -1,0 +1,42 @@
+# Scientific configuration of the pilot (Research Spec v1.1.1 §5). Values read directly from the spec.
+# Changing any value here is a research decision (docs/QUESTIONS.md / DECISIONS_LOG.md), not engineering.
+spec_version: apsp-v1.1.1
+psp_commit: 590f59f58384169c719e431dc01d14006fb0fc0c
+model_repo: stable-diffusion-v1-5/stable-diffusion-v1-5
+model_revision: null             # resolve once on the GPU box (apsp.gpu.profile --stage model), then pin the SHA here
+scheduler: DDIM
+eta: 0.0
+steps: 64
+delta: 4
+cfg: 7.5
+negative_prompt: ""
+height: 512
+width: 512
+grammar: G-842-v1
+k0: 8
+keep: [4, 2]
+reference_cuts: [4, 8]
+alpha: [0.25, 0.5, 1.0, 1.5]
+primary_alpha: [0.5, 1.0]
+seed_scheme: apsp-v1-sha256-cpu
+scoring_path: ir_pil_v1
+verifier: ImageReward-v1.0
+preview_dtype: null              # proposed after M3, research freezes (fp16 | fp32)
+deliver_dtype: fp16
+vae_decode_chunk: null           # selected in P0 from measured throughput/memory (candidates 1,2,4,8,16)
+calibration_prompt_count: 50
+throughput_subset_count: 20
+max_val_total: 300
+max_val_looks: 2
+cnn_enabled: false
+
+# operational (engineering, not scientific) settings
+unet_dtype: fp16
+banks_per_prompt: 2
+paths:
+  data_root: data
+  banks: data/banks
+  costs: data/costs
+  runs: data/runs
+  artifacts: data/artifacts
+  reports: reports
