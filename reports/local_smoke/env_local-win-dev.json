@@ -1,0 +1,48 @@
+{
+  "machine_id": "local-win-dev",
+  "os": "Windows-10-10.0.26300-SP0",
+  "python": "3.10.20",
+  "cpu": "AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",
+  "cpu_logical": 16,
+  "affinity_cpus": null,
+  "ram_bytes": 14702026752,
+  "cgroup_mem_limit_bytes": null,
+  "disk_free_bytes_cwd": 193694720000,
+  "nvidia_smi": [
+    "NVIDIA GeForce RTX 3050 Ti Laptop GPU, 4096 MiB, 531.88"
+  ],
+  "env_threads": {
+    "OMP_NUM_THREADS": null,
+    "MKL_NUM_THREADS": null
+  },
+  "torch": "2.4.0+cu121",
+  "cuda_available": true,
+  "gpu": {
+    "name": "NVIDIA GeForce RTX 3050 Ti Laptop GPU",
+    "total_mem_bytes": 4294443008,
+    "capability": "8.6",
+    "count": 1
+  },
+  "numeric_runtime": {
+    "torch": "2.4.0+cu121",
+    "cuda_runtime": "12.1",
+    "cudnn": 90100,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": false,
+    "matmul_allow_tf32": false,
+    "cudnn_allow_tf32": true,
+    "torch_num_threads": 1,
+    "CUBLAS_WORKSPACE_CONFIG": null,
+    "flash_sdp": true,
+    "mem_efficient_sdp": true,
+    "math_sdp": true
+  },
+  "packages": {
+    "diffusers": "0.31.0.dev0",
+    "transformers": "4.38.2",
+    "ImageReward": "unknown",
+    "numpy": "1.26.3",
+    "PIL": "11.1.0"
+  },
+  "note": "detected facts only; measurement role and GPU-hour budget are set by research in configs/machines.yaml"
+}

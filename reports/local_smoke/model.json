@@ -1,0 +1,12 @@
+{
+  "M1": "written",
+  "path": "reports\\local_smoke\\M1_model.json",
+  "eph": "e0c16b5f97146aa7d74f00cd38278b45318c2b88b0a27370e8c8d3fe36b2e725",
+  "revision": "451f4fe16113bff5a5d2269ed5ad43b0592e9a14",
+  "rm_missing_keys": [],
+  "rm_unexpected_keys": [],
+  "stage": "model",
+  "backend": "diffusers",
+  "smoke": false,
+  "seconds": 0.003951499999857333
+}

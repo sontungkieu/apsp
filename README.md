@@ -34,8 +34,9 @@ docs/            RUNBOOK, GPU_FIRST_RUN, P0_CPU_ACCEPTANCE, DECISIONS_LOG, QUEST
 ## Install (CPU, Windows or Linux, Python >= 3.10)
 
 ```bash
-git clone --recurse-submodules -b bootstrap/p0 https://github.com/NguyenNgocMinh30012005/DMRL.git
+git -c core.longpaths=true clone --recurse-submodules -b bootstrap/p0 https://github.com/NguyenNgocMinh30012005/DMRL.git
 cd DMRL
+git -C third_party/psp config core.longpaths true   # Windows only: PSP has paths > 260 chars
 python -m venv .venv            # or: uv venv --python 3.11 .venv
 # Windows: .venv\Scripts\activate   Linux: source .venv/bin/activate
 pip install torch --index-url https://download.pytorch.org/whl/cpu     # CPU torch for the RL controller

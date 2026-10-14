@@ -14,7 +14,7 @@ path is `--fake-backend`, a test fixture whose outputs are labelled `backend: fa
 ## A. Windows local (CPU)
 
 ```powershell
-git clone --recurse-submodules -b bootstrap/p0 https://github.com/NguyenNgocMinh30012005/DMRL.git
+git -c core.longpaths=true clone --recurse-submodules -b bootstrap/p0 https://github.com/NguyenNgocMinh30012005/DMRL.git
 cd DMRL
 uv venv --python 3.11 .venv            # or: py -3.11 -m venv .venv
 .venv\Scripts\activate

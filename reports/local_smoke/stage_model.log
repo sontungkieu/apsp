@@ -1,0 +1,15 @@
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]Fetching 13 files:  15%|█▌        | 2/13 [00:00<00:01,  5.67it/s]Fetching 13 files:  38%|███▊      | 5/13 [00:41<01:14,  9.32s/it]Fetching 13 files:  85%|████████▍ | 11/13 [03:20<00:41, 20.72s/it]Fetching 13 files: 100%|██████████| 13/13 [03:20<00:00, 15.43s/it]
+Loading pipeline components...:   0%|          | 0/5 [00:00<?, ?it/s]Loading pipeline components...:  20%|██        | 1/5 [00:01<00:05,  1.35s/it]Loading pipeline components...:  40%|████      | 2/5 [00:09<00:16,  5.54s/it]Loading pipeline components...:  60%|██████    | 3/5 [00:10<00:06,  3.14s/it]Loading pipeline components...:  80%|████████  | 4/5 [00:10<00:02,  2.03s/it]Loading pipeline components...: 100%|██████████| 5/5 [00:11<00:00,  1.63s/it]Loading pipeline components...: 100%|██████████| 5/5 [00:11<00:00,  2.27s/it]
+{
+  "M1": "written",
+  "path": "reports\\local_smoke\\M1_model.json",
+  "eph": "e0c16b5f97146aa7d74f00cd38278b45318c2b88b0a27370e8c8d3fe36b2e725",
+  "revision": "451f4fe16113bff5a5d2269ed5ad43b0592e9a14",
+  "rm_missing_keys": [],
+  "rm_unexpected_keys": [],
+  "stage": "model",
+  "backend": "diffusers",
+  "smoke": false,
+  "seconds": 0.003951499999857333
+}
+EXIT=0

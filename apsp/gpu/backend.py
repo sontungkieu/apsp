@@ -23,6 +23,7 @@ def add_backend_args(ap: argparse.ArgumentParser) -> None:
     ap.add_argument("--local-files-only", action="store_true")
     ap.add_argument("--rm-device", choices=["cuda", "cpu"], default="cuda",
                     help="ImageReward device; 'cpu' only for small-VRAM technical smoke (recorded in EPH)")
+    ap.add_argument("--rm-revision", default=None, help="THUDM/ImageReward HF revision (defaults to config reward_revision)")
     ap.add_argument("--vae-chunk", type=int, default=None,
                     help="override vae_decode_chunk (engineering setting, recorded in EPH)")
 
@@ -49,7 +50,8 @@ def build_backend(args) -> tuple:
     cfg["preview_dtype"] = b.provenance["preview_dtype"]
     import torch
     rm_dev = dev if getattr(args, "rm_device", "cuda") == "cuda" else torch.device("cpu")
-    s = ImageRewardScorer(rm_dev, local_files_only=args.local_files_only)
+    s = ImageRewardScorer(rm_dev, revision=getattr(args, "rm_revision", None) or cfg.get("reward_revision"),
+                          local_files_only=args.local_files_only)
     return cfg, b, s, ScoringPath(b, s, cfg.get("vae_decode_chunk")), rt
 
 
