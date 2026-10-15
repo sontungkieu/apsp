@@ -51,6 +51,9 @@ Nothing on this list collects the pilot bank, trains RL on real data, uses val/t
 |---|---|---|
 | B4b grid from pinned PSP code | done | 7,823 strategies, identical to PSP; all checkpoints on the bank |
 | Amendment 1 (native batching, simulator replay, online confirmation) | research (draft rev. 2) | `docs/PREREG_PROPOSALS/AMENDMENT_1_replay_online_DRAFT.md` |
-| M9 bank-time and pilot GPU-hour forecast | ready | `32_calib_summary` (estimate before measurement: ≈ 14 GPU h for small-pilot collection) |
+| M9 bank-time and pilot GPU-hour forecast | ready | `32_calib_summary`. Measured smoke1: 81.9 s per prompt-bank, ≈ 10.9 GPU h for train_fit + train_dev banks (`PILOT_RUN_PLAN.md` §4) |
 | PREREG-A proposal | blocked | needs the items above plus Q1; agents draft it, research signs |
 | Pilot bank collection | blocked | PREREG-A signed |
+| Pilot baselines (single, single32, BoN-2/4/8, PSP, B3, B5, B6, B8) | done | `PILOT_RUN_PLAN.md` §1; B4b, B7, B10, RL training planned |
+| Online quality-cost benchmark + report + NI/savings status | done | `apsp/gpu/benchmark.py`, `apsp/reports/quality_cost.py`; conclusions `not_concludable` until `configs/evaluation.yaml` is approved |
+| Independent evaluation metric (HPSv2) | ready (unpinned) | `apsp/gpu/evaluators/independent.py`; pin package and checkpoint in `configs/evaluators.yaml` |

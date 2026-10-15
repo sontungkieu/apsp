@@ -97,7 +97,14 @@ DIAG_STEPS=(00_setup 01_pytest 02_env_check 02b_fingerprint 03_model 20_diag_aud
 # calibration/profiling session (docs/CALIBRATION_PLAN.md): ordered by value, every step resumable
 CALIB_STEPS=(00_setup 01_pytest 02_env_check 02b_fingerprint 03_model 30_pool_full_check 31_calib_m3m9 32_calib_summary
              33_calib_equivalence 34_calib_chunk 35_m2 36_m2_merge 37_m2b)
+# pilot (docs/PILOT_RUN_PLAN.md). dev: bank on train_fit/train_dev (PREREG-A), replay tuning, online benchmark on
+# train_dev, report + frozen operating point (needs the approved evaluation config). val: online on val (PREREG-B)
+# with the frozen file only.
+PILOT_DEV_STEPS=(00_setup 01_pytest 02_env_check 02b_fingerprint 03_model 40_bank 41_tune 42_bench_dev 43_report_dev)
+PILOT_VAL_STEPS=(00_setup 01_pytest 02_env_check 02b_fingerprint 03_model 44_bench_val 45_report_val)
 if [[ $# -eq 1 && "$1" == "diag" ]]; then STEPS=("${DIAG_STEPS[@]}")
+elif [[ $# -eq 1 && "$1" == "pilot_dev" ]]; then STEPS=("${PILOT_DEV_STEPS[@]}")
+elif [[ $# -eq 1 && "$1" == "pilot_val" ]]; then STEPS=("${PILOT_VAL_STEPS[@]}")
 elif [[ $# -eq 1 && "$1" == "calib" ]]; then STEPS=("${CALIB_STEPS[@]}")
 elif [[ $# -gt 0 ]]; then STEPS=("$@")
 else STEPS=("${ALL_STEPS[@]}"); fi
@@ -106,6 +113,10 @@ DG="--diag-config configs/drift_diagnostic.yaml --out ${RUN}/diag"
 # production EPH measured in smoke1 (generation code, env lock and pilot config unchanged since); override if needed
 POOL_DIR="${POOL_DIR:-${APSP_STORE}/prompts}"     # prompt_pool.parquet, val_ext_sealed.parquet, survivors.parquet
 CB="--prompt-pool ${POOL_DIR}/prompt_pool.parquet --out ${RUN}/calib"
+COSTS="${COSTS:-}"                                  # merged M2 table from the calibration run (generator_costs.json)
+TUNED="${TUNED:-${APSP_STORE}/tuned}"
+FROZEN="${FROZEN:-${APSP_STORE}/frozen_operating_point.json}"
+BENCH_COMMON="--prompt-pool ${POOL_DIR}/prompt_pool.parquet --norm ${TUNED}/norm.json --pca ${TUNED}/pca16.npz --costs ${COSTS}"
 EXPECT_EPH="${EXPECT_EPH:-c1351a998e37d89ec892abf2f5f3ac16312ca20d3d12fdc359530bb3605c83bd}"
 
 for s in "${STEPS[@]}"; do
@@ -143,6 +154,12 @@ for s in "${STEPS[@]}"; do
                       run_step "35_m2_k${kk}" 25 "${PY}" -m apsp.gpu.profile --stage generator --ks "$k"                         --out-dir "${RUN}/p0/m2/k${kk}" ${M2_MEASUREMENT:+--measurement} || break; done ;;
     36_m2_merge)    run_step "$s" 5 "${PY}" scripts/merge_m2.py "${RUN}/p0/m2" --out "${RUN}/p0/m2/generator_costs.json" ;;
     37_m2b)         run_step "$s" 30 "${PY}" -m apsp.gpu.calibration --part m2b ${CB} --costs "${RUN}/p0/m2/generator_costs.json" ;;
+    40_bank)        run_step "$s" 900 "${PY}" -m apsp.gpu.collect_bank --prompt-pool "${POOL_DIR}/prompt_pool.parquet"                       --split train_fit train_dev --resume --out-root "${APSP_STORE}/banks" --bank-name PILOT --machine-id "${MACHINE_ID}" ;;
+    41_tune)        run_step "$s" 120 "${PY}" -m apsp.sim.tune_baselines --bank "${APSP_STORE}/banks/PILOT" --costs "${COSTS}" --out "${TUNED}" ;;
+    42_bench_dev)   run_step "$s" 900 "${PY}" -m apsp.gpu.benchmark ${BENCH_COMMON} --split train_dev                       --methods-file "${TUNED}/methods_frozen.json" --out "${RUN}/bench_dev" ;;
+    43_report_dev)  run_step "$s" 10 "${PY}" -m apsp.reports.quality_cost --run "${RUN}/bench_dev" --out "${RUN}/bench_dev/report" --freeze "${FROZEN}" ;;
+    44_bench_val)   run_step "$s" 900 "${PY}" -m apsp.gpu.benchmark ${BENCH_COMMON} --split val --methods-file "${FROZEN}" --out "${RUN}/bench_val" ;;
+    45_report_val)  run_step "$s" 10 "${PY}" -m apsp.reports.quality_cost --run "${RUN}/bench_val" --out "${RUN}/bench_val/report" ;;
     *) echo "unknown step $s" >&2; exit 2 ;;
   esac
   rc=$?

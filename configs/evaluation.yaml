@@ -1,0 +1,17 @@
+# Quality-cost evaluation settings. Scientific thresholds are RESEARCH decisions (PREREG-B); agents never fill them
+# in after seeing results. While `approved: false` or a threshold is null, the report computes descriptive CIs and
+# labels every NI / savings conclusion "not_concludable".
+approved: false
+approved_by: null                 # research name, with the PREREG-B marker
+objective: "min E[C_policy] s.t. E[Q_policy - Q_ref] >= -epsilon"
+quality_metric: ir_delivered      # pilot quality: ImageReward of the delivered image (Spec §2)
+reference_method: psp             # Q_ref / C_ref for the NI contrast (B2, PSP-default); research may change it
+epsilon_ir: null                  # NI margin on IR; Spec §10.3/§11.4: delta_IR = tau_prac / 2, tau from the train anchor (PREREG-B)
+savings_go: 0.10                  # Spec §11.4 cost gate (apsp.stats.decisions): GO needs LCB(savings) >= 10% and NI
+savings_stop: 0.05                # STOP if UCB(savings) < 5%
+r_fail: null                      # frozen failure penalty (Spec §12, train_fit, PREREG-B); failures stay in the denominator
+n_primary_contrasts: null         # M for the per-contrast CI level 1 - 0.025/M (PREREG-B); descriptive level used if null
+descriptive_ci_level: 0.95
+cost_measure: e2e_seconds         # primary cost: measured end-to-end request time; the ledger is reported alongside
+budgets_alpha: [0.25, 0.5, 1.0, 1.5]   # shared caps B_alpha of the cost table for the equal-budget table
+reference_levels: [single, psp, "bon:8"]  # quality levels whose cost-to-reach is reported

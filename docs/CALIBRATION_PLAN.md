@@ -66,17 +66,17 @@ skipped, finished calibration instances and M2 k-parts are reused.
 |---|---|---|---|
 | 00–03, 02b | setup, tests, env, runtime fingerprint, M1 check | — | 2 min (kept disk) to 6 min (fresh) |
 | 30_pool_full_check | embed every filtered survivor; full-pool components of cosine > 0.95; selected prompts crossing splits | — | 20–30 min |
-| 31_calib_m3m9 | 50 calibration prompts × bank 0 through the production collector. At each checkpoint the same x0 is also decoded with the other preview precision (M3). The 10 equivalence prompts keep x0@4/8/16, final latents, initial latents and embeddings. The 20 subset prompts × bank 1 run the plain collector (clean M9) | each trajectory computed once; M3, M9 and equivalence share it | 85–95 min |
+| 31_calib_m3m9 | 50 calibration prompts × bank 0 through the production collector. At each checkpoint the same x0 is also decoded with the other preview precision (M3). The 10 equivalence prompts keep x0@4/8/16, final latents, initial latents and embeddings. The 20 subset prompts × bank 1 run the plain collector (clean M9) | each trajectory computed once; M3, M9 and equivalence share it | ≈ 2.2 h (50 × ~122 s + 20 × ~82 s) |
 | 32_calib_summary | M3 rates per j and per dtype, delivered failures, escalation flag, M9 seconds/prompt-bank and pilot GPU hours, collector peak VRAM | reads records | <1 min |
-| 33_calib_equivalence | reference PSP pipeline A (our embeddings) and B (own encoding) vs stored tensors: exact-hash flags, max abs, x0/score at j = 4, 8, 16 | our side comes from step 31 (no second UNet pass) | 5–8 min |
+| 33_calib_equivalence | reference PSP pipeline A (our embeddings) and B (own encoding) vs stored tensors: exact-hash flags, max abs, x0/score at j = 4, 8, 16 | our side comes from step 31 (no second UNet pass) | ≈ 18 min |
 | 34_calib_chunk | VAE decode chunk {1,2,4,8,16} for preview and delivered at k = 8 and 16: mean/p95 time and peak VRAM (Q7) | stored final latents | 5 min |
 | 35_m2 (k01…k16) | M2 generator primitives k = 1..16, warm-up 10, n = 50: den, ver, fin, feat/lfeat, fixed and all 21 prune pairs (main, B5, B4b); peak VRAM per k (M8) | — | ~2 h |
 | 36_m2_merge | merge, key coverage (den/ver/fin 1..16, prune pairs, feat/lfeat), CV flags; `provisional` with reasons | — | <1 min |
 | 37_m2b | B2 (4,8) online on the 20 subset prompts: wall clock vs ledger prediction, residual, peak VRAM | — | ~8 min |
 
-- **Total runner estimate:** 4–4.5 h. As one session: watchdog deadline 5 h, about **$1.8 compute + ≤ $0.25
-  bandwidth**.
-- **As two sessions:** A = steps 00–34 (~2.3 h); B = 35–37 (~2.2 h).
+- **Total runner estimate (corrected 2026-10-15):** ≈ 5 h. As one session: watchdog deadline 5.5 h, about
+  **$2.0 compute + ≤ $0.25 bandwidth**.
+- **As two sessions:** A = steps 00–34 (~3 h); B = 35–37 (~2 h).
 - **Not included:** idle time (bounded by the watchdog: 15 min idle grace) and storage while stopped.
 
 **Expected outputs**, all labelled provisional or engineering:
@@ -87,8 +87,9 @@ skipped, finished calibration instances and M2 k-parts are reused.
 - **Cost table.** den/ver/fin k = 1..16, all prune pairs for G-842, B5 and B4b; `provisional: true` with reasons.
 - **Peak memory (M8).** Collector, M2 per k, online B2.
 - **Bank collection time (M9)** and pilot GPU hours for collection: s/prompt-bank × 2 banks × 540 prompts (small
-  pilot, val_ext at its maximum). Before measurement, smoke1's numbers (~46 s per prompt-bank at k=8) give **≈ 14 GPU
-  hours for collection**. This is an estimate only, and profiling, G1 and online evaluation are extra.
+  pilot, val_ext at its maximum). smoke1 **measured 81.9 s per prompt-bank** (an earlier ~46 s figure read den
+  as per 4 forwards and was wrong). That gives ≈ 24.6 GPU h for all 540 prompts, or ≈ 10.9 h for train_fit +
+  train_dev only (`PILOT_RUN_PLAN.md` §4).
 - **Collector equivalence** report and **full-pool duplicate check** report.
 
 ## 4. Not in this session

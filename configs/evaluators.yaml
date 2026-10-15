@@ -1,0 +1,10 @@
+# Evaluation-only metrics independent of ImageReward (Guide CC-8). Not used for decisions or inference cost.
+# An evaluator runs only when fully pinned. HPS on val is a diagnostic (Spec §10.1), never used to select a policy.
+hpsv2:
+  package_version: null        # e.g. the hpsv2 release installed in the GPU env; pin before use
+  hps_version: v2.1
+  checkpoint_repo: xswu/HPSv2  # HPS_v2.1_compressed.pt
+  checkpoint_revision: null    # resolve and pin the HF commit before use
+  checkpoint_sha256: null
+geneval:
+  status: "not before PREREG-C (official repo/weights pinned then; per-tag official aggregation)"
