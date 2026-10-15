@@ -14,6 +14,7 @@ path is `--fake-backend`, a test fixture whose outputs are labelled `backend: fa
 ## A. Windows local (CPU)
 
 ```powershell
+git config --global core.longpaths true   # PSP submodule has paths > 260 chars (checkout and status need it)
 git -c core.longpaths=true clone --recurse-submodules -b bootstrap/p0 https://github.com/NguyenNgocMinh30012005/DMRL.git
 cd DMRL
 uv venv --python 3.11 .venv            # or: py -3.11 -m venv .venv
@@ -47,7 +48,8 @@ $env:HF_HOME = "$PWD\.cache\hf"
 
 ## B. Linux GPU (rented box)
 
-The exact first-run sequence is in `docs/GPU_FIRST_RUN.md`. Summary:
+The first session is the technical smoke run by `scripts/gpu_smoke.sh`; commands, order and pass criteria are in
+`docs/GPU_FIRST_RUN.md` and `docs/GPU_SMOKE_CHECKLIST.md`. Summary:
 
 ```bash
 git clone --recurse-submodules -b bootstrap/p0 https://github.com/NguyenNgocMinh30012005/DMRL.git && cd DMRL

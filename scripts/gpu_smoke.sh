@@ -60,7 +60,7 @@ classify() {  # $1 exit code, $2 log -> failure class with evidence
     echo "sigkill_unknown_source(supervisor?)"; return
   fi
   if [[ $rc -eq 124 ]]; then echo "step_timeout"; return; fi
-  if grep -q "CudaUnavailableError" "$log"; then echo "no_cuda"; return; fi
+  if grep -qE "CudaUnavailableError|CUDA not available" "$log"; then echo "no_cuda"; return; fi
   echo "error_exit_${rc}"
 }
 

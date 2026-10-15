@@ -1,143 +1,91 @@
-# GPU first run (rented Linux box)
+# GPU first run (rented Linux box): technical smoke
 
-Purpose: the first technical smoke, profiling and parity runs on a real CUDA machine. Run the commands **in
-order**. Nothing here touches research splits; prompts are technical prompts outside the research pool until
-the prompt pool is approved (QUESTIONS Q2/Q3). Every output lands in `reports/p0/` (small JSON, safe to commit
-back) or `data/` (gitignored).
+Scope: **engineering only**. Up to 3 hand-written technical prompts (`configs/technical_smoke.yaml`, split
+`technical_smoke`), checked against the research prompt pool and GenEval text. No research split, no pilot
+bank, no RL on real data, no val/test/GenEval, no PREREG signing. The guards in the code refuse those anyway.
 
-Do not run bank collection on research splits, tuning on val/test, or anything GenEval here. The code
-refuses those until PREREG-A/B/C are signed.
+Expected box: 1 NVIDIA GPU with 24 GB (RTX 3090 or 4090), ≥64 GB RAM, ~150 GB disk, a single GPU worker.
+Plan to stop within **2 hours of rental**, including setup and downloads. That is a target, not a measurement:
+`MAX_MINUTES` stops the runner before starting a new step once the budget is spent, and the steps are ordered
+so the essential ones run first. Per-step timeouts are in `scripts/gpu_smoke.sh`.
 
-## 0. Prerequisites
+Stage names in the code: `profile --stage model` = M1, `--stage hook` = M0, `--stage generator` = M2,
+`--stage validity` = M3, `--stage batch-parity` = M6, `collect_bank --calib-throughput` = M9.
 
-- Linux x86_64, NVIDIA driver that supports CUDA 12.1 wheels (`nvidia-smi` shows CUDA ≥ 12.1), `git`.
-- `uv` (recommended: `curl -LsSf https://astral.sh/uv/install.sh | sh`) or `python3.10`.
-- Disk: ~10 GB for the env, ~8 GB HF cache (SD1.5 fp32 safetensors + ImageReward), plus outputs.
+## 0. Storage
 
-## 1. Clone the exact commit
+Put everything on **persistent** storage. On RunPod that is the network volume mounted at `/workspace`; the
+container disk can vanish when the Pod stops.
 
 ```bash
+export APSP_STORE=/workspace/apsp          # HF cache, venv, runs and the artifact tarball all live here
+mkdir -p "$APSP_STORE"
+```
+
+## 1. Clone the candidate commit
+
+```bash
+cd /workspace
 git clone --recurse-submodules -b bootstrap/p0 https://github.com/NguyenNgocMinh30012005/DMRL.git
 cd DMRL
-git checkout <COMMIT_SHA_FROM_HANDOFF>
-git submodule update --init --recursive
-git rev-parse HEAD                                  # must equal the handoff SHA
-git submodule status                                # must show 590f59f58384169c719e431dc01d14006fb0fc0c third_party/psp
-git -C third_party/psp status --porcelain           # must be empty (read-only submodule)
+git checkout <COMMIT_SHA_FROM_HANDOFF> && git submodule update --init --recursive
+git rev-parse HEAD                        # must equal the handoff SHA
+git submodule status                      # must show 590f59f58384169c719e431dc01d14006fb0fc0c third_party/psp
+git -C third_party/psp status --porcelain # must print nothing
 ```
 
-## 2. Build the GPU environment
+The repo is private, so the box needs a GitHub credential with read access to it (deploy key or token), set
+up by the user. Never commit or log a token.
+
+## 2. Run the smoke (all steps, resumable)
 
 ```bash
-bash env/setup_gpu_linux.sh            # creates .venv-gpu (Python 3.10), writes env/env.lock.linux-gpu.txt
-source .venv-gpu/bin/activate
-export HF_HOME=$PWD/.cache/hf          # keep weights out of the repo tree tracked by git (.cache is ignored)
-export CUBLAS_WORKSPACE_CONFIG=:4096:8 # recorded in the numeric runtime; helps deterministic cuBLAS
+APSP_STORE=/workspace/apsp RUN_ID=smoke1 MAX_MINUTES=100 MACHINE_ID=gpu_box_1 bash scripts/gpu_smoke.sh
 ```
 
-If pip cannot resolve a pin, don't upgrade diffusers or transformers silently. Write down the exact error in
-`docs/QUESTIONS.md` and stop at this step.
+To run single steps: `bash scripts/gpu_smoke.sh 04_single 05_psp`. Re-running with the same `RUN_ID` skips
+steps that have a `.done` marker. A failed step is not retried until you read its log and remove
+`runs/<RUN_ID>/.failed/<step>`. A second concurrent run with the same `RUN_ID` is refused (flock).
 
-## 3. CPU sanity on the GPU box
+The steps, in order, with the exact commands the runner executes (`PY=$APSP_STORE/venv-gpu/bin/python`,
+`TS="--smoke-config configs/technical_smoke.yaml --out $RUN/tsmoke"`):
+
+| Step | Command | Purpose |
+|---|---|---|
+| 00_setup | `bash env/setup_gpu_linux.sh` (VENV=$APSP_STORE/venv-gpu) | Python 3.10 env with pinned deps; asserts torch 2.4.0 / diffusers 0.31.0.dev0 / transformers 4.38.2; writes `env/env.lock.linux-gpu.txt` |
+| 01_pytest | `$PY -m pytest tests -q` | CPU suite inside the GPU env (the no-CUDA guard test skips on a CUDA host) |
+| 02_env_check | `$PY -m apsp.gpu.env_check --machine-id $MACHINE_ID --out $RUN/p0/env_$MACHINE_ID.json --require-cuda` | GPU model, VRAM, RAM, cgroup limit, driver, CUDA, numeric runtime |
+| 03_model (M1) | `$PY -m apsp.gpu.profile --stage model --out-dir $RUN/p0` then `$PY scripts/check_m1.py $RUN/p0/M1_model.json reports/local_smoke/M1_model.json` | downloads + hashes SD1.5 (pinned revision), scheduler dump, ImageReward revision, missing keys, pinned BERT tokenizer hashes; compares with the 2026-10-14 laptop report |
+| 04_single | `$PY -m apsp.gpu.technical_smoke $TS --step single` | one candidate, 64 steps, delivered decode, real ImageReward score |
+| 05_psp | `$PY -m apsp.gpu.technical_smoke $TS --step psp` | PSP-default 8→4→2 with identity / CFG-row / fresh-score / final-delivery audit |
+| 06_collector | `$PY -m apsp.gpu.technical_smoke $TS --step collector` | 1 prompt × 1 bank × 8 seeds × 16 checkpoints; validate; resume; EPH mismatch refusal |
+| 07_parity | `$PY -m apsp.gpu.technical_smoke $TS --step parity` | online vs replay on that bank: traces, survivors, winner, scores (not G1) |
+| 08_equivalence | `$PY -m apsp.gpu.collect_bank --test-equivalence --smoke-prompt "a photograph of an astronaut riding a horse"` | our engine vs the pinned PSP reference pipeline (A/B/C comparisons) |
+| 09_m0_hook (M0) | `$PY -m apsp.gpu.profile --stage hook --out-dir $RUN/p0` | repeat determinism, 64 UNet calls per run, hook x0 vs DDIM inversion |
+| 10_m6_batch (M6) | `$PY -m apsp.gpu.profile --stage batch-parity --out-dir $RUN/p0` | batch 1/2/4/8/16 vs 8 |
+| 11_m2_generator (M2) | `$PY -m apsp.gpu.profile --stage generator --smoke --ks 1 2 4 8 16 --out-dir $RUN/p0` | primitive timings, **SMOKE / provisional** (n=5) |
+| 12_vae_chunk | `$PY -m apsp.gpu.profile --stage generator --smoke --ks 8 --vae-chunk C --out-dir $RUN/p0/chunk_C` for C in 1 2 4 8 | technical survey for Q7; report only, no freeze |
+
+Steps 00–03 are prerequisites: if one fails, the runner stops. Pass/fail criteria and stop conditions are in
+`docs/GPU_SMOKE_CHECKLIST.md`.
+
+## 3. Download the artifacts before terminating the Pod
+
+The runner writes `$APSP_STORE/<RUN_ID>_artifacts.tgz` (logs, JSON reports, summary.tsv, memory evidence,
+env freeze, the small technical bank and a few PNGs; no weights). From the local machine:
 
 ```bash
-python -m pytest tests -q              # contract/sim/stats + fake-backend engine tests; must all pass
+scp -P <SSH_PORT> root@<POD_HOST>:/workspace/apsp/smoke1_artifacts.tgz .
+# or: runpodctl send /workspace/apsp/smoke1_artifacts.tgz   (then runpodctl receive <code> locally)
 ```
 
-## 4. CUDA and machine facts
+Commit back only the small JSON reports you want reviewed (under `reports/gpu_smoke/<RUN_ID>/`) plus
+`env/env.lock.linux-gpu.txt`. Never commit weights, banks or images.
 
-```bash
-python -m apsp.gpu.env_check --machine-id GPU_BOX_1 --out reports/p0/env_GPU_BOX_1.json --require-cuda
-```
+## 4. What this run does NOT establish
 
-Exit code 3 means there is no CUDA: stop. Copy the detected facts into `configs/machines.yaml`
-(`measurement-gpu`). Research decides whether this box is the measurement machine and sets the budget.
-
-## 5. M1: model, revision, weights, scheduler, ImageReward keys
-
-```bash
-python -m apsp.gpu.profile --stage model --out-dir reports/p0
-```
-
-Check `reports/p0/M1_model.json`: `model_revision` (40-hex SHA), `weight_files_sha256`, 64 timesteps,
-`terminal_update`, `reward_model.missing_keys == []`. Then pin the revision in `configs/pilot.yaml`
-(`model_revision: <sha>`) and commit that one-line change. Every later run must report the same revision.
-
-## 6. Technical smoke (prompt outside the research pool)
-
-```bash
-P="a photograph of an astronaut riding a horse"
-python -m apsp.gpu.online --task smoke --prompt "$P" --synthetic-costs --methods b2 random fixed:2,9 \
-       --disp-us 0 --out data/runs/smoke_online
-python -m apsp.gpu.collect_bank --smoke-prompt "$P" --bank-name SMOKE_1 --machine-id GPU_BOX_1
-python -m apsp.contracts.schema --bank data/banks/SMOKE_1 --validate
-```
-
-Expected: every record is `feasible` with `ledger_spend_us <= cap_us`, PNGs exist, and the smoke bank validates
-(8 seeds x 16 checkpoints, 8 delivered). The costs here are **synthetic**, so the spend numbers exercise the
-ledger and say nothing about real timing.
-
-## 7. M0: hook, determinism, no extra forward
-
-```bash
-python -m apsp.gpu.profile --stage hook --out-dir reports/p0
-```
-
-Report `no_extra_forward` (UNet calls = 64 per run), `mode_none_feature_kernel_calls == 0`, repeat max abs
-diffs / exact flags, and `hook_x0_vs_ddim_inversion_max_abs`. Exact flags are measurements; don't assume them.
-
-## 8. M6: batch-size parity
-
-```bash
-python -m apsp.gpu.profile --stage batch-parity --out-dir reports/p0
-```
-
-Report the latent / preview / delivered deltas and winner flips for batch 1, 2, 4, 8 and 16 vs batch 8. Treat a
-non-zero delta as a finding for G1 planning, not as a failure to hide.
-
-## 9. Collector equivalence against the PSP reference
-
-```bash
-python -m apsp.gpu.collect_bank --test-equivalence --smoke-prompt "$P"
-```
-
-This needs `clip` and `google-genai` (installed by the setup script) because the reference module imports them.
-After the prompt pool exists, rerun on 10 calibration prompts: `--test-equivalence --prompt-pool data/prompts/prompt_pool.parquet`.
-
-## 10. M2: primitive profile (generator cost table)
-
-```bash
-python -m apsp.gpu.profile --stage generator --smoke --ks 1 2 4 8 --out-dir reports/p0     # quick check
-python -m apsp.gpu.profile --stage generator --out-dir reports/p0                          # full: k=1..16, warm-up 10, n=50
-```
-
-Add `--measurement` only if research designated this box as the measurement machine; otherwise the table stays
-`provisional: true`. Check `cv_flags` (CV > 0.15 needs a diagnostic) and that every prune pair is present.
-
-## 11. M3 validity and VAE chunk (after the prompt pool, Q2/Q3)
-
-```bash
-python -m apsp.gpu.profile --stage validity --preview-dtype fp16 --prompts-file data/prompts/calibration.jsonl --out-dir reports/p0/fp16
-python -m apsp.gpu.profile --stage validity --preview-dtype fp32 --prompts-file data/prompts/calibration.jsonl --out-dir reports/p0/fp32
-for c in 1 2 4 8 16; do python -m apsp.gpu.profile --stage generator --ks 8 16 --vae-chunk $c --out-dir reports/p0/chunk_$c; done
-```
-
-50 calibration prompts x 8 seeds x 16 checkpoints = 6,400 previews per precision. Any rate > 1e-3 escalates
-to research before a bank.
-
-## 12. M9 throughput forecast (after the prompt pool)
-
-```bash
-python -m apsp.gpu.collect_bank --calib-throughput --prompt-pool data/prompts/prompt_pool.parquet --machine-id GPU_BOX_1
-```
-
-## Send back
-
-`reports/p0/*.json`, `env/env.lock.linux-gpu.txt`, the console logs of failed steps, and the `configs/pilot.yaml`
-revision pin. Don't send weights, banks or PNGs.
-
-## If something fails
-
-- OOM: keep the run directory and log. For a technical retry, `--vae-chunk 1` (and `--rm-device cpu` on very
-  small GPUs) are allowed and recorded in the EPH. Don't change scientific settings.
-- Import errors in step 9 only: the reference pipeline's extra dependencies are missing. Steps 5–8 don't need them.
+- Cost tables: step 11 is a smoke (n=5, provisional). The ledger in steps 05/07 uses the SYNTHETIC
+  `engineering_only` table. No latency, cap or research conclusion may come from either.
+- Replay–online parity / G1: step 07 compares a few hand-written prompts. It is a code-path check, not the
+  statistical protocol of Spec §10.2.
+- Preview dtype / VAE chunk: step 12 only produces numbers for a proposal (QUESTIONS Q7).
