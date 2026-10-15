@@ -737,7 +737,8 @@ def main(argv=None) -> int:
     cfg, bundle, scorer, scoring, rt = build_backend(a)
     eph, body = compute_eph(cfg, bundle, scorer, rt)
     parts = list(PARTS) if "all" in a.part else a.part
-    meta = {"eph": eph, "pid": os.getpid(), "backend": body["backend"], "prompt_guard": guard, "vae_decode_chunk_cfg": cfg.get("vae_decode_chunk"),
+    from apsp.gpu.fingerprint import collect as runtime_fingerprint
+    meta = {"eph": eph, "pid": os.getpid(), "backend": body["backend"], "runtime_fingerprint": runtime_fingerprint(bundle), "prompt_guard": guard, "vae_decode_chunk_cfg": cfg.get("vae_decode_chunk"),
             "diag_config": {k: v for k, v in dc.items()}}
     st = run_parts(parts, cfg, bundle, scorer, scoring, dc, Path(a.out), meta, progress=lambda s: print(s, flush=True),
                    aa_tag=a.aa_tag)

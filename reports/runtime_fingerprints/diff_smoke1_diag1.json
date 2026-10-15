@@ -1,0 +1,71 @@
+{
+ "a": "smoke1",
+ "b": "diag1",
+ "numeric_fields_differing": {
+  "python": [
+   "3.10.20",
+   "3.10.21"
+  ],
+  "driver": [
+   "580.95.05",
+   "595.91.07"
+  ],
+  "flags": {
+   "CUBLAS_WORKSPACE_CONFIG": [
+    "not recorded",
+    ":4096:8"
+   ],
+   "cudnn_allow_tf32": [
+    "not recorded",
+    true
+   ],
+   "cudnn_benchmark": [
+    "not recorded",
+    false
+   ],
+   "cudnn_deterministic": [
+    "not recorded",
+    true
+   ],
+   "deterministic_algorithms": [
+    "not recorded",
+    false
+   ],
+   "flash_sdp": [
+    "not recorded",
+    true
+   ],
+   "fp16_reduced_precision_reduction": [
+    "not recorded",
+    true
+   ],
+   "math_sdp": [
+    "not recorded",
+    true
+   ],
+   "matmul_allow_tf32": [
+    "not recorded",
+    false
+   ],
+   "mem_efficient_sdp": [
+    "not recorded",
+    true
+   ],
+   "note": [
+    "engine-time flags not recorded in this run (env_check records process defaults before configure_determinism; EPH holds the engine-time subset)",
+    null
+   ]
+  },
+  "attention_processors": [
+   "not recorded",
+   [
+    "AttnProcessor2_0"
+   ]
+  ],
+  "backend": [
+   "diffusers (per EPH-bearing reports)",
+   "diffusers"
+  ]
+ },
+ "note": "'not recorded' on either side means the difference cannot be judged from the artifacts"
+}

@@ -1,0 +1,73 @@
+{
+ "schema": "apsp.runtime_fingerprint/v1",
+ "source": "reconstructed from artifacts (read-only)",
+ "run_dir": "smoke1",
+ "python": "3.10.20",
+ "os": "Linux-5.15.0-139-generic-x86_64-with-glibc2.39",
+ "cpu": "AMD EPYC 7K62 48-Core Processor",
+ "cpu_threads_env": {
+  "OMP_NUM_THREADS": "23",
+  "MKL_NUM_THREADS": "23"
+ },
+ "driver": "580.95.05",
+ "backend": "diffusers (per EPH-bearing reports)",
+ "packages": {
+  "diffusers": "not recorded",
+  "transformers": "4.38.2",
+  "image-reward": "not recorded",
+  "numpy": "1.26.3",
+  "pillow": "11.1.0",
+  "accelerate": "1.2.1"
+ },
+ "torch": "2.4.0+cu121",
+ "cuda_runtime": "12.1",
+ "cudnn": 90100,
+ "gpu_name": "NVIDIA GeForce RTX 3090",
+ "gpu_capability": "8.6",
+ "gpu_total_mem_bytes": 25296044032,
+ "flags": {
+  "note": "engine-time flags not recorded in this run (env_check records process defaults before configure_determinism; EPH holds the engine-time subset)",
+  "cudnn_benchmark": "not recorded",
+  "cudnn_deterministic": "not recorded",
+  "matmul_allow_tf32": "not recorded",
+  "cudnn_allow_tf32": "not recorded",
+  "fp16_reduced_precision_reduction": "not recorded",
+  "deterministic_algorithms": "not recorded",
+  "CUBLAS_WORKSPACE_CONFIG": "not recorded",
+  "flash_sdp": "not recorded",
+  "mem_efficient_sdp": "not recorded",
+  "math_sdp": "not recorded"
+ },
+ "attention_processors": "not recorded",
+ "machine_id": "vast_56044352_rtx3090",
+ "ephs_in_artifacts": [
+  "09787e3313ab5288c354b0584f32c4b55434254e0187f127f4f6473959f83c97",
+  "0ff1e856635043db1d046263191dc949b55e71e5890aaf5a19ceccc90542634d",
+  "3e365f265695dbb5715afc3dcc38be2c48a56f7e08d256bec4c01557900160f6",
+  "c1351a998e37d89ec892abf2f5f3ac16312ca20d3d12fdc359530bb3605c83bd",
+  "ccdbacf07d60fe627f9104c9d29ee9551ee124425efe7aab6b960cac58be5481"
+ ],
+ "eph_v1_covers": [
+  "torch version",
+  "CUDA runtime version",
+  "cuDNN version",
+  "cudnn.benchmark",
+  "cudnn.deterministic",
+  "matmul/cudnn allow_tf32",
+  "SDPA flash/mem_efficient/math enabled",
+  "CUBLAS_WORKSPACE_CONFIG",
+  "requirements-gpu-linux.txt sha256 (pins, not the installed patch versions)"
+ ],
+ "eph_v1_misses": [
+  "GPU model and compute capability",
+  "NVIDIA driver",
+  "Python version",
+  "installed diffusers / transformers / ImageReward / numpy / PIL versions",
+  "attention processor class",
+  "torch.use_deterministic_algorithms",
+  "allow_fp16_reduced_precision_reduction",
+  "OS / kernel / glibc",
+  "CPU model and thread settings"
+ ],
+ "fingerprint_sha": "31754714ef0a13a308c2c24826082c58078c43b541ba23decb30a7e7cc3ed146"
+}

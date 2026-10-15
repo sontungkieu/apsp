@@ -32,6 +32,15 @@ mkdir -p "${RUN}/logs" "${RUN}/.done" "${HF_HOME}"
 exec 9>"${RUN}/.lock"
 if ! flock -n 9; then echo "another gpu_smoke.sh is already running for ${RUN_ID}; refusing duplicate" >&2; exit 3; fi
 
+# Cost watchdog gate (docs/COST_WATCHDOG.md): on a Vast instance (CONTAINER_ID set) the runner refuses to start unless
+# scripts/arm_watchdog.sh has armed a watchdog for this instance. REQUIRE_WATCHDOG=0 disables the gate explicitly.
+REQUIRE_WATCHDOG="${REQUIRE_WATCHDOG:-$([[ -n "${CONTAINER_ID:-}" ]] && echo 1 || echo 0)}"
+if [[ "${REQUIRE_WATCHDOG}" == "1" ]]; then
+  if ! python3 scripts/vast_watchdog.py --check-armed --instance-id "${WATCHDOG_INSTANCE_ID:-${CONTAINER_ID:-}}"        --state-dir "${WATCHDOG_STATE_DIR:-${APSP_STORE}/watchdog}"; then
+    echo "refusing to start: cost watchdog not armed (scripts/arm_watchdog.sh)" >&2; exit 3
+  fi
+fi
+
 T_START=$(date +%s)
 SUMMARY="${RUN}/summary.tsv"
 [[ -f "${SUMMARY}" ]] || printf "step\texit\tseconds\tclass\tlog\n" > "${SUMMARY}"
@@ -83,8 +92,8 @@ run_step() {  # name, timeout_minutes, command...
   echo "[FAIL] ${name} rc=${rc} class=${cls} after ${dt}s -> ${log}"; return 1
 }
 
-ALL_STEPS=(00_setup 01_pytest 02_env_check 03_model 04_single 05_psp 06_collector 07_parity 08_equivalence 09_m0_hook 10_m6_batch 11_m2_generator 12_vae_chunk)
-DIAG_STEPS=(00_setup 01_pytest 02_env_check 03_model 20_diag_audit 20a_diag_aa1 20b_diag_aa2 20c_diag_aa_compare 21_diag_traj 22_diag_unet 23_diag_vae 24_diag_rm 25_diag_method)
+ALL_STEPS=(00_setup 01_pytest 02_env_check 02b_fingerprint 03_model 04_single 05_psp 06_collector 07_parity 08_equivalence 09_m0_hook 10_m6_batch 11_m2_generator 12_vae_chunk)
+DIAG_STEPS=(00_setup 01_pytest 02_env_check 02b_fingerprint 03_model 20_diag_audit 20a_diag_aa1 20b_diag_aa2 20c_diag_aa_compare 21_diag_traj 22_diag_unet 23_diag_vae 24_diag_rm 25_diag_method)
 if [[ $# -eq 1 && "$1" == "diag" ]]; then STEPS=("${DIAG_STEPS[@]}")
 elif [[ $# -gt 0 ]]; then STEPS=("$@")
 else STEPS=("${ALL_STEPS[@]}"); fi
@@ -98,6 +107,7 @@ for s in "${STEPS[@]}"; do
     00_setup)       run_step "$s" 40 bash env/setup_gpu_linux.sh ;;
     01_pytest)      run_step "$s" 15 "${PY}" -m pytest tests -q ;;
     02_env_check)   run_step "$s" 5  "${PY}" -m apsp.gpu.env_check --machine-id "${MACHINE_ID}" --out "${RUN}/p0/env_${MACHINE_ID}.json" --require-cuda ;;
+    02b_fingerprint) run_step "$s" 5 "${PY}" -m apsp.gpu.fingerprint --out "${RUN}/p0/runtime_fingerprint.json" ;;
     03_model)       run_step "$s" 40 "${PY}" -m apsp.gpu.profile --stage model --out-dir "${RUN}/p0" && \
                     run_step 03b_model_check 2 "${PY}" scripts/check_m1.py "${RUN}/p0/M1_model.json" reports/local_smoke/M1_model.json ;;
     04_single)      run_step "$s" 15 "${PY}" -m apsp.gpu.technical_smoke ${TS} --step single ;;

@@ -1,0 +1,70 @@
+{
+ "schema": "apsp.runtime_fingerprint/v1",
+ "source": "reconstructed from artifacts (read-only)",
+ "run_dir": "diag1",
+ "python": "3.10.21",
+ "os": "Linux-6.8.0-138-generic-x86_64-with-glibc2.39",
+ "cpu": "AMD EPYC 7443 24-Core Processor",
+ "cpu_threads_env": {
+  "OMP_NUM_THREADS": "6",
+  "MKL_NUM_THREADS": "6"
+ },
+ "driver": "595.91.07",
+ "backend": "diffusers",
+ "packages": {
+  "diffusers": "not recorded",
+  "transformers": "4.38.2",
+  "image-reward": "not recorded",
+  "numpy": "1.26.3",
+  "pillow": "11.1.0",
+  "accelerate": "1.2.1"
+ },
+ "torch": "2.4.0+cu121",
+ "cuda_runtime": "12.1",
+ "cudnn": 90100,
+ "gpu_name": "NVIDIA GeForce RTX 3090",
+ "gpu_capability": "8.6",
+ "gpu_total_mem_bytes": 25298141184,
+ "flags": {
+  "cudnn_benchmark": false,
+  "cudnn_deterministic": true,
+  "matmul_allow_tf32": false,
+  "cudnn_allow_tf32": true,
+  "fp16_reduced_precision_reduction": true,
+  "deterministic_algorithms": false,
+  "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+  "flash_sdp": true,
+  "mem_efficient_sdp": true,
+  "math_sdp": true
+ },
+ "attention_processors": [
+  "AttnProcessor2_0"
+ ],
+ "machine_id": "vast_56070930_rtx3090",
+ "ephs_in_artifacts": [
+  "c1351a998e37d89ec892abf2f5f3ac16312ca20d3d12fdc359530bb3605c83bd"
+ ],
+ "eph_v1_covers": [
+  "torch version",
+  "CUDA runtime version",
+  "cuDNN version",
+  "cudnn.benchmark",
+  "cudnn.deterministic",
+  "matmul/cudnn allow_tf32",
+  "SDPA flash/mem_efficient/math enabled",
+  "CUBLAS_WORKSPACE_CONFIG",
+  "requirements-gpu-linux.txt sha256 (pins, not the installed patch versions)"
+ ],
+ "eph_v1_misses": [
+  "GPU model and compute capability",
+  "NVIDIA driver",
+  "Python version",
+  "installed diffusers / transformers / ImageReward / numpy / PIL versions",
+  "attention processor class",
+  "torch.use_deterministic_algorithms",
+  "allow_fp16_reduced_precision_reduction",
+  "OS / kernel / glibc",
+  "CPU model and thread settings"
+ ],
+ "fingerprint_sha": "cea87044b68591a3bd7ca32e631201716b38d1f86151a1dff6d62ba71fd39c12"
+}
