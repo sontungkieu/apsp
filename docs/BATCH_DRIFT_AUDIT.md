@@ -254,3 +254,68 @@ To add if any option in §9 is adopted:
   Online runs should log the batch size at every VERIFY and delivery, so replay comparisons can condition on it.
 
 Any of these changes yields a new EPH. Existing banks (only the technical smoke bank) cannot be mixed with new ones.
+
+## 11. diag1 results (2026-10-15, GPU run of the harness)
+
+ENGINEERING ONLY: diagnostic prompts in a technical split, synthetic costs, **not G1**, no threshold set.
+
+**Run.**
+- Machine: Vast instance **56070930** (RTX 3090 24 GB, driver 595.91.07, Sweden), provided by the user. It is not
+  56044352.
+- Price: $0.359/h compute plus storage (verified via API); bandwidth $0.026/GB.
+- Code: commit `1100a12147856b751c62c230029cbf619ab0d7cb`, PSP `590f59f58384169c719e431dc01d14006fb0fc0c`, transferred
+  by bundle (sha256 verified on the box). Repo clean before the run.
+- Runner: `gpu_smoke.sh diag`, RUN_ID `diag1`, started 09:00:31Z and exited 0 at 09:23:10Z. All 14 steps exited 0.
+- Peak VRAM: 12.6 GB allocated and 24.1 GB reserved (traj b16).
+- Artifacts: `diag1_artifacts.tgz`, sha256 `f57d0646…146885a`. Digest in `reports/batch_drift/diag1_summary.json`.
+- EPH measured in every part: `c1351a99…`, the same as smoke1. EPH does not include the driver or Python patch
+  version (3.10.21 here, 3.10.20 in smoke1), so matching EPHs say nothing about those.
+
+**A/A repeatability.**
+- *Two processes, same batch 8:* bitwise identical for all 16 candidates. This covers initial latents, embeddings,
+  all 64 forwards, the decoded tensor, uint8 pixels, and preview and delivered scores (`aa_compare.json`).
+- *Across sessions, machines and drivers:* the `method` k=8 collection of the astronaut prompt (bank 0) equals
+  smoke1's bank shard. Initial latents 8/8, preview table 128/128, delivered 8/8 (all compared as float32) and PNG
+  pixels 8/8 (`diag1_crosscheck_smoke1.json`).
+- *M6 reproduced:* traj reproduced smoke1's M6 numbers to every digit (latent max 1.7068 / 2.4443 / 2.0454 /
+  1.4354; flips at b2 and b16).
+
+**Drift sources.** At a fixed batch size the pipeline is deterministic; changing the batch size changes numbers in
+all three components.
+
+| Component | Test (identical, hashed inputs) | Batch size ≠ 8 | Same size, other composition/order |
+|---|---|---|---|
+| UNet | one forward at f = 0, 16, 32, 63 | 0/16 bitwise; ε max 0.002–0.005 (fp16 ulp level) | identical to the same size `fwd` |
+| Trajectory | 64 forwards | first divergent forward = **1** for all 16; final latent max 1.4–2.4, RMSE 0.07–0.13 | b8 rev/interleave bitwise = b8 |
+| VAE | same latent bytes, chunk 1/2/4/16 | 0/16 bitwise; tensor max ≤ 0.013; **pixels ≤ 2 u8 levels** | chunk 8 rev/interleave bitwise |
+| ImageReward | same PNG pixels and preprocessed tensor; 3 repeats of b8 bitwise | score max **2.0e-6** | identical to the same size `fwd` |
+
+- *Reading.* The dominant source is UNet batch-size-dependent kernels. Ulp-level ε differences at forward 1 are
+  amplified by the 64-step trajectory into visible changes.
+- *Not decisive.* VAE (≤ 2 u8 levels) and ImageReward (~1e-6) are measurable but tiny compared with ranking gaps
+  (smallest seen about 0.0015).
+- *Not established.* Which kernel (GEMM, conv or SDPA backend) varies with batch size. This run did not toggle
+  backends.
+
+**Impact on the method** (6 fixed pairs × 3 prompts × 2 banks = 36 episodes, online vs replay on the same
+instance's k=8 table; plan written to `method_plan.json` before running).
+- *Winners:* 36/36 equal, so `winner_changes` is empty and there is no quality cost to report.
+- *Keep sets:* first prune 36/36 equal. That prune runs at k=8, the same batch as the bank, so this is expected.
+  Second prune 32/36 equal. The 4 differences, (2,4) on two instances and (6,12) on two, all had small replay gaps
+  at j2 (0.0076–0.059), and the winner still matched.
+- *Delivered Y online − replay:* max |·| 0.049, mean 0.0036.
+- *Effect vs (4,8):* online − replay error max 0.058. 7 sign disagreements, mostly where the replay effect is exactly
+  0 (same winner as (4,8)) and the online effect is the delivered-score noise of a different final batch size.
+  Sign agreement is therefore not a useful statistic when the replay effect is 0.
+- *Scope:* 3 diagnostic prompts. This says nothing about how often flips occur on the research distribution, where
+  some j=4 gaps are as small as 0.0015.
+
+**Engine changes worth trying next (not adopted; production unchanged).**
+1. Pin UNet kernels per batch shape. Test the SDPA backend (math vs flash/mem-efficient), `torch.use_deterministic_algorithms`
+   and `fp16_reduced_precision_reduction=False`, and check whether any setting makes b1/b2/b4/b16 equal b8.
+   Primitives to re-measure: den(k) for each k, M0, M6, equivalence.
+2. Padding only for the final delivered decode and score (VAE+RM effect ≤ 2 u8 and 1e-6). It would not remove UNet
+   drift, so it is low value.
+3. Treat drift as measurement noise in replay, sized by the Y differences above.
+
+Any of these needs the proposal and EPH/BMH changes of §9–10.

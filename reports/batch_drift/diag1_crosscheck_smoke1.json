@@ -1,0 +1,21 @@
+{
+  "label": "ENGINEERING ONLY; cross-session A/A at batch 8; not G1",
+  "bank": "..\\DMRL_artifacts\\smoke1\\x\\runs\\smoke1\\tsmoke\\TSMOKE_BANK",
+  "diag_eph": "c1351a998e37d89ec892abf2f5f3ac16312ca20d3d12fdc359530bb3605c83bd",
+  "instances": [
+    {
+      "uid": "1f64b1c61ffd598384f753a48e0fcf9123711cae",
+      "bank_id": 0,
+      "smoke1_eph": "c1351a998e37d89ec892abf2f5f3ac16312ca20d3d12fdc359530bb3605c83bd",
+      "eph_equal": true,
+      "init_latent_sha_equal": 8,
+      "preview_n_equal_as_float32": 128,
+      "preview_n": 128,
+      "preview_max_abs": 0.0,
+      "delivered_n_equal_as_float32": 8,
+      "delivered_max_abs": 0.0,
+      "pixels_equal": 8,
+      "n": 8
+    }
+  ]
+}
