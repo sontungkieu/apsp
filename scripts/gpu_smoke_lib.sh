@@ -46,3 +46,13 @@ package_artifacts() {
   local store=$1 run_id=$2
   tar --exclude="*.lock" -czf "${store}/${run_id}_artifacts.tgz" -C "${store}/runs" "${run_id}"
 }
+
+# effective_timeout_min STEP_MINUTES [DEADLINE_EPOCH] [NOW_EPOCH] -> minutes for `timeout`, capped so the step
+# cannot outlive a hard deadline; prints 0 when less than one minute remains (caller must not start the step).
+effective_timeout_min() {
+  local tmo=$1 deadline=${2:-} now=${3:-$(date +%s)}
+  if [[ -z "$deadline" ]]; then echo "$tmo"; return; fi
+  local left=$(( (deadline - now) / 60 ))
+  if (( left < 1 )); then echo 0; return; fi
+  (( left < tmo )) && echo "$left" || echo "$tmo"
+}

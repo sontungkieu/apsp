@@ -4,6 +4,10 @@
 #
 #   APSP_STORE=/workspace/apsp RUN_ID=smoke1 MAX_MINUTES=100 bash scripts/gpu_smoke.sh            # all steps
 #   APSP_STORE=/workspace/apsp RUN_ID=smoke1 bash scripts/gpu_smoke.sh 04_single 05_psp            # chosen steps
+#   APSP_STORE=/workspace/apsp RUN_ID=diag1 MAX_MINUTES=60 HARD_DEADLINE_EPOCH=<epoch> bash scripts/gpu_smoke.sh diag
+#     ("diag" = setup, tests, env check, model check, then the batch-drift harness parts 20..25)
+# HARD_DEADLINE_EPOCH (optional) caps every step's timeout so no step outlives it; MAX_MINUTES is checked
+# between steps only.
 #
 # APSP_STORE must live on PERSISTENT storage (e.g. a RunPod network volume mounted at /workspace); the container
 # filesystem may vanish when the Pod stops. Weights (HF cache), venv and outputs all go under APSP_STORE.
@@ -61,11 +65,13 @@ run_step() {  # name, timeout_minutes, command...
   if [[ -f "${RUN}/.failed/${name}" ]]; then echo "[skip] ${name} failed before; read ${log}, then rm ${RUN}/.failed/${name} to retry"; return 1; fi
   local elapsed=$(( ( $(date +%s) - T_START ) / 60 ))
   if (( elapsed >= MAX_MINUTES )); then echo "[budget] ${MAX_MINUTES} min reached before ${name}; stopping"; return 2; fi
+  tmo=$(effective_timeout_min "${tmo}" "${HARD_DEADLINE_EPOCH:-}")
+  if (( tmo < 1 )); then echo "[budget] hard deadline ${HARD_DEADLINE_EPOCH} too close to start ${name}; stopping"; return 2; fi
   echo "[run ] ${name}  (elapsed ${elapsed} min)"
   mem_snapshot "before ${name}"
   local oom0; oom0=$(cg_oom_kills)
   local t0=$(date +%s)
-  ( echo "\$ $*"; timeout --signal=TERM "${tmo}m" "$@" ) > "${log}" 2>&1
+  ( echo "\$ $*  (timeout ${tmo}m)"; timeout --signal=TERM --kill-after=30s "${tmo}m" "$@" ) > "${log}" 2>&1
   local rc=$?
   local dt=$(( $(date +%s) - t0 ))
   mem_snapshot "after ${name} rc=${rc}"
@@ -77,8 +83,12 @@ run_step() {  # name, timeout_minutes, command...
 }
 
 ALL_STEPS=(00_setup 01_pytest 02_env_check 03_model 04_single 05_psp 06_collector 07_parity 08_equivalence 09_m0_hook 10_m6_batch 11_m2_generator 12_vae_chunk)
-[[ $# -gt 0 ]] && STEPS=("$@") || STEPS=("${ALL_STEPS[@]}")
+DIAG_STEPS=(00_setup 01_pytest 02_env_check 03_model 20_diag_audit 21_diag_traj 22_diag_unet 23_diag_vae 24_diag_rm 25_diag_method)
+if [[ $# -eq 1 && "$1" == "diag" ]]; then STEPS=("${DIAG_STEPS[@]}")
+elif [[ $# -gt 0 ]]; then STEPS=("$@")
+else STEPS=("${ALL_STEPS[@]}"); fi
 TS="--smoke-config configs/technical_smoke.yaml --out ${RUN}/tsmoke"
+DG="--diag-config configs/drift_diagnostic.yaml --out ${RUN}/diag"
 
 for s in "${STEPS[@]}"; do
   case "$s" in
@@ -96,6 +106,12 @@ for s in "${STEPS[@]}"; do
     10_m6_batch)    run_step "$s" 30 "${PY}" -m apsp.gpu.profile --stage batch-parity --out-dir "${RUN}/p0" ;;
     11_m2_generator) run_step "$s" 30 "${PY}" -m apsp.gpu.profile --stage generator --smoke --ks 1 2 4 8 16 --out-dir "${RUN}/p0" ;;
     12_vae_chunk)   for c in 1 2 4 8; do run_step "12_vae_chunk_${c}" 10 "${PY}" -m apsp.gpu.profile --stage generator --smoke --ks 8 --vae-chunk "${c}" --out-dir "${RUN}/p0/chunk_${c}" || break; done ;;
+    20_diag_audit)  run_step "$s" 10 "${PY}" -m apsp.gpu.drift_harness ${DG} --part audit ;;
+    21_diag_traj)   run_step "$s" 30 "${PY}" -m apsp.gpu.drift_harness ${DG} --part traj ;;
+    22_diag_unet)   run_step "$s" 15 "${PY}" -m apsp.gpu.drift_harness ${DG} --part unet ;;
+    23_diag_vae)    run_step "$s" 15 "${PY}" -m apsp.gpu.drift_harness ${DG} --part vae ;;
+    24_diag_rm)     run_step "$s" 15 "${PY}" -m apsp.gpu.drift_harness ${DG} --part rm ;;
+    25_diag_method) run_step "$s" 45 "${PY}" -m apsp.gpu.drift_harness ${DG} --part method ;;
     *) echo "unknown step $s" >&2; exit 2 ;;
   esac
   rc=$?

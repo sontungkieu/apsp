@@ -1,0 +1,34 @@
+# Batch-drift diagnostic (apsp.gpu.drift_harness). ENGINEERING ONLY; see docs/BATCH_DRIFT_AUDIT.md.
+# - Scientific configuration comes from configs/pilot.yaml (loaded by the backend); nothing is redefined here.
+# - Prompts are hand-written diagnostic prompts with a technical split label. The harness refuses any prompt
+#   whose uid is in a research prompt pool or whose text duplicates GenEval. Research calibration prompts can
+#   replace them only after the pool is frozen (Q2/Q3) and research approves their use for P0 diagnostics.
+# - Costs used by the `method` part are the synthetic engineering-only table (ledger plumbing only).
+split: technical_smoke
+max_prompts: 8
+prompts:
+  - "a photograph of an astronaut riding a horse"
+  - "a red bicycle leaning against a brick wall"
+  - "a bowl of fruit on a wooden table, studio lighting"
+  - "a lighthouse on a rocky coast at dusk, oil painting"
+  - "a cat sleeping on a stack of old books"
+  - "an isometric illustration of a tiny city block"
+
+# M6 reproduction: same prompt AND same uid as smoke1's M6 (seeds derive from the uid, not the text)
+repro:
+  prompt: "a photograph of an astronaut riding a horse"
+  uid: "m6-technical"
+
+batch_sizes: [1, 2, 4, 8, 16]
+ref_batch: 8                    # smoke1 M6 reference; vae_chunks must contain it
+orders: [fwd, rev, interleave]  # rev/interleave change group composition and in-group order
+# trajectories (M6 reproduction with per-candidate detail): the five M6 batch sizes plus composition/order at 8
+traj_plans: [b8_fwd, b1_fwd, b2_fwd, b4_fwd, b16_fwd, b8_rev, b8_interleave]
+unet_forward_indices: [0, 16, 32, 63]
+vae_chunks: [1, 2, 4, 8, 16]
+rm_repeats: 3
+# fixed (j1, j2) schedules for the method part; [4, 8] is the reference pair (PSP default cuts)
+method_pairs: [[4, 8], [2, 9], [1, 2], [2, 4], [6, 12], [8, 14]]
+method_prompts: 3
+method_banks: 2
+prompt_pool_check: data/prompts/prompt_pool.parquet

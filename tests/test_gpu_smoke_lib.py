@@ -123,3 +123,14 @@ def test_old_exclude_order_is_rejected_by_gnu_tar(tmp_path):
     (tmp_path / "runs" / "r1" / "a.lock").write_text("")
     out = run(tmp_path, 'tar -czf old.tgz -C runs r1 --exclude="*.lock" 2>/dev/null; echo rc=$?')
     assert out != "rc=0"
+
+
+@pytest.mark.parametrize("tmo,deadline,now,expected", [
+    (40, "", 0, "40"),            # no deadline: step timeout unchanged
+    (40, 6000, 0, "40"),          # 100 min left
+    (40, 1200, 0, "20"),          # 20 min left caps the step
+    (40, 59, 0, "0"),             # < 1 min left: do not start
+    (40, 0, 100, "0"),            # deadline passed
+])
+def test_effective_timeout_respects_hard_deadline(tmp_path, tmo, deadline, now, expected):
+    assert run(tmp_path, f'effective_timeout_min {tmo} "{deadline}" {now}') == expected
