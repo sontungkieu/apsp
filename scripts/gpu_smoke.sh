@@ -36,32 +36,22 @@ P1="a photograph of an astronaut riding a horse"   # = configs/technical_smoke.y
 git rev-parse HEAD > "${RUN}/commit.txt" 2>/dev/null || true
 git submodule status > "${RUN}/submodule.txt" 2>/dev/null || true
 
-cg_file() { for f in "$@"; do [[ -r "$f" ]] && { cat "$f"; return; }; done; echo "n/a"; }
+# shellcheck source=scripts/gpu_smoke_lib.sh
+. "${REPO_ROOT}/scripts/gpu_smoke_lib.sh"
+CG_VERSION=$(cgroup_version)
+echo "cgroup ${CG_VERSION}" > "${RUN}/cgroup.txt"
+
 mem_snapshot() {  # $1 = label
   {
     echo "== $1 $(date -u +%FT%TZ)"
     echo "-- free -b"; free -b 2>/dev/null || true
-    echo "-- cgroup memory.max / memory.peak / memory.events"
-    cg_file /sys/fs/cgroup/memory.max /sys/fs/cgroup/memory/memory.limit_in_bytes
-    cg_file /sys/fs/cgroup/memory.peak /sys/fs/cgroup/memory/memory.max_usage_in_bytes
-    cg_file /sys/fs/cgroup/memory.events
+    echo "-- cgroup ${CG_VERSION}: memory limit / peak / events (v2 memory.max|peak|events, v1 limit_in_bytes|max_usage_in_bytes|oom_control)"
+    cg_mem_limit
+    cg_mem_peak
+    cg_mem_events
     echo "-- nvidia-smi"
     nvidia-smi --query-gpu=name,memory.total,memory.used,driver_version --format=csv,noheader 2>/dev/null || echo n/a
   } >> "${RUN}/logs/memory_evidence.txt"
-}
-
-classify() {  # $1 exit code, $2 log -> failure class with evidence
-  local rc=$1 log=$2
-  if [[ $rc -eq 0 ]]; then echo "ok"; return; fi
-  if grep -q "CUDA out of memory\|torch.cuda.OutOfMemoryError" "$log"; then echo "cuda_vram_oom"; return; fi
-  if [[ $rc -eq 137 ]]; then
-    if grep -q "oom_kill [1-9]" <(cg_file /sys/fs/cgroup/memory.events); then echo "cgroup_oom_kill"; return; fi
-    if dmesg 2>/dev/null | tail -50 | grep -qi "out of memory\|oom-kill"; then echo "host_oom_killer"; return; fi
-    echo "sigkill_unknown_source(supervisor?)"; return
-  fi
-  if [[ $rc -eq 124 ]]; then echo "step_timeout"; return; fi
-  if grep -qE "CudaUnavailableError|CUDA not available" "$log"; then echo "no_cuda"; return; fi
-  echo "error_exit_${rc}"
 }
 
 run_step() {  # name, timeout_minutes, command...
@@ -73,12 +63,13 @@ run_step() {  # name, timeout_minutes, command...
   if (( elapsed >= MAX_MINUTES )); then echo "[budget] ${MAX_MINUTES} min reached before ${name}; stopping"; return 2; fi
   echo "[run ] ${name}  (elapsed ${elapsed} min)"
   mem_snapshot "before ${name}"
+  local oom0; oom0=$(cg_oom_kills)
   local t0=$(date +%s)
   ( echo "\$ $*"; timeout --signal=TERM "${tmo}m" "$@" ) > "${log}" 2>&1
   local rc=$?
   local dt=$(( $(date +%s) - t0 ))
   mem_snapshot "after ${name} rc=${rc}"
-  local cls; cls=$(classify "$rc" "$log")
+  local cls; cls=$(classify "$rc" "$log" "$oom0")
   printf "%s\t%s\t%s\t%s\t%s\n" "${name}" "${rc}" "${dt}" "${cls}" "${log}" >> "${SUMMARY}"
   if [[ $rc -eq 0 ]]; then touch "${RUN}/.done/${name}"; echo "[ ok ] ${name} ${dt}s"; return 0; fi
   mkdir -p "${RUN}/.failed"; echo "${cls}" > "${RUN}/.failed/${name}"
@@ -114,6 +105,7 @@ done
 
 "${PY}" -m pip freeze > "${RUN}/env_freeze.txt" 2>/dev/null || uv pip freeze --python "${PY}" > "${RUN}/env_freeze.txt" 2>/dev/null || true
 cp -f env/env.lock.linux-gpu.txt "${RUN}/" 2>/dev/null || true
-tar -czf "${APSP_STORE}/${RUN_ID}_artifacts.tgz" -C "${APSP_STORE}/runs" "${RUN_ID}" --exclude="*.lock"
+if ! package_artifacts "${APSP_STORE}" "${RUN_ID}"; then echo "[FAIL] packaging artifacts (tar exit non-zero)" >&2; PACK_RC=1; fi
 echo "== summary (${SUMMARY})"; column -t -s $'\t' "${SUMMARY}" 2>/dev/null || cat "${SUMMARY}"
 echo "== artifacts: ${APSP_STORE}/${RUN_ID}_artifacts.tgz  (download BEFORE terminating the Pod)"
+exit "${PACK_RC:-0}"

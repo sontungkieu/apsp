@@ -35,9 +35,16 @@ to `logs/memory_evidence.txt` (free, cgroup memory.max/peak/events, nvidia-smi).
 
 ## Failure classes (from `classify()` in the runner)
 
-`ok`, `cuda_vram_oom` (log contains CUDA OOM), `cgroup_oom_kill` (exit 137 and memory.events oom_kill > 0),
-`host_oom_killer` (exit 137 and dmesg OOM), `sigkill_unknown_source(supervisor?)` (exit 137 without OOM
-evidence), `step_timeout` (exit 124), `no_cuda`, `error_exit_<n>`.
+`ok`, `cuda_vram_oom` (log contains CUDA OOM), `cgroup_oom_kill` (exit 137 and the cgroup `oom_kill` counter
+grew during the step: v2 `memory.events`, v1 `memory/memory.oom_control`), `host_oom_killer` (exit 137 and dmesg
+OOM), `sigkill_unknown_source(supervisor?)` (exit 137 without OOM evidence), `step_timeout` (exit 124), `no_cuda`,
+`error_exit_<n>`. Helpers live in `scripts/gpu_smoke_lib.sh`, tested by `tests/test_gpu_smoke_lib.py`. The run
+records its cgroup version in `runs/<RUN_ID>/cgroup.txt`. The runner exits non-zero if packaging fails.
+
+smoke1 (2026-10-15, commit `933e9ac`) ran the earlier runner: its tar call put `--exclude` after the member names,
+so GNU tar exited 2 and an empty `.lock` file was archived (contents otherwise complete), and on that cgroup v1
+host the OOM classifier could not read `memory.events`. Both are fixed after smoke1 (D28); smoke1 results are
+unaffected because every step exited 0.
 
 ## Before terminating the Pod
 
