@@ -17,14 +17,45 @@ from apsp.gpu.runtime import import_torch
 from apsp.gpu.validity import rows_finite
 
 IR_HF_REPO = "THUDM/ImageReward"
+BERT_REPO = "google-bert/bert-base-uncased"          # "bert-base-uncased" redirects here
+BERT_FILES = ("vocab.txt", "tokenizer_config.json", "config.json")
+
+
+def pinned_bert_dir(revision: str, local_files_only: bool = False):
+    """Snapshot of ONLY the tokenizer files BLIP needs, at an exact revision. Returns (dir, {file: sha256})."""
+    from pathlib import Path
+
+    from huggingface_hub import snapshot_download
+    if not revision or len(revision) != 40:
+        raise ValueError("reward_tokenizer_revision must be a 40-hex commit SHA")
+    d = Path(snapshot_download(BERT_REPO, revision=revision, allow_patterns=list(BERT_FILES),
+                               local_files_only=local_files_only))
+    present = sorted(p.name for p in d.iterdir() if p.is_file())
+    if present != sorted(BERT_FILES):
+        raise RuntimeError(f"pinned tokenizer snapshot has files {present}, expected {sorted(BERT_FILES)}")
+    return d, {f: file_sha256(d / f) for f in BERT_FILES}
+
+
+def _pinned_init_tokenizer_factory(tok_dir):
+    """Same post-processing as ImageReward.models.BLIP.blip.init_tokenizer, but from the pinned local dir."""
+    def init_tokenizer():
+        from transformers import BertTokenizer
+        tokenizer = BertTokenizer.from_pretrained(str(tok_dir))
+        tokenizer.add_special_tokens({"bos_token": "[DEC]"})
+        tokenizer.add_special_tokens({"additional_special_tokens": ["[ENC]"]})
+        tokenizer.enc_token_id = tokenizer.additional_special_tokens_ids[0]
+        return tokenizer
+    return init_tokenizer
 
 
 class ImageRewardScorer:
     """Frozen ImageReward-v1.0 with an explicit missing/unexpected-key check (the base uses strict=False silently)."""
 
-    def __init__(self, device, revision: Optional[str] = None, local_files_only: bool = False):
+    def __init__(self, device, revision: Optional[str] = None, local_files_only: bool = False,
+                 tokenizer_revision: Optional[str] = None):
         torch = import_torch()
         from huggingface_hub import HfApi, hf_hub_download
+        import ImageReward.models.BLIP.blip_pretrain as blip_pretrain
         from ImageReward.ImageReward import ImageReward as IRModel  # official package pinned in env lock
 
         rev = revision
@@ -33,7 +64,18 @@ class ImageRewardScorer:
         ckpt = hf_hub_download(IR_HF_REPO, "ImageReward.pt", revision=rev, local_files_only=local_files_only)
         med = hf_hub_download(IR_HF_REPO, "med_config.json", revision=rev, local_files_only=local_files_only)
         state = torch.load(ckpt, map_location="cpu")
-        model = IRModel(med_config=med, device=device)
+        # BLIP_Pretrain calls ``init_tokenizer()`` (imported by name) -> BertTokenizer.from_pretrained('bert-base-uncased')
+        # at a floating revision. That is the only tokenizer load in the package; we swap it for the pinned
+        # snapshot during construction only (third-party files untouched) and verify the result afterwards.
+        tok_dir, tok_hashes = pinned_bert_dir(tokenizer_revision, local_files_only)
+        original = blip_pretrain.init_tokenizer
+        blip_pretrain.init_tokenizer = _pinned_init_tokenizer_factory(tok_dir)
+        try:
+            model = IRModel(med_config=med, device=device)
+        finally:
+            blip_pretrain.init_tokenizer = original
+        if str(model.blip.tokenizer.name_or_path) != str(tok_dir):
+            raise RuntimeError("ImageReward tokenizer was not loaded from the pinned snapshot")
         msg = model.load_state_dict(state, strict=False)
         self.missing, self.unexpected = list(msg.missing_keys), list(msg.unexpected_keys)
         if self.missing:
@@ -44,7 +86,8 @@ class ImageRewardScorer:
         self.n_calls = 0
         self.provenance = {"hf_repo": IR_HF_REPO, "revision": rev, "ckpt_sha256": file_sha256(ckpt),
                            "med_config_sha256": file_sha256(med), "missing_keys": self.missing,
-                           "unexpected_keys": self.unexpected, "bert_tokenizer": "bert-base-uncased (resolved by BLIP init)",
+                           "unexpected_keys": self.unexpected, "bert_tokenizer": {"repo": BERT_REPO, "revision": tokenizer_revision,
+                                              "files_sha256": tok_hashes, "vocab_size": len(model.blip.tokenizer)},
                            "device": str(device)}
 
     def score(self, prompt: str, images: list) -> list[float]:

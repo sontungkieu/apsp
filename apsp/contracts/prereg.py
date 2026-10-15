@@ -70,7 +70,7 @@ def require_marker(name: str, root: Optional[Path] = None) -> dict:
 # split -> PREREG that must be signed before *outcomes* on that split are read
 _SPLIT_RULES = {
     "syn_train_fit": None, "syn_train_dev": None, "syn_eval": None,  # synthetic fixtures
-    "smoke": None, "calibration": None,
+    "smoke": None, "technical_smoke": None, "calibration": None,
     "train_fit": "A", "train_dev": "A",   # bank collection on research splits needs A
     "val": "B", "val_ext": "B",
     "test": "C", "geneval": "C",

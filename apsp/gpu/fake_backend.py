@@ -86,7 +86,7 @@ class FakeBundle:
     def decode(self, z_scaled, preview: bool):
         torch = import_torch()
         img = torch.tanh(z_scaled[:, :3] * self.vae_scaling * 2.0)
-        return img.repeat_interleave(2, dim=2).repeat_interleave(2, dim=3)
+        return img.repeat_interleave(8, dim=2).repeat_interleave(8, dim=3)   # VAE factor 8
 
     def to_pil(self, images):
         from PIL import Image

@@ -51,7 +51,8 @@ def build_backend(args) -> tuple:
     import torch
     rm_dev = dev if getattr(args, "rm_device", "cuda") == "cuda" else torch.device("cpu")
     s = ImageRewardScorer(rm_dev, revision=getattr(args, "rm_revision", None) or cfg.get("reward_revision"),
-                          local_files_only=args.local_files_only)
+                          local_files_only=args.local_files_only,
+                          tokenizer_revision=cfg.get("reward_tokenizer_revision"))
     return cfg, b, s, ScoringPath(b, s, cfg.get("vae_decode_chunk")), rt
 
 

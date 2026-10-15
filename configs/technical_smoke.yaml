@@ -1,0 +1,21 @@
+# Technical smoke for the first GPU session. ENGINEERING ONLY.
+# - The scientific configuration is NOT redefined here: it is loaded from `base_config` and checked against
+#   Research Spec v1.1.1 (SD1.5 mirror pinned, DDIM eta=0, 64 steps, delta 4, CFG 7.5, "" negative, 512x512,
+#   grammar 8->4->2, PSP-default cuts j=4,j=8, frozen generator and verifier).
+# - At most 3 hand-written technical prompts, outside every research split (split label `technical_smoke`).
+#   apsp.gpu.technical_smoke refuses a prompt whose uid appears in a prompt pool or that matches GenEval text.
+# - The cost table used for ledger/mask plumbing is the SYNTHETIC table marked engineering_only/provisional.
+#   It must not be used for latency, real caps or research conclusions.
+base_config: configs/pilot.yaml
+split: technical_smoke
+prompts:
+  - "a photograph of an astronaut riding a horse"
+  - "a red bicycle leaning against a brick wall"
+  - "a bowl of fruit on a wooden table, studio lighting"
+max_prompts: 3
+banks_per_prompt: 1            # collector smoke: 1 bank x 8 seeds per prompt (no pruning while collecting)
+collector_prompts: 1           # how many of the prompts the collector step uses
+parity_methods: ["b2", "fixed:2,9", "random"]
+cost_table: synthetic_engineering_only
+alpha: 1.0
+prompt_pool_check: data/prompts/prompt_pool.parquet   # checked if it exists

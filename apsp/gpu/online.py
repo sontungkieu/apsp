@@ -107,15 +107,19 @@ def task_replay_parity(a, cfg, bundle, scorer, scoring, eph) -> dict:
     from apsp.contracts.schema import load_bank
     from apsp.sim.replay import ReplayContext
     bank = load_bank(a.bank)
-    research = not (bank.manifest.get("synthetic") or bank.manifest.get("backend") == "fake")
+    from apsp.contracts.schema import TECHNICAL_SPLITS
+    technical = set(bank.prompts["split"].astype(str)) <= set(TECHNICAL_SPLITS) and a.split in TECHNICAL_SPLITS
+    research = not (bank.manifest.get("synthetic") or bank.manifest.get("backend") == "fake" or technical)
     if research:
         require_signed("B")
         require_split_access(a.split, "G1 replay-parity")
-        if bank.manifest.get("eph") != eph:
-            raise SystemExit(f"bank EPH {bank.manifest.get('eph', '')[:12]} != online EPH {eph[:12]}: parity claim refused")
+    if bank.manifest.get("backend") != "fake" and not bank.manifest.get("synthetic") and bank.manifest.get("eph") != eph:
+        raise SystemExit(f"bank EPH {bank.manifest.get('eph', '')[:12]} != online EPH {eph[:12]}: comparison refused")
     base = load_method_costs(a.costs)
     ctrl = base.with_overrides(disp=a.disp_us, method_id="controller")
     ctx = ReplayContext.build(bank, base, fit_split=a.fit_split, guard=research)
+    if technical:
+        print("NOTE: technical replay-vs-online comparison on hand-written prompts; this is NOT G1 and not parity evidence", file=sys.stderr)
     cap = ctx.caps.cap(a.alpha)
     engine = DenoiseEngine(bundle, scoring, cfg, hook_mode="none")
     keys = bank.instances_of([a.split])[: a.limit or None]

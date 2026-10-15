@@ -3,7 +3,7 @@
 spec_version: apsp-v1.1.1
 psp_commit: 590f59f58384169c719e431dc01d14006fb0fc0c
 model_repo: stable-diffusion-v1-5/stable-diffusion-v1-5
-model_revision: null             # resolve once on the GPU box (apsp.gpu.profile --stage model), then pin the SHA here
+model_revision: 451f4fe16113bff5a5d2269ed5ad43b0592e9a14   # resolved 2026-10-14 (reports/local_smoke/M1_model.json); GPU box re-hashes weights
 scheduler: DDIM
 eta: 0.0
 steps: 64
@@ -21,7 +21,8 @@ primary_alpha: [0.5, 1.0]
 seed_scheme: apsp-v1-sha256-cpu
 scoring_path: ir_pil_v1
 verifier: ImageReward-v1.0
-reward_revision: null         # THUDM/ImageReward HF commit; pin after apsp.gpu.profile --stage model
+reward_revision: 5736be03b2652728fb87788c9797b0570450ab72   # THUDM/ImageReward HF commit (resolved 2026-10-14)
+reward_tokenizer_revision: 86b5e0934494bd15c9632b12f734a8a67f723594   # google-bert/bert-base-uncased, used by BLIP init
 preview_dtype: null              # proposed after M3, research freezes (fp16 | fp32)
 deliver_dtype: fp16
 vae_decode_chunk: null           # selected in P0 from measured throughput/memory (candidates 1,2,4,8,16)

@@ -32,7 +32,7 @@ hpsv2==1.2.0
 psutil
 pytest==7.2.0
 # Imported (not used) by the PSP reference pipeline's rewards module; the base leaves it unpinned.
-google-genai
+google-genai==2.31.0
 # Installed with --no-deps by the setup script (their own setup.py pulls a floating CLIP main.zip):
 #   git+https://github.com/openai/CLIP.git@dcba3cb2e2827b402d2701e7e1c7d9fed8a20ef1
 #   git+https://github.com/THUDM/ImageReward.git@2ca71bac4ed86b922fe53ddaec3109fe94d45fd3

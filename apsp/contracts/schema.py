@@ -25,8 +25,10 @@ J = 16
 DELTA = 4
 K0 = 8
 N_BANKS = 2
-SPLITS = ("calibration", "train_fit", "train_dev", "val", "val_ext", "test", "smoke",
+SPLITS = ("calibration", "train_fit", "train_dev", "val", "val_ext", "test", "smoke", "technical_smoke",
           "syn_train_fit", "syn_train_dev", "syn_eval")  # syn_*: synthetic fixtures only
+# technical prompts written by hand, outside every research split; never research data
+TECHNICAL_SPLITS = ("smoke", "technical_smoke")
 
 PROMPT_COLS = {"prompt_uid": "string", "text": "string", "split": "string", "source": "string",
                "group_id": "string", "n_clip_tokens": "int16"}
