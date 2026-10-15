@@ -301,6 +301,7 @@ def main(argv=None) -> int:
     ap.add_argument("--bank-root", default=None)
     ap.add_argument("--costs", default=None)
     ap.add_argument("--machine-id", default="unknown")
+    ap.add_argument("--chunk-n", type=int, default=50, help="timed repetitions per chunk configuration (warm-up 10)")
     a = ap.parse_args(argv)
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
@@ -320,7 +321,7 @@ def main(argv=None) -> int:
     elif a.part == "equivalence":
         rep = run_equivalence(cfg, bundle, scoring, out)
     elif a.part == "chunk":
-        rep = run_chunk(bundle, out)
+        rep = run_chunk(bundle, out, n=a.chunk_n)
     else:
         if not a.costs:
             raise SystemExit("--costs (merged M2 generator_costs.json) is required for m2b")

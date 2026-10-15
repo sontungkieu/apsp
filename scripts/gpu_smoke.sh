@@ -149,8 +149,8 @@ for s in "${STEPS[@]}"; do
     31_calib_m3m9)  run_step "$s" 150 "${PY}" -m apsp.gpu.calibration --part m3m9 ${CB} --bank-root "${RUN}/banks" --machine-id "${MACHINE_ID}" ;;
     32_calib_summary) run_step "$s" 5 "${PY}" -m apsp.gpu.calibration --part summary ${CB} ;;
     33_calib_equivalence) run_step "$s" 25 "${PY}" -m apsp.gpu.calibration --part equivalence ${CB} ;;
-    34_calib_chunk) run_step "$s" 15 "${PY}" -m apsp.gpu.calibration --part chunk ${CB} ;;
-    35_m2)          for k in $(seq 1 16); do kk=$(printf %02d "$k")
+    34_calib_chunk) run_step "$s" 30 "${PY}" -m apsp.gpu.calibration --part chunk ${CB} --chunk-n "${CHUNK_N:-50}" ;;
+    35_m2)          for k in ${M2_KS:-$(seq 1 16)}; do kk=$(printf %02d "$k")      # M2_KS="1 2 4 8 16" = pilot subset
                       run_step "35_m2_k${kk}" 25 "${PY}" -m apsp.gpu.profile --stage generator --ks "$k"                         --out-dir "${RUN}/p0/m2/k${kk}" ${M2_MEASUREMENT:+--measurement} || break; done ;;
     36_m2_merge)    run_step "$s" 5 "${PY}" scripts/merge_m2.py "${RUN}/p0/m2" --out "${RUN}/p0/m2/generator_costs.json" ;;
     37_m2b)         run_step "$s" 30 "${PY}" -m apsp.gpu.calibration --part m2b ${CB} --costs "${RUN}/p0/m2/generator_costs.json" ;;

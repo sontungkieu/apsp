@@ -6,5 +6,9 @@ hpsv2:
   checkpoint_repo: xswu/HPSv2  # HPS_v2.1_compressed.pt
   checkpoint_revision: null    # resolve and pin the HF commit before use
   checkpoint_sha256: null
+  # candidates resolved 2026-10-15 (read-only, NOT yet installed or verified): hpsv2 1.2.0 (PyPI);
+  #   xswu/HPSv2 @ 697403c78157020a1ae59d23f111aa58ced35b0a, HPS_v2.1_compressed.pt 1,972,490,005 B,
+  #   sha256 c57a38fb4a2f7e7c15bf00da2ea377cdf165448b4dd1052a484c215a998c9837.
+  #   hpsv2 1.2.0 pins protobuf<4 and pytest==7.2.0 -> install in a separate venv, not the GPU env.
 geneval:
   status: "not before PREREG-C (official repo/weights pinned then; per-tag official aggregation)"
