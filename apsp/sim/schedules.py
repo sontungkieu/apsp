@@ -34,10 +34,12 @@ def bon_spec(n: int, rows: Sequence[CandidateId], J: int = 16) -> ScheduleSpec:
 def required_prune_pairs() -> list[tuple[int, int]]:
     """Source->target pairs the main grammar, BoN-free baselines and S&R use; profiled by CC-4.
 
-    Main G-842: 8->4, 4->2.  B5 screen-and-resume: M in {8,16} -> q in {1,2}.  B4b keeps are read
-    from the PSP grid (see docs/QUESTIONS.md) and appended once pinned.
+    Main G-842: 8->4, 4->2.  B5 screen-and-resume: M in {8,16} -> q in {1,2}.  B4b: every consecutive keep pair
+    of the PSP SD1.5 grid at the pinned commit (apsp.sim.b4b_grid, reports/b4b/b4b_grid_manifest.json).
     """
+    from apsp.sim.b4b_grid import enumerate_grid, required_primitives
     pairs = {(8, 4), (4, 2), (8, 1), (8, 2), (16, 1), (16, 2), (16, 8)}
+    pairs |= {tuple(p) for p in required_primitives(enumerate_grid())["prune_pairs"]}
     return sorted(pairs, reverse=True)
 
 

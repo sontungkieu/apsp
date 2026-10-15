@@ -6,7 +6,7 @@ Ordered by dependency. Nothing here blocks the first GPU smoke.
 |---|---|---|
 | ~~Batch-drift diagnostic run~~ | done (diag1, BATCH_DRIFT_AUDIT §11) | |
 | Watchdog live check on a provider | next GPU session | arm with a short deadline on an idle instance; confirm stop in the console (COST_WATCHDOG.md) |
-| `--numeric-variant` + A/B preset | Q13 | only if research wants the backend A/B (NEXT_STEPS_PRE_PILOT §3) |
+| ~~`--numeric-variant` + A/B preset~~ | dropped by research (D34) | |
 | Engine batch-policy decision | research (Q10, Q12; optional Q13) | options/costs in BATCH_DRIFT_AUDIT §9; any change = new EPH + M2/M0/M6/M9/equivalence re-measured |
 | Prompt pool build (`apsp.data.prompts`) | Q2 (English rule), Q3 (DiffusionDB metadata revision), GPU env for CLIP | produces calibration 50 + subset 20, train/dev/val/val_ext; research approves |
 | M3 validity per precision (6,400 previews each) | prompt pool (calibration), GPU | `profile --stage validity --preview-dtype fp16|fp32 --prompts-file …` |
@@ -23,3 +23,4 @@ Ordered by dependency. Nothing here blocks the first GPU smoke.
 | Ablations A1–A6 | G-A1 grammar (done), `scaled_verifier` (done) | |
 | `pilot_report`, GenEval/HPS evaluators | P3/P4, PREREG-C | evaluators live outside env/policy modules |
 | Real-bank RL training | PREREG-B, Q4 (σ_R), `G2_EVALUATED` marker | `policies.reinforce --train` currently only checks guards |
+| Calibration session (`gpu_smoke.sh calib`) | watchdog live check passed; pool approved (Q15, Q16) | docs/CALIBRATION_PLAN.md |

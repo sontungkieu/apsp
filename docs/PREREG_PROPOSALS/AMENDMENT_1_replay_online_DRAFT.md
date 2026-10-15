@@ -1,125 +1,158 @@
-# Amendment 1 (DRAFT): native batching, replay as an approximation, online confirmation
+# Amendment 1 (DRAFT, revision 2): native batching, replay as a simulator, online confirmation
 
-**Status: DRAFT proposal by a coding agent. Not signed, not frozen, not part of PREREG-A/B/C.** Research decides
-whether to adopt, change or reject it; signing follows `docs/PREREG.md`. Nothing here changes split, reward,
-grammar, caps, gate thresholds or τ_prac.
+**Status: DRAFT by a coding agent, revised after research decisions of 2026-10-15. Not signed, not frozen, not part
+of PREREG-A/B/C.** Signing follows `docs/PREREG.md`. Nothing here changes split, reward, grammar, caps, gate
+thresholds or τ_prac.
+
+**Research decisions recorded (2026-10-15):**
+- keep native batching 8→4→2;
+- the backend A/B is dropped and `--numeric-variant` is not implemented;
+- replay serves training and approximate screening; confirmatory conclusions rest on online runs;
+- no PREREG is signed and no pilot bank is collected yet.
 
 ## 1. Evidence
 
-From `docs/BATCH_DRIFT_AUDIT.md` §11 and `docs/DIAG1_RUN_REPORT.md`; diagnostic prompts only.
+From `docs/BATCH_DRIFT_AUDIT.md` §11 and `docs/DIAG1_RUN_REPORT.md`, diagnostic prompts only.
 
-- **Fixed batch size:** the engine is deterministic.
-  - Two processes: bitwise identical.
-  - Across two machines and drivers: the k=8 bank is bitwise identical.
-  - Composition or order within a batch of 8: bitwise identical.
-- **Changed batch size:** numbers change from the first UNet forward (fp16 ulp level); 64 steps amplify that to
-  final-latent differences of 1.4–2.4.
+- **Fixed batch size: bitwise identical results**
+  - across two processes;
+  - across two machines and driver versions (bank k=8, same EPH);
+  - across composition and order within a batch.
+- **Changed batch size:** UNet outputs differ from the first forward (fp16 ulp level); after 64 steps, final latents
+  differ by 1.4–2.4.
   - VAE: ≤ 2 u8 levels.
   - ImageReward: ~2e-6.
-- **Online fixed schedules vs replay on the same instance** (36 episodes):
-  - winners 36/36 equal; first keep sets 36/36 (same batch, k=8); second keep sets 32/36;
+- **Online fixed schedules vs replay** (36 episodes):
+  - winners 36/36 equal; first keep sets 36/36; second keep sets 32/36;
   - |Y_online − Y_replay| max 0.049, mean 0.0036;
   - paired-effect error vs (4,8) max 0.058.
-- Under native batching, PSP-style online pruning changes the batch size after every prune. Online trajectories
-  therefore equal the bank only up to the first prune.
 
-## 2. Proposed main branch
+## 2. Main branch
 
-1. **Production and online engine keep native batching** (batch = number of alive candidates). EPH stays
-   `c1351a99…` for this configuration; a runtime fingerprint is recorded next to it. No batch-1, padding or FP32
-   engine is adopted. Those options stay in `BATCH_DRIFT_AUDIT.md` §9 with their re-measurement lists.
-2. **Replay (the k=8 bank) is an approximation**, used for:
-   - training controllers;
-   - screening and ranking candidate methods on train-fit/train-dev;
-   - computing diagnostics (O1-replay, O2, O3).
-3. **Every confirmatory statement is evaluated online** with the production engine, on the same machine class
-   (GPU model fixed in PREREG-A): gates G3/G3b/G4, val/test endpoints, and any G2 claim that replay cannot carry
-   (§4).
+1. **Production and online engine: native batching** (batch = number of alive candidates), EPH `c1351a99…` for this
+   configuration, plus a runtime fingerprint (`apsp.runtime_fingerprint/v1`).
+2. **Replay is a simulator** built from the k=8 bank. It serves controller training, screening and the simulator
+   oracles/diagnostics (O1-replay, O2, O3).
+3. **Confirmatory statements are online** with the production engine on the machine class fixed in PREREG-A:
+   G3/G3b/G4, val/test endpoints, and every G2 claim that replay cannot carry (§3.4–3.5).
 
 ## 3. Text changes proposed to the Research Spec
 
-### 3.1 Mệnh đề 2 (replay equivalence): explicit assumptions
+### 3.1 Mệnh đề 2: all assumptions explicit
 
-Replace the assumption list with:
+> Replay of a pruning trace equals online execution if **all** of the following hold for every surviving candidate:
+>
+> (a) **Candidate independence.** Each candidate's update, preview score and delivered score depend only on that
+> candidate's own latent, the prompt, the timestep and the frozen model (no cross-row interaction; CFG pairs the
+> uncond/cond rows of the same candidate).
+>
+> (b) **Identical inputs.** Initial latent, prompt embeddings, timesteps, weights and dtypes.
+>
+> (c) **Identical numerical execution** of every operation that touches the candidate: the same kernels and
+> algorithm selection, reduction order, precision and math flags, library versions and hardware/driver behaviour.
+>
+> (d) (a)–(c) also hold for VERIFY decoding/scoring and for the terminal decode/score.
 
-> Replay of a pruning trace equals online execution **if** for every candidate (a) the initial latent, timesteps,
-> model, weights and dtypes are identical; (b) every kernel call that touches the candidate produces the same
-> per-row result regardless of the other rows in the call: the same batch size and shape (or kernels proven
-> batch-invariant), the same algorithm selection and the same reduction order; (c) VERIFY scoring and terminal
-> decode satisfy (b) as well.
+Add:
 
-Add the consequence:
+> **Equal batch shape is not a substitute for (a)–(c).** It removes one known cause of differing kernels, but (c)
+> still requires the same runtime (recorded by the runtime fingerprint), and (a) is a property of the model and
+> pipeline that must hold independently.
+>
+> In this configuration (native batching, CUDA fp16), (a) holds by construction of the UNet/CFG path. (c) holds
+> empirically at equal batch size (diag1: bitwise identity across processes and two machines). (c) fails once the
+> batch size changes, so replay is exact only up to the first prune and is an approximation afterwards. The
+> approximation error is measured (G1), not assumed.
 
-> With native batching on CUDA, (b) holds only while the batch size equals the bank's (k=8). Replay is exact up to
-> the first prune and approximate afterwards. Its error is measured (G1), not assumed.
+Hệ quả 2a (105 schedules, at most 8 delivered images per bank) holds **inside the simulator**. Online, schedule s
+delivers a different, nearby sample.
 
-The algebraic content of Hệ quả 2a (105 schedules, at most 8 delivered images per bank) holds **within replay**.
-Online, the delivered image of schedule s is a different sample, close to the bank image but not equal to it.
-
-### 3.2 Mệnh đề 3 (O1): no online upper-bound claim
+### 3.2 Mệnh đề 3: O1-replay is a simulator oracle only
 
 Rename the bank quantity **O1-replay**:
 
 O1ʳᵉᵖ_i(B) = max over s ∈ 𝒮 with C₀(s) ≤ B of Yʳᵉᵖ_i(W_i(s)).
 
-- Keep the proof, scoped to replay: it bounds every **replayed** policy trace in the same grammar and paid ranking.
-- Add: O1-replay is **not** an upper bound on online policy quality. Online, Y_i(s) differs from Yʳᵉᵖ_i(s) (diag1:
-  up to 0.049 per episode), so Y_policy,online ≤ O1ʳᵉᵖ is not guaranteed.
-- An empirical gap (for example a high quantile of |Y_online(s) − Y_replay(s)| on train-dev) may be reported, but
-  it is not a bound.
-- Wording such as "O1 is the ceiling of online performance" is not used.
+- It is the hindsight optimum **of the simulator**. The proof bounds simulator (replayed) policy traces in the same
+  grammar and paid ranking, and nothing else.
+- It is **not** an upper bound on online policy quality.
+- It is **not** a policy that can be deployed: it uses each instance's outcomes in hindsight.
+- Any empirical replay-vs-online gap may be reported as a description, never as a bound.
 
-### 3.3 G1: paired effect discrepancy only
+### 3.3 G1: paired effect discrepancy
 
-Keep §10.2's statistic and bands unchanged:
+The statistic and bands of §10.2 are unchanged:
 
 Δ_disc = mean(Y_m − Y_ref)_online − mean(Y_m − Y_ref)_replay
 
-with CI inside ±0.25 τ_prac meaning replay may serve gates, and inside ±0.5 τ_prac meaning train only. Add:
+with CI inside ±0.25 τ_prac meaning replay may serve gates, and inside ±0.5 τ_prac meaning train only.
 
-- Y_ref is the PSP-default schedule (cuts j=4, j=8) on the same (prompt, bank). Each method m and Y_ref are run
-  online on the same instances with the production engine, and paired by instance.
-- Winner agreement, keep-set agreement and effect-sign agreement are **reported as diagnostics and never used as
-  G1 or as a substitute for it**.
-  - Winner agreement can be perfect while Y differs (diag1: 36/36 winners, |ΔY| up to 0.049).
-  - Sign agreement is undefined in effect when the replay effect is exactly 0.
-- Train-dev instances, the method list for G1 and the number of online episodes are fixed in PREREG-B before G1 is
-  computed. A wide CI is "not established", not parity (as §10.2 says).
+- Y_ref is PSP-default (4,8) on the same (prompt, bank). The online runs use the production engine, paired by
+  instance.
+- Winner, keep-set and effect-sign agreement are diagnostics only and never replace G1.
+- **CI too wide to decide: G1 = INC** (not established, not parity). The train-dev budget may be extended within
+  PREREG-B limits.
+- The train-dev instances, the method list and the number of online episodes are fixed in PREREG-B before G1 is
+  computed.
 
-### 3.4 If G1 does not pass: online evidence for headroom and quality
+### 3.4 Simulator discrepancy vs engine error
 
-- **G1 within ±0.5 τ_prac but not ±0.25 τ_prac (replay trains, gates online).**
-  - **G2-quality (headroom).** For each train-dev instance, the replay-optimal schedule
-    s*_i = argmax Yʳᵉᵖ_i(s) under the cap is evaluated **online**.
-  - Y_online,i(s*_i) is attained by a feasible schedule, so it is a lower bound on the online hindsight optimum.
-    Headroom is claimed only if mean(Y_online(s*) − Y_online(B3)) clears the prespecified threshold, with a paired
-    CI.
-  - If it does not clear, G2-quality is **INC**, not STOP: s* may be suboptimal online.
-  - O1-replay − B3 is reported as a diagnostic only.
-  - **G2-cost.** The primal witness (schedule assignment reaching the mean target) must be evaluated online. A
-    replay-only witness is INC.
-  - G3/G3b/G4 run online, as already required.
-- **G1 outside ±0.5 τ_prac (or not established within budget): STOP-ENG** (§10.2).
-  - No headroom or quality conclusion is drawn from replay.
-  - Options are an engine change (`BATCH_DRIFT_AUDIT.md` §9, with new EPH/BMH and re-measured primitives) or
-    research re-scoping.
-- **In every case,** any claim about quality or headroom in the paper states whether it is a replay diagnostic or
-  an online result.
+A replay-online difference has two possible sources. They are reported separately and lead to different actions.
+
+| | Simulator discrepancy (expected) | Engine error (a bug) |
+|---|---|---|
+| Cause | (c) fails after a batch-size change: numeric drift amplified along the trajectory | identity/row mapping errors, wrong costs or ledger, non-determinism at fixed batch, a bank that does not match the engine, a changed runtime fingerprint |
+| Checks that separate them | the engine checks below pass | any check below fails |
+| Action | handle by online confirmation (this amendment); do not "fix" by retuning | **STOP-ENG**: fix the engine, re-collect what the fix invalidates |
+
+**Engine checks, run on train-dev before G1:**
+- A/A repeatability at fixed batch (bitwise);
+- bank vs online bitwise equality up to the first prune (k=8);
+- PRUNE identity checks;
+- ledger spend equal to the schedule cost;
+- same EPH and runtime fingerprint for bank and online runs.
+
+### 3.5 When G1 does not establish equivalence: online evidence
+
+**G1 within ±0.5 τ_prac but not ±0.25 τ_prac, or INC.** Replay may train; every gate uses online evidence.
+
+- **G2-quality (headroom).**
+  - For each train-dev instance and cap, take the simulator-optimal schedule s*_i (argmax of Yʳᵉᵖ_i(s) under the
+    cap). **Check its budget:** C₀(s*_i) ≤ B under the frozen ledger.
+  - Run s*_i online and record the actual ledger spend. A run whose spend exceeds the cap is infeasible and counted
+    as a failure under the frozen failure rule.
+  - Y_online,i(s*_i) is a **hindsight-feasible solution**: a lower bound on the online hindsight optimum for that
+    instance. It is **not** a policy that can be deployed and must not be presented as one.
+  - Headroom is claimed only if mean(Y_online(s*) − Y_online(B3)) clears the prespecified threshold with a paired
+    CI. Otherwise G2-quality is INC (s* may be suboptimal online), not STOP. O1-replay − B3 is reported as a
+    simulator diagnostic only.
+- **G2-cost.** The primal witness (an assignment of schedules reaching the mean-quality target with the stated
+  saving) must be **confirmed online**: every schedule of the witness is run online on its instances, with budget
+  checks as above. A replay-only witness is INC.
+- **G3/G3b/G4:** online, as already required.
+
+**G1 outside ±0.5 τ_prac.**
+- If the engine checks of §3.4 fail: STOP-ENG.
+- If they pass (pure simulator discrepancy): replay is not used even for training decisions that feed gates.
+- No headroom or quality conclusion is drawn from replay in either case.
+
+**In every case,** each reported number states whether it is a simulator (replay) result or an online result.
 
 ## 4. Engineering consequences (no scientific change)
 
-- **Online episodes cost GPU time per evaluation.** The PREREG-B budget must include G1's online runs and, if needed,
-  the online evaluation of s* per train-dev instance (one online run per instance per cap, plus the B3 run).
-- **Runtime fingerprint v1** (`apsp/gpu/fingerprint.py`) is recorded for every bank shard and online run. PREREG-A
-  fixes the GPU model, driver range and package versions. A fingerprint change between bank collection and online
-  evaluation is reported and, for confirmatory runs, needs research approval.
-- The bank collector stays at k=8 (native), so bank and online coincide up to the first prune.
+- **PREREG-B budget** must cover:
+  - the online runs of G1;
+  - the engine checks (§3.4);
+  - if needed, the online runs of s* (one per train-dev instance per cap, plus B3);
+  - the online confirmation of the G2-cost witness.
+- **Runtime fingerprint.** Recorded for every bank shard and online run (`02b_fingerprint`; harness and calibration
+  reports carry it). PREREG-A fixes the GPU model, driver range and package versions. A fingerprint change between
+  bank and online runs is an engine-check failure until research rules otherwise.
+- **Collector.** Stays at k=8 (native), so bank and online coincide up to the first prune.
 
-## 5. Decisions needed from research
+## 5. Decisions still needed from research
 
-1. Adopt the main branch (native batching, replay approximate, online confirmation)?
-2. Approve the wording changes to Mệnh đề 2/3 and the O1-replay naming.
-3. Approve the G2-quality online witness rule in §3.4 and its INC (not STOP) outcome.
-4. Online episode budget for G1 and G2 in PREREG-B, and the train-dev subset used.
-5. Whether a short backend A/B (`docs/NEXT_STEPS_PRE_PILOT.md` §3) should run before PREREG-A, to check whether a
-   batch-invariant UNet configuration is cheap enough to make replay exact instead.
+1. Approve the wording of §3.1–3.5. In particular: O1-replay as a simulator oracle; s* online as a
+   hindsight-feasible witness with budget checks; INC for a wide G1 CI; online confirmation of the G2-cost witness.
+2. Approve the engine-check list that separates simulator discrepancy from engine error (§3.4).
+3. Online episode budget for G1, the engine checks and G2 in PREREG-B, and the train-dev subset used.

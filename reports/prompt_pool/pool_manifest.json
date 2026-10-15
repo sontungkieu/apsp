@@ -1,0 +1,130 @@
+{
+ "schema": "apsp.prompt_pool/v1",
+ "status": "PROPOSAL - research approves pool and split before collection",
+ "rules": {
+  "norm_rule": "apsp-norm-v1",
+  "lang_rule": "fasttext-lid176-top1en-p0.90",
+  "nsfw_rule": "max prompt_nsfw over rows < 0.1",
+  "token_rule": "4..60 content CLIP tokens (BOS/EOS excluded)",
+  "group_rule": "sampled-grouping-v1",
+  "split_rule": "group-exact-fill-v1",
+  "dup_threshold": 0.95,
+  "geneval_threshold": 0.9,
+  "geneval_template_rule": "full match after replacing include classes, colours and count words",
+  "n_candidates": 2000,
+  "salt": "apsp-split-v1",
+  "pilot": "small",
+  "pilot_sizes": {
+   "train_fit": 190,
+   "train_dev": 50,
+   "val": 80,
+   "val_ext": 220
+  },
+  "calibration": 50,
+  "m9_subset": 20
+ },
+ "inputs": {
+  "diffusiondb_metadata": {
+   "sha256": "eecd341187bc91c07f5994ad0660d40228ea025616fd57a509bef8323677c68f",
+   "bytes": 194548652,
+   "url": "https://huggingface.co/datasets/poloclub/diffusiondb/resolve/fb620fbe49fa4420e0734bd9c0df11f51176b61f/metadata.parquet",
+   "revision": "fb620fbe49fa4420e0734bd9c0df11f51176b61f"
+  },
+  "fasttext_lid176": {
+   "sha256": "7e69ec5451bc261cc7844e49e4792a85d7f09c06789ec800fc4a44aec362764e",
+   "bytes": 131266198,
+   "url": "https://huggingface.co/julien-c/fasttext-language-id/resolve/9f2e94d2fd6b2615d26f5ec5b34cf7e2f38cb86e/lid.176.bin",
+   "revision": "9f2e94d2fd6b2615d26f5ec5b34cf7e2f38cb86e"
+  },
+  "geneval_manifest": {
+   "sha256": "5c48e0813e812e3c373fa5c8ed07a8f0a483be30272b4427b0559c8048e67c13",
+   "bytes": 85209,
+   "url": "https://raw.githubusercontent.com/djghosh13/geneval/af4902f24d3ca90ebbb446dd9891a59e0f82725f/prompts/evaluation_metadata.jsonl",
+   "revision": "af4902f24d3ca90ebbb446dd9891a59e0f82725f"
+  }
+ },
+ "encoder": {
+  "repo": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+  "revision": "451f4fe16113bff5a5d2269ed5ad43b0592e9a14",
+  "text_encoder_sha256": "d008943c017f0092921106440254dbbe00b6a285f7883ec8ba160c3faad88334"
+ },
+ "technical_uids_excluded": [
+  "1f64b1c61ffd598384f753a48e0fcf9123711cae",
+  "91b440e4780fedb52fca8c1ee9c7b677b3a60cd7",
+  "9ea80e24da5118b7d5cbf66b3c3bd7777497b7ca",
+  "b8b5858ed66e7aa9bdb5ad3432d3e9fc87b9c010",
+  "c690e71dcd025b039ed9e95493499c7e2634e373",
+  "e591b5e8528ded22421727879a4e47ab15368148"
+ ],
+ "filter_report": {
+  "n_rows": 2000000,
+  "drop_empty": 603,
+  "n_unique_uid": 1526014,
+  "exact_duplicate_rows_merged": 473383,
+  "uids_with_raw_variants": 2483,
+  "uids_with_inconsistent_nsfw": 18,
+  "drop_nsfw": 90081,
+  "drop_lang_not_en_top1": 15220,
+  "drop_lang_en_below_threshold": 1172804,
+  "lang_top_labels_dropped": {
+   "__label__fr": 2846,
+   "__label__de": 2302,
+   "__label__es": 1626,
+   "__label__it": 1448,
+   "__label__nl": 670,
+   "__label__pt": 587,
+   "__label__ja": 538,
+   "__label__zh": 510,
+   "__label__pl": 493,
+   "__label__ru": 389
+  },
+  "lang_en_p_quantiles_kept": {
+   "0.0": 0.900000274181366,
+   "0.05": 0.9028823137283325,
+   "0.5": 0.932995617389679
+  },
+  "drop_tokens_lt_min": 2483,
+  "drop_tokens_gt_max": 13910,
+  "drop_technical_prompt": 0,
+  "n_survivors": 231516
+ },
+ "split_report": {
+  "n_candidates": 2000,
+  "n_groups": 1997,
+  "group_size_hist": {
+   "1": 1994,
+   "2": 3
+  },
+  "candidates_geneval_cos_hit": 0,
+  "candidates_geneval_template_hit": 0,
+  "groups_dropped_geneval": 0,
+  "prompts_dropped_geneval_groups": 0,
+  "groups_skipped_too_big_for_remaining": 0,
+  "split_counts": {
+   "unused": 1410,
+   "val_ext": 220,
+   "train_fit": 190,
+   "val": 80,
+   "calibration": 50,
+   "train_dev": 50
+  },
+  "split_targets": {
+   "calibration": 50,
+   "train_fit": 190,
+   "train_dev": 50,
+   "val": 80,
+   "val_ext": 220
+  },
+  "split_shortfall": {},
+  "cross_split_groups": 0
+ },
+ "deviation": "sampled-grouping-v1: near-duplicate groups are exact among the candidates only; full-pool grouping to be checked on GPU (full_pool_check) before freezing",
+ "files": {
+  "prompt_pool.parquet": "5246859b0c88492e32b96e9de0258904f89c4deccfaecb9da394ed38370a66a8",
+  "val_ext_sealed.parquet": "f6d2408d64d19a786e10bd236c8217f8e5295fe2b3c87117b36d9cf9a5116dcf"
+ },
+ "val_ext_sealed": {
+  "n": 220,
+  "uid_list_sha256": "f60554f0afadb9f87e76fd897c6b7ddc6449d107e04e5d103a10f184452ea2fc"
+ }
+}

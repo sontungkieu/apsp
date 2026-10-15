@@ -94,12 +94,18 @@ run_step() {  # name, timeout_minutes, command...
 
 ALL_STEPS=(00_setup 01_pytest 02_env_check 02b_fingerprint 03_model 04_single 05_psp 06_collector 07_parity 08_equivalence 09_m0_hook 10_m6_batch 11_m2_generator 12_vae_chunk)
 DIAG_STEPS=(00_setup 01_pytest 02_env_check 02b_fingerprint 03_model 20_diag_audit 20a_diag_aa1 20b_diag_aa2 20c_diag_aa_compare 21_diag_traj 22_diag_unet 23_diag_vae 24_diag_rm 25_diag_method)
+# calibration/profiling session (docs/CALIBRATION_PLAN.md): ordered by value, every step resumable
+CALIB_STEPS=(00_setup 01_pytest 02_env_check 02b_fingerprint 03_model 30_pool_full_check 31_calib_m3m9 32_calib_summary
+             33_calib_equivalence 34_calib_chunk 35_m2 36_m2_merge 37_m2b)
 if [[ $# -eq 1 && "$1" == "diag" ]]; then STEPS=("${DIAG_STEPS[@]}")
+elif [[ $# -eq 1 && "$1" == "calib" ]]; then STEPS=("${CALIB_STEPS[@]}")
 elif [[ $# -gt 0 ]]; then STEPS=("$@")
 else STEPS=("${ALL_STEPS[@]}"); fi
 TS="--smoke-config configs/technical_smoke.yaml --out ${RUN}/tsmoke"
 DG="--diag-config configs/drift_diagnostic.yaml --out ${RUN}/diag"
 # production EPH measured in smoke1 (generation code, env lock and pilot config unchanged since); override if needed
+POOL_DIR="${POOL_DIR:-${APSP_STORE}/prompts}"     # prompt_pool.parquet, val_ext_sealed.parquet, survivors.parquet
+CB="--prompt-pool ${POOL_DIR}/prompt_pool.parquet --out ${RUN}/calib"
 EXPECT_EPH="${EXPECT_EPH:-c1351a998e37d89ec892abf2f5f3ac16312ca20d3d12fdc359530bb3605c83bd}"
 
 for s in "${STEPS[@]}"; do
@@ -128,6 +134,15 @@ for s in "${STEPS[@]}"; do
     23_diag_vae)    run_step "$s" 15 "${PY}" -m apsp.gpu.drift_harness ${DG} --part vae ;;
     24_diag_rm)     run_step "$s" 15 "${PY}" -m apsp.gpu.drift_harness ${DG} --part rm ;;
     25_diag_method) run_step "$s" 45 "${PY}" -m apsp.gpu.drift_harness ${DG} --part method ;;
+    30_pool_full_check) run_step "$s" 30 "${PY}" scripts/full_pool_check.py --survivors "${POOL_DIR}/survivors.parquet"                       --pool "${POOL_DIR}/prompt_pool.parquet" --sealed "${POOL_DIR}/val_ext_sealed.parquet" --out "${RUN}/calib/pool_full_check.json" ;;
+    31_calib_m3m9)  run_step "$s" 150 "${PY}" -m apsp.gpu.calibration --part m3m9 ${CB} --bank-root "${RUN}/banks" --machine-id "${MACHINE_ID}" ;;
+    32_calib_summary) run_step "$s" 5 "${PY}" -m apsp.gpu.calibration --part summary ${CB} ;;
+    33_calib_equivalence) run_step "$s" 25 "${PY}" -m apsp.gpu.calibration --part equivalence ${CB} ;;
+    34_calib_chunk) run_step "$s" 15 "${PY}" -m apsp.gpu.calibration --part chunk ${CB} ;;
+    35_m2)          for k in $(seq 1 16); do kk=$(printf %02d "$k")
+                      run_step "35_m2_k${kk}" 25 "${PY}" -m apsp.gpu.profile --stage generator --ks "$k"                         --out-dir "${RUN}/p0/m2/k${kk}" ${M2_MEASUREMENT:+--measurement} || break; done ;;
+    36_m2_merge)    run_step "$s" 5 "${PY}" scripts/merge_m2.py "${RUN}/p0/m2" --out "${RUN}/p0/m2/generator_costs.json" ;;
+    37_m2b)         run_step "$s" 30 "${PY}" -m apsp.gpu.calibration --part m2b ${CB} --costs "${RUN}/p0/m2/generator_costs.json" ;;
     *) echo "unknown step $s" >&2; exit 2 ;;
   esac
   rc=$?

@@ -1,5 +1,8 @@
 # Before the pilot bank: what is still missing
 
+> **Superseded in part (2026-10-15):** research kept native batching and dropped the backend A/B (§3 below is not
+> pursued). Current status: `docs/PRE_PILOT_ACCEPTANCE.md`; session plan: `docs/CALIBRATION_PLAN.md`.
+
 Status 2026-10-15, after diag1. Nothing here collects the pilot bank, trains RL on real data, uses val/test or signs
 a PREREG.
 

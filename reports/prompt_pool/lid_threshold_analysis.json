@@ -1,0 +1,225 @@
+{
+ "population": "unique normalised prompts after exact dedup and prompt_nsfw < 0.1",
+ "n_population": 1435933,
+ "n_top1_en": 1420713,
+ "en_p_quantiles": {
+  "0.05": 0.5381870269775391,
+  "0.1": 0.6276326537132263,
+  "0.25": 0.7318935394287109,
+  "0.5": 0.8125288486480713,
+  "0.75": 0.8772034645080566,
+  "0.9": 0.9274396657943725
+ },
+ "en_p_histogram": {
+  "[0.00,0.30)": 9889,
+  "[0.30,0.40)": 14813,
+  "[0.40,0.50)": 28714,
+  "[0.50,0.60)": 60667,
+  "[0.60,0.70)": 152336,
+  "[0.70,0.80)": 376896,
+  "[0.80,0.85)": 277712,
+  "[0.85,0.90)": 251777,
+  "[0.90,0.95)": 172863,
+  "[0.95,1.00)": 75046
+ },
+ "would_keep_at_threshold_information_only": {
+  "0.5": 1367297,
+  "0.7": 1154294,
+  "0.8": 777398,
+  "0.85": 499686,
+  "0.9": 247909
+ },
+ "median_words": {
+  "p<0.90": 22.0,
+  "p>=0.90": 15.0
+ },
+ "comma_fraction_median": {
+  "p<0.90": 5.0,
+  "p>=0.90": 1.0
+ },
+ "samples_dropped_p_lt_0.90": [
+  {
+   "p": 0.8,
+   "text": "portrait, huge thistle flower under head, a girl in a suit in a field of flowers, surreal photography, sunrise, blue sky, dramatic light, impressionist painting, digital painting, artstation, simon st"
+  },
+  {
+   "p": 0.785,
+   "text": "alita battle angel. intricate artwork. octane render, trending on artstation, very coherent symmetrical artwork. cinematic, hyper realism, high detail, octane render, 8k, matte painting, 3d"
+  },
+  {
+   "p": 0.62,
+   "text": "screenshot from super mario world ( 1 9 9 1 )"
+  },
+  {
+   "p": 0.762,
+   "text": "dystopian forest on fire with pandemic warning signs"
+  },
+  {
+   "p": 0.745,
+   "text": "elizabeth taylor, gray hoodie, jeans, beautiful hair, half body shot, path traced, highly detailed, high quality, digital painting, alena aenami, leonid afremov, lilia alvarado, shinji aramaki, karol "
+  },
+  {
+   "p": 0.14,
+   "text": "maga riot"
+  },
+  {
+   "p": 0.669,
+   "text": "rtx ambient occlusion | face of beautiful, rich, soft, crisp, enticing madison beer cyborg | concentric biomechanical moebius strip | an ultrafine hyperrealistic illustration by artgerm and mucha and "
+  },
+  {
+   "p": 0.898,
+   "text": "cute cat with tongue photo wearing wool hat doing mlem cat ears"
+  },
+  {
+   "p": 0.888,
+   "text": "detailed, sharp, dreaming humanoid female automata floating in a space station by Anna Dittmannand, by hayao miyazaki. digital art. surreal. featured on art station. anime arts. featured on Pixiv, HD,"
+  },
+  {
+   "p": 0.741,
+   "text": "steampunk robot drone worshipping an overgrown black monolith, art nouveau, garden, park, leaves, plants, flowers, trees, steel architecture, large windows, gold, steam, fog in distance, beautiful 3 d"
+  },
+  {
+   "p": 0.76,
+   "text": "die cut sticker of cute cyber figure with headphones, artistic flat illustration by bryen frost, cyberpunk minimal, black grunge background, vector style"
+  },
+  {
+   "p": 0.853,
+   "text": "kim jong un standing in a ballpit having fun"
+  },
+  {
+   "p": 0.817,
+   "text": "kodak portra 4 0 0, wetplate, muted colours, blueberry, 1 9 3 0 s style, award winning portrait by britt marling of tin toy robots running trough a sunny tuscan countryside in autumn, haze, explosions"
+  },
+  {
+   "p": 0.781,
+   "text": "film portrait of Amy Winehouse standing in a bedroom mirror holding a leica camera, gorgeous makeup, ektachrome,"
+  },
+  {
+   "p": 0.876,
+   "text": "large indoor model train set, photo, split shift, artistic, highly detailed"
+  },
+  {
+   "p": 0.892,
+   "text": "a cyborg woman dancing. Line drawing by Hans Bellmer."
+  },
+  {
+   "p": 0.853,
+   "text": "painting of edvard munch's the scream with van gogh's the starry night in the background, detailed, unreal engine"
+  },
+  {
+   "p": 0.689,
+   "text": "A alien cityscape , metropolis and space craft overhead in the style of Syd Mead , Chris Foss ."
+  },
+  {
+   "p": 0.879,
+   "text": "overwatch's tracer in a 1 9 5 0's pinup art, promotional skin, overwatch art team, cinematic composition, award winning art, octane render, assymetrical, in the beach, artwork by norman rockwell"
+  },
+  {
+   "p": 0.708,
+   "text": "small hipster coffee shop, vivid atmospheric lighting, by makoto shinkai, studio ghibli, greg rutkowski, ross tran"
+  },
+  {
+   "p": 0.556,
+   "text": "a distressing meme"
+  },
+  {
+   "p": 0.854,
+   "text": "Shrek as 2B from Nier Automata by Charlie Bowater, blindfold, trending on artstation, digital art"
+  },
+  {
+   "p": 0.863,
+   "text": "very complex sophisticated architecture, full of geometry, conceptual, sketch, parametric, generative, engineering, flow, people, street view, octane render, vray, artstation, unreal engine."
+  },
+  {
+   "p": 0.824,
+   "text": "fantasy oil painting, a beautiful young dark woman, floral headdress, flowers, holding a bouquet of flowers, long flowing hair, ornate robe, ultra realistic, wide angle, intricate details, artifacts, "
+  },
+  {
+   "p": 0.782,
+   "text": "interior shot of paradise inside of a spaceship for humans in deep space, night club vibes, people partying, elaborate costumes, celestial objects in the background outside massive windows, natural, g"
+  },
+  {
+   "p": 0.668,
+   "text": "portrait of an otter wearing a flower dress. shadowrun cyberpunk fantasy highly detailed painting by gaston bussiere craig mullins jc leyendecker gustav klimt artgerm greg rutkowski john berkey, berge"
+  },
+  {
+   "p": 0.618,
+   "text": "portrait of a beautiful girl with dark hair as a ballerina, ballet studio background, rich vivid colors, ambient lighting, dynamic lighting, 4k, HQ, official media, anime key visual, makoto shinkai, i"
+  },
+  {
+   "p": 0.843,
+   "text": "Portrait of a girl surrounded by butterflies and mushrooms, face, fantasy, intricate, elegant, highly detailed, digital painting, artstation, concept art, smooth, sharp focus, illustration, art by Fer"
+  },
+  {
+   "p": 0.727,
+   "text": "baroque Disneyland advertisement featuring Tucker Carlson in the style of H.P. Lovecraft"
+  },
+  {
+   "p": 0.817,
+   "text": "a hyper detailed realistic cinematic lit scene in the guggenheim museum of a white armless marble statue of a woman, with a motorcycle in background with motocross colors and corporate logos in the st"
+  }
+ ],
+ "samples_kept": [
+  {
+   "p": 0.929,
+   "text": "matt damon as the devil, intricately detailed painting by magali villeneuve, jeremy mann, and ross tran."
+  },
+  {
+   "p": 0.994,
+   "text": "the body of a king entombed in solid diamond. his body can clearly be seen sitting on his throne as perfect as in life"
+  },
+  {
+   "p": 0.905,
+   "text": "Portrait of a Ferret with dark fur in a general outfit , painted by Jan Willem Pieneman, Courageous, Bold, painting"
+  },
+  {
+   "p": 0.949,
+   "text": "the birth of venus painted by lisa frank"
+  },
+  {
+   "p": 0.927,
+   "text": "cheese head hat fashion with cows popping out of the holes very detailed, hyper realistic"
+  },
+  {
+   "p": 0.973,
+   "text": "a city made out of chess pieces"
+  },
+  {
+   "p": 0.931,
+   "text": "impressionist oil painting with broad pallet knife, luminous muted colors, a bay window with comfy cushions, side view. a child reads a book and mandalorian yoda sleeps contentedly. the room is dark w"
+  },
+  {
+   "p": 0.957,
+   "text": "the women gathered by the river to dance as the sun set , high quality digital art in the style of Bauhaus,"
+  },
+  {
+   "p": 0.915,
+   "text": "a giant, stunning belt with a skull on it, huge mountain, purple sky, hyper - detailed digital painting"
+  },
+  {
+   "p": 0.946,
+   "text": "giant rust robot penguin destroyed in a middle of road, in rainy night, the photo as taken inside of car, concept art by simon stalenhag"
+  },
+  {
+   "p": 0.901,
+   "text": "a painting of a photorealistic anthropomorphic male red fox in a nice suit eating a slice of blueberry pie, oil on canvas, soft lighting, vivid colors, by pixar"
+  },
+  {
+   "p": 0.919,
+   "text": "suburban street painted in the style of Monet n- 6"
+  },
+  {
+   "p": 0.919,
+   "text": "drawing of a dog by mrrevenge in the style of corpse bride"
+  },
+  {
+   "p": 0.924,
+   "text": "photo of a cute shrek squishmallow, realistic,"
+  },
+  {
+   "p": 0.905,
+   "text": "film still of tom selleck as eivor in assassin's creed valhalla, gameplay, 8 k, hd"
+  }
+ ],
+ "rule_in_force": "fasttext-lid176-top1en-p0.90 (research decision); this report changes nothing"
+}

@@ -145,8 +145,11 @@ def stage_generator(cfg, bundle, scoring, a) -> dict:
     W, N = (2, 5) if a.smoke else (10, 50)
     ks = a.ks or list(range(1, 17))
     res = {"den": {}, "ver": {}, "fin": {}, "prune": {}, "feat": {}, "lfeat": {}, "fixed": {}}
-    raw = {}
+    raw, mem = {}, {}
+    real_cuda = torch.cuda.is_available() and getattr(bundle, "backend", "") != "fake"
     for k in ks:
+        if real_cuda:
+            torch.cuda.reset_peak_memory_stats()
         eng = DenoiseEngine(bundle, scoring, cfg, hook_mode="traj")
         eng.prepare_request(a.prompt, "m2-technical")
         rows = _rows(k)
@@ -192,6 +195,9 @@ def stage_generator(cfg, bundle, scoring, a) -> dict:
                 hx = x0[ii]
                 return xs, es, hx
             raw[f"prune_{src}_{tgt}"] = _timeit(do_prune, dev, W, N)
+        if real_cuda:     # M8: peak VRAM while profiling k (den/ver/fin at batch k, CFG rows 2k)
+            mem[str(k)] = {"peak_vram_allocated_bytes": int(torch.cuda.max_memory_allocated()),
+                           "peak_vram_reserved_bytes": int(torch.cuda.max_memory_reserved())}
         del eng
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
@@ -213,10 +219,12 @@ def stage_generator(cfg, bundle, scoring, a) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
     tag = "SMOKE_" if a.smoke else ""
     (out_dir / f"{tag}generator_costs.json").write_text(json.dumps({**costs, "gch": gch}, indent=2), encoding="utf-8")
-    (out_dir / f"{tag}generator_costs_raw.json").write_text(json.dumps({"raw_us": raw, "summary": summ, "gch_body": gch_body}),
+    (out_dir / f"{tag}generator_costs_raw.json").write_text(json.dumps({"raw_us": raw, "summary": summ, "gch_body": gch_body,
+                                                                        "peak_memory_by_k": mem, "ks": list(ks)}),
                                                              encoding="utf-8")
     return {"gch": gch, "costs_path": str(out_dir / f"{tag}generator_costs.json"), "provisional": costs["provisional"],
-            "cv_flags": [k for k, v in summ.items() if v["cv_flag"]], "summary_mean_us": {k: round(v["mean_us"], 1) for k, v in summ.items()}}
+            "cv_flags": [k for k, v in summ.items() if v["cv_flag"]], "summary_mean_us": {k: round(v["mean_us"], 1) for k, v in summ.items()},
+            "peak_memory_by_k": mem}
 
 
 def stage_batch_parity(cfg, bundle, scoring, a) -> dict:

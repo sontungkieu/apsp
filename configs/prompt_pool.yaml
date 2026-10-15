@@ -1,0 +1,26 @@
+# Prompt pool v1 inputs and rules (Spec §10.1, Guide CX-1). PROPOSAL until research approves pool and split.
+# Files are downloaded by hand (scripts never fetch data) into the external directory given on the command line.
+pilot: small                 # 190 / 50 / 80, val_ext 220 (sealed), calibration 50, M9 subset 20
+salt: apsp-split-v1
+n_candidates: 2000           # sampled-grouping-v1 (see apsp/data/pool_v1.py deviation note)
+inputs:
+  diffusiondb_metadata:
+    url: https://huggingface.co/datasets/poloclub/diffusiondb/resolve/fb620fbe49fa4420e0734bd9c0df11f51176b61f/metadata.parquet
+    revision: fb620fbe49fa4420e0734bd9c0df11f51176b61f      # poloclub/diffusiondb HF commit (resolved 2026-10-15)
+    local_path: diffusiondb/metadata.parquet               # DiffusionDB 2M metadata, 2,000,000 rows
+    sha256: eecd341187bc91c07f5994ad0660d40228ea025616fd57a509bef8323677c68f   # = HF LFS sha256
+  fasttext_lid176:
+    url: https://huggingface.co/julien-c/fasttext-language-id/resolve/9f2e94d2fd6b2615d26f5ec5b34cf7e2f38cb86e/lid.176.bin
+    revision: 9f2e94d2fd6b2615d26f5ec5b34cf7e2f38cb86e      # HF mirror; official dl.fbaipublicfiles.com URL returned 403 here
+    official_url: https://dl.fbaipublicfiles.com/fasttext/supported-models/lid.176.bin
+    local_path: fasttext/lid.176.bin                       # 131,266,198 bytes (same size as the official file)
+    sha256: 7e69ec5451bc261cc7844e49e4792a85d7f09c06789ec800fc4a44aec362764e
+  geneval_manifest:
+    url: https://raw.githubusercontent.com/djghosh13/geneval/af4902f24d3ca90ebbb446dd9891a59e0f82725f/prompts/evaluation_metadata.jsonl
+    revision: af4902f24d3ca90ebbb446dd9891a59e0f82725f      # djghosh13/geneval main HEAD (resolved 2026-10-15)
+    local_path: geneval/evaluation_metadata.jsonl          # 553 prompts; TEXT ONLY (no GenEval images before PREREG-C)
+    sha256: 5c48e0813e812e3c373fa5c8ed07a8f0a483be30272b4427b0559c8048e67c13
+encoder:                     # tokenizer + text encoder of the pinned generator (pooler_output, L2-normalised)
+  repo: stable-diffusion-v1-5/stable-diffusion-v1-5
+  revision: 451f4fe16113bff5a5d2269ed5ad43b0592e9a14
+  text_encoder_sha256: d008943c017f0092921106440254dbbe00b6a285f7883ec8ba160c3faad88334   # text_encoder/model.safetensors
