@@ -5,7 +5,8 @@
 #   APSP_STORE=/workspace/apsp RUN_ID=smoke1 MAX_MINUTES=100 bash scripts/gpu_smoke.sh            # all steps
 #   APSP_STORE=/workspace/apsp RUN_ID=smoke1 bash scripts/gpu_smoke.sh 04_single 05_psp            # chosen steps
 #   APSP_STORE=/workspace/apsp RUN_ID=diag1 MAX_MINUTES=60 HARD_DEADLINE_EPOCH=<epoch> bash scripts/gpu_smoke.sh diag
-#     ("diag" = setup, tests, env check, model check, then the batch-drift harness parts 20..25)
+#     ("diag" = setup, tests, env check, model check, then the batch-drift harness parts 20..25: audit, two A/A runs
+#      in separate processes + their comparison (EPH checked against EXPECT_EPH), traj, unet, vae, rm, method)
 # HARD_DEADLINE_EPOCH (optional) caps every step's timeout so no step outlives it; MAX_MINUTES is checked
 # between steps only.
 #
@@ -83,12 +84,14 @@ run_step() {  # name, timeout_minutes, command...
 }
 
 ALL_STEPS=(00_setup 01_pytest 02_env_check 03_model 04_single 05_psp 06_collector 07_parity 08_equivalence 09_m0_hook 10_m6_batch 11_m2_generator 12_vae_chunk)
-DIAG_STEPS=(00_setup 01_pytest 02_env_check 03_model 20_diag_audit 21_diag_traj 22_diag_unet 23_diag_vae 24_diag_rm 25_diag_method)
+DIAG_STEPS=(00_setup 01_pytest 02_env_check 03_model 20_diag_audit 20a_diag_aa1 20b_diag_aa2 20c_diag_aa_compare 21_diag_traj 22_diag_unet 23_diag_vae 24_diag_rm 25_diag_method)
 if [[ $# -eq 1 && "$1" == "diag" ]]; then STEPS=("${DIAG_STEPS[@]}")
 elif [[ $# -gt 0 ]]; then STEPS=("$@")
 else STEPS=("${ALL_STEPS[@]}"); fi
 TS="--smoke-config configs/technical_smoke.yaml --out ${RUN}/tsmoke"
 DG="--diag-config configs/drift_diagnostic.yaml --out ${RUN}/diag"
+# production EPH measured in smoke1 (generation code, env lock and pilot config unchanged since); override if needed
+EXPECT_EPH="${EXPECT_EPH:-c1351a998e37d89ec892abf2f5f3ac16312ca20d3d12fdc359530bb3605c83bd}"
 
 for s in "${STEPS[@]}"; do
   case "$s" in
@@ -107,6 +110,9 @@ for s in "${STEPS[@]}"; do
     11_m2_generator) run_step "$s" 30 "${PY}" -m apsp.gpu.profile --stage generator --smoke --ks 1 2 4 8 16 --out-dir "${RUN}/p0" ;;
     12_vae_chunk)   for c in 1 2 4 8; do run_step "12_vae_chunk_${c}" 10 "${PY}" -m apsp.gpu.profile --stage generator --smoke --ks 8 --vae-chunk "${c}" --out-dir "${RUN}/p0/chunk_${c}" || break; done ;;
     20_diag_audit)  run_step "$s" 10 "${PY}" -m apsp.gpu.drift_harness ${DG} --part audit ;;
+    20a_diag_aa1)   run_step "$s" 15 "${PY}" -m apsp.gpu.drift_harness ${DG} --part aa --aa-tag run1 ;;
+    20b_diag_aa2)   run_step "$s" 15 "${PY}" -m apsp.gpu.drift_harness ${DG} --part aa --aa-tag run2 ;;
+    20c_diag_aa_compare) run_step "$s" 5 "${PY}" -m apsp.gpu.drift_harness ${DG} --compare-aa run1 run2 --expect-eph "${EXPECT_EPH}" ;;
     21_diag_traj)   run_step "$s" 30 "${PY}" -m apsp.gpu.drift_harness ${DG} --part traj ;;
     22_diag_unet)   run_step "$s" 15 "${PY}" -m apsp.gpu.drift_harness ${DG} --part unet ;;
     23_diag_vae)    run_step "$s" 15 "${PY}" -m apsp.gpu.drift_harness ${DG} --part vae ;;

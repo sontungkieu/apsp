@@ -216,3 +216,87 @@ def test_traj_plans_selection(tmp_path, dc):
     dc["traj_plans"] = ["b3_fwd"]
     with pytest.raises(dh.DiagConfigError, match="traj_plans"):
         dh.run_parts(["traj"], cfg, b, s, sp, dc, tmp_path, {})
+
+
+class ProcessNoiseUNet(FakeBundle):
+    """Stands in for run-to-run nondeterminism: a different tiny offset per 'process' (instance)."""
+    def __init__(self, off):
+        super().__init__()
+        self.off = off
+
+    def unet_eps(self, x, t, emb):
+        return super().unet_eps(x, t, emb) + self.off
+
+
+def _aa_run(tmp_path, tag, pid, bundle=None, dc_=None):
+    cfg, b, s, sp = fake(bundle=bundle)
+    dh.run_parts(["aa"], cfg, b, s, sp, dc_, tmp_path, {"eph": "e" * 64, "pid": pid}, aa_tag=tag)
+
+
+def test_aa_two_independent_runs_identical(tmp_path, dc):
+    _aa_run(tmp_path, "run1", 101, dc_=dc)
+    _aa_run(tmp_path, "run2", 202, dc_=dc)
+    rec = json.loads((tmp_path / "aa_run1.json").read_text())
+    assert len(rec["init_sha"]) == 16 and len(rec["forward_sha"]["0,0"]) == 64 and rec["groups"][0][0] == "0,0"
+    assert dh.main(["--compare-aa", "run1", "run2", "--out", str(tmp_path), "--expect-eph", "e" * 64]) == 0
+    rep = json.loads((tmp_path / "aa_compare.json").read_text())
+    assert rep["all_bitwise_identical"] and rep["eph"]["equals_expected"] and rep["pids"] == [101, 202]
+    assert rep["summary"]["n_trajectory_identical"] == 16 and rep["pixel_sha"]["n_equal"] == 16
+
+
+def test_aa_detects_run_to_run_difference_and_eph_mismatch(tmp_path, dc):
+    _aa_run(tmp_path, "run1", 1, bundle=ProcessNoiseUNet(0.0), dc_=dc)
+    _aa_run(tmp_path, "run2", 2, bundle=ProcessNoiseUNet(1e-3), dc_=dc)
+    assert dh.main(["--compare-aa", "run1", "run2", "--out", str(tmp_path), "--expect-eph", "f" * 64]) == 0
+    rep = json.loads((tmp_path / "aa_compare.json").read_text())
+    assert not rep["all_bitwise_identical"] and rep["eph"]["equals_expected"] is False
+    assert rep["init_latents"]["n_equal"] == 16          # inputs equal, outputs differ from forward 1
+    assert all(p["first_divergent_forward"] == 1 for p in rep["per_candidate"].values())
+
+
+def test_aa_refuses_same_process_or_same_tag(tmp_path, dc):
+    _aa_run(tmp_path, "run1", 7, dc_=dc)
+    _aa_run(tmp_path, "run2", 7, dc_=dc)
+    with pytest.raises(dh.DiagConfigError, match="same process"):
+        dh.main(["--compare-aa", "run1", "run2", "--out", str(tmp_path)])
+    with pytest.raises(dh.DiagConfigError, match="two different"):
+        dh.main(["--compare-aa", "run1", "run1", "--out", str(tmp_path)])
+
+
+def test_method_plan_written_before_run_and_new_fields(tmp_path, dc):
+    cfg, b, s, sp = fake()
+    seen = {}
+    orig = dh.method_effects
+
+    def spy(*a, **k):
+        seen["plan_exists"] = (tmp_path / "method_plan.json").exists()
+        return orig(*a, **k)
+    dh.method_effects = spy
+    try:
+        dh.run_parts(["method"], cfg, b, s, sp, dc, tmp_path, {"eph": "x"})
+    finally:
+        dh.method_effects = orig
+    assert seen["plan_exists"]
+    plan = json.loads((tmp_path / "method_plan.json").read_text())
+    assert plan["pairs"] == [[4, 8], [2, 9]] and plan["written_before_run"] and plan["n_episodes"] == 2
+    rep = json.loads((tmp_path / "method.json").read_text())
+    inst = rep["instances"][0]
+    assert len(inst["preview_table"]) == 8 and len(inst["delivered_pixel_sha"]) == 8
+    v = inst["pairs"]["2,9"]
+    assert v["gap_j1_online"] == pytest.approx(v["gap_j1_replay"]) and v["bank_y_gap_between_winners"] == 0.0
+    assert rep["summary"]["winner_changes"] == []
+
+
+def test_diag_crosscheck_against_collector_bank(tmp_path, dc):
+    """scripts/diag_crosscheck.py: the fake k=8 collection in `method` equals the fake technical-smoke bank."""
+    from apsp.gpu.technical_smoke import main as smoke_main
+    assert smoke_main(["--fake-backend", "--step", "collector", "--out", str(tmp_path / "tsmoke")]) == 0
+    cfg, b, s, sp = fake()
+    dh.run_parts(["method"], cfg, b, s, sp, dc, tmp_path / "diag", {"eph": "fake"})
+    out = tmp_path / "x.json"
+    r = subprocess.run([sys.executable, "scripts/diag_crosscheck.py", str(tmp_path / "diag" / "method.json"),
+                        str(tmp_path / "tsmoke" / "TSMOKE_BANK"), "--out", str(out)], capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    inst = json.loads(out.read_text())["instances"]
+    assert len(inst) == 1 and inst[0]["init_latent_sha_equal"] == 8 and inst[0]["pixels_equal"] == 8
+    assert inst[0]["preview_n_equal_as_float32"] == 128 and inst[0]["delivered_n_equal_as_float32"] == 8

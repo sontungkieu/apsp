@@ -3,6 +3,9 @@
 Separates the three places where batch size / composition / order can change numbers, always mapping results
 back to CandidateId and hashing the inputs, so "same seed integer" is never taken as "same input":
 
+  aa      A/A: the reference plan end to end in THIS process (initial latents, embeddings, every forward,
+          checkpoints, decoded tensor and uint8 pixels, preview/delivered scores). Run it in two separate processes
+          and compare with --compare-aa; a plan compared with its own tensors is never repeatability evidence
   audit   train/eval flags of every submodule (UNet, VAE, preview VAE, text encoder, ImageReward), parameter
           dtypes, attention processors, autocast / grad state and the numeric flags in effect
   unet    A1: ONE forward at fixed forward indices with bit-identical inputs (latent rows, embeddings,
@@ -29,6 +32,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -46,6 +50,7 @@ from apsp.gpu.engine import DenoiseEngine
 from apsp.gpu.runtime import import_torch, numeric_runtime
 
 PARTS = ("audit", "unet", "traj", "vae", "rm", "method")
+EXTRA_PARTS = ("aa",)        # run explicitly (twice, separate processes), not part of "all"
 ORDERS = ("fwd", "rev", "interleave")
 LABEL = "ENGINEERING ONLY; diagnostic prompts outside research splits; not G1"
 
@@ -377,8 +382,93 @@ def trajectory_drift(bundle, scoring, cfg, prompt, uid, ids, plans, ref_name, wi
     return rep, ref_latents
 
 
+def _gap(sc: Optional[dict], keep: int) -> Optional[float]:
+    if not sc or len(sc) <= keep:
+        return None
+    o = sorted(sc, key=lambda c: (-sc[c], c))
+    return float(sc[o[keep - 1]] - sc[o[keep]])
+
+
 def _sdiff(a, b):
     return None if a is None or b is None else float(a) - float(b)
+
+
+# ------------------------------------------------------------------ A/A repeatability ------------------------
+def aa_record(bundle, scoring, cfg, prompt, uid, ids, ref_batch) -> tuple[dict, dict]:
+    """One A/A run of the reference plan in this process: hashes/scores (JSON) and tensors (saved separately)."""
+    torch = import_torch()
+    groups = make_plan(ids, ref_batch, "fwd")
+    emb = {}
+    for _ in groups:      # embeddings as each group's engine computes them
+        eng = _engine(bundle, scoring, cfg, prompt, uid)
+        emb.setdefault("uncond", []).append(tensor_sha(eng.uncond))
+        emb.setdefault("cond", []).append(tensor_sha(eng.cond))
+    r = run_plan_trajectory(bundle, scoring, cfg, prompt, uid, groups, with_scores=True)
+    with torch.inference_mode():
+        img = decode_delivered(bundle, torch.stack([r["x_final"][c] for c in ids], 0).to(bundle.device), ref_batch)
+    pils = bundle.to_pil(img)
+    J = sorted(next(iter(r["x_ckpt"].values())))
+    tensors = {"ids": [cid_key(c) for c in ids],
+               "x_ckpt": {cid_key(c): torch.stack([r["x_ckpt"][c][j] for j in J], 0) for c in ids},
+               "x_final": {cid_key(c): r["x_final"][c] for c in ids},
+               "image": {cid_key(c): img[i].detach().cpu() for i, c in enumerate(ids)},
+               "pixels": {cid_key(c): torch.from_numpy(np.asarray(pils[i].convert("RGB")).copy()) for i, c in enumerate(ids)}}
+    rec = {"prompt": prompt, "uid": uid, "ref_batch": ref_batch, "ids": tensors["ids"],
+           "groups": [[cid_key(c) for c in g] for g in groups], "checkpoints": J, "embedding_sha": emb,
+           "init_sha": {cid_key(c): r["init_sha"][c] for c in ids},
+           "forward_sha": {cid_key(c): r["sha"][c] for c in ids},
+           "final_sha": {cid_key(c): tensor_sha(r["x_final"][c]) for c in ids},
+           "image_tensor_sha": {k: tensor_sha(v) for k, v in tensors["image"].items()},
+           "pixel_sha": {cid_key(c): pixel_sha(pils[i]) for i, c in enumerate(ids)},
+           "preview": {str(j): {cid_key(c): v for c, v in d.items()} for j, d in r["preview"].items()},
+           "delivered": {cid_key(c): v for c, v in r["delivered"].items()}}
+    return rec, tensors
+
+
+def _eq_count(a: dict, b: dict) -> dict:
+    keys = sorted(set(a) | set(b))
+    return {"n": len(keys), "n_equal": sum(a.get(k) == b.get(k) for k in keys)}
+
+
+def compare_aa(a: dict, b: dict, ta: dict, tb: dict, expect_eph: Optional[str] = None) -> dict:
+    """Compare two independent A/A runs (records + tensors). Reports measured differences; no tolerance."""
+    ids = a["ids"]
+    rep = {"eph": {"run_a": a.get("eph"), "run_b": b.get("eph"), "expected": expect_eph,
+                   "a_equals_b": a.get("eph") == b.get("eph"),
+                   "equals_expected": None if expect_eph is None else (a.get("eph") == expect_eph == b.get("eph"))},
+           "same_inputs_declared": all(a[k] == b[k] for k in ("prompt", "uid", "ref_batch", "groups", "ids")),
+           "init_latents": _eq_count(a["init_sha"], b["init_sha"]),
+           "embeddings": {k: a["embedding_sha"][k] == b["embedding_sha"][k] for k in a["embedding_sha"]},
+           "final_latent_sha": _eq_count(a["final_sha"], b["final_sha"]),
+           "image_tensor_sha": _eq_count(a["image_tensor_sha"], b["image_tensor_sha"]),
+           "pixel_sha": _eq_count(a["pixel_sha"], b["pixel_sha"])}
+    per = {}
+    for k in ids:
+        fa, fb = a["forward_sha"][k], b["forward_sha"][k]
+        first = next((i + 1 for i, (x, y) in enumerate(zip(fa, fb)) if x != y), None)
+        per[k] = {"first_divergent_forward": first,
+                  "x_ckpt": compare(ta["x_ckpt"][k], tb["x_ckpt"][k]), "x_final": compare(ta["x_final"][k], tb["x_final"][k]),
+                  "image": compare(ta["image"][k], tb["image"][k]),
+                  "pixels_max_abs_u8": int((ta["pixels"][k].int() - tb["pixels"][k].int()).abs().max()),
+                  "delivered_diff": _sdiff(a["delivered"].get(k), b["delivered"].get(k)),
+                  "preview_diff": {j: _sdiff(a["preview"][j].get(k), b["preview"][j].get(k)) for j in a["preview"]}}
+    pv = [abs(v) for p in per.values() for v in p["preview_diff"].values() if v is not None]
+    dl = [abs(p["delivered_diff"]) for p in per.values() if p["delivered_diff"] is not None]
+    rep["per_candidate"] = per
+    rep["summary"] = {"n_candidates": len(ids),
+                      "n_trajectory_identical": sum(p["first_divergent_forward"] is None for p in per.values()),
+                      "max_abs_x_final": max(p["x_final"]["max_abs"] for p in per.values()),
+                      "max_abs_pixels_u8": max(p["pixels_max_abs_u8"] for p in per.values()),
+                      "preview_scores_bitwise_equal": all(v == 0 for v in pv), "preview_max_abs": max(pv) if pv else None,
+                      "delivered_scores_bitwise_equal": all(v == 0 for v in dl), "delivered_max_abs": max(dl) if dl else None}
+    sm = rep["summary"]
+    rep["all_bitwise_identical"] = bool(
+        rep["same_inputs_declared"] and rep["init_latents"]["n_equal"] == rep["init_latents"]["n"]
+        and all(rep["embeddings"].values()) and sm["n_trajectory_identical"] == sm["n_candidates"]
+        and rep["pixel_sha"]["n_equal"] == rep["pixel_sha"]["n"]
+        and rep["image_tensor_sha"]["n_equal"] == rep["image_tensor_sha"]["n"]
+        and sm["preview_scores_bitwise_equal"] and sm["delivered_scores_bitwise_equal"])
+    return rep
 
 
 # ------------------------------------------------------------------ B: VAE decode -----------------------------
@@ -478,7 +568,9 @@ def method_effects(bundle, scoring, cfg, prompts: Sequence[str], banks: int, pai
                 pv[r[2], r[3] - 1] = r[6]
             dl = np.array([np.nan if r[3] is None else r[3] for r in sorted(col["delivered"], key=lambda r: r[2])], dtype=float)
             replay = {(o.j1, o.j2): o for o in pair_outcomes(pv, dl, b, mc)}
-            inst = {"uid": uid, "prompt": text, "bank_id": b, "init_latent_sha": [s[4] for s in col["seeds"]], "pairs": {}}
+            inst = {"uid": uid, "prompt": text, "bank_id": b, "init_latent_sha": [s[4] for s in col["seeds"]],
+                    "preview_table": pv.tolist(), "delivered_table": dl.tolist(),
+                    "delivered_pixel_sha": [None if im is None else pixel_sha(im) for im in col["images"]], "pairs": {}}
             for (j1, j2) in pairs:
                 eng = CheckingEngine(bundle, scoring, cfg, hook_mode="none")
                 eng.prepare_request(text, uid)
@@ -492,6 +584,7 @@ def method_effects(bundle, scoring, cfg, prompts: Sequence[str], banks: int, pai
                 sc2 = {c: pv[c[1], j2 - 1] for c in keep1_replay}
                 o2 = sorted(sc2, key=lambda c: (-sc2[c], c))
                 verify_scores = {a["j"]: dict(zip(map(tuple, a["alive"]), a["scores"])) for a in eng.audit if a["event"] == "VERIFY"}
+                w_on, w_rp = d.winner, rp.winner
                 inst["pairs"][f"{j1},{j2}"] = {
                     "winner_online": cid_key(d.winner) if d.winner else None,
                     "winner_replay": cid_key(rp.winner) if rp.winner else None,
@@ -502,6 +595,11 @@ def method_effects(bundle, scoring, cfg, prompts: Sequence[str], banks: int, pai
                     "gap_j1_replay": float(sc1[o1[3]] - sc1[o1[4]]), "gap_j2_replay": float(sc2[o2[1]] - sc2[o2[2]]),
                     "verify_j2_max_abs_vs_bank": max(abs(v - pv[c[1], j2 - 1]) for c, v in verify_scores.get(j2, {}).items())
                     if verify_scores.get(j2) else None,
+                    "gap_j1_online": _gap(verify_scores.get(j1), 4), "gap_j2_online": _gap(verify_scores.get(j2), 2),
+                    # quality of both winners on the same k=8 table (one batch, one process): what a flip costs
+                    "bank_y_of_online_winner": float(dl[w_on[1]]) if w_on else None,
+                    "bank_y_of_replay_winner": float(dl[w_rp[1]]) if w_rp else None,
+                    "bank_y_gap_between_winners": float(dl[w_on[1]] - dl[w_rp[1]]) if w_on and w_rp else None,
                     "identity_checks_ok": all(all(p["checks"].values()) for p in prunes)}
             ref = inst["pairs"]["4,8"]
             for k, v in inst["pairs"].items():
@@ -522,7 +620,11 @@ def method_effects(bundle, scoring, cfg, prompts: Sequence[str], banks: int, pai
                         "max_abs_y_diff": max(ydiff) if ydiff else None, "mean_abs_y_diff": float(np.mean(ydiff)) if ydiff else None,
                         "max_abs_effect_error": max(eff) if eff else None,
                         "n_effect_sign_disagree": sum(v.get("effect_sign_agrees") is False for v in flat),
-                        "identity_checks_ok": all(v["identity_checks_ok"] for v in flat)}}
+                        "identity_checks_ok": all(v["identity_checks_ok"] for v in flat),
+                        "winner_changes": [{"uid": r["uid"], "bank_id": r["bank_id"], "pair": k, "winner_online": v["winner_online"],
+                                            "winner_replay": v["winner_replay"], "y_diff": v["y_diff"],
+                                            "bank_y_gap_between_winners": v["bank_y_gap_between_winners"]}
+                                           for r in recs for k, v in r["pairs"].items() if not v["winner_equal"]]}}
 
 
 # ------------------------------------------------------------------ driver -------------------------------------
@@ -530,8 +632,18 @@ def _write(out: Path, name: str, rep: dict) -> None:
     (out / f"{name}.json").write_text(json.dumps(rep, indent=2, default=str), encoding="utf-8")
 
 
+def method_plan(dc: dict) -> dict:
+    """The schedules / prompts / banks of the method part, written BEFORE it runs."""
+    prompts = dc["prompts"][: dc["method_prompts"]]
+    return {"pairs": [list(p) for p in dc["method_pairs"]], "reference_pair": [4, 8],
+            "reference_note": "PSP-default cuts j=4, j=8 (8->4->2)",
+            "prompts": [{"text": t, "uid": prompt_uid(t)} for t in prompts], "banks": list(range(dc["method_banks"])),
+            "n_episodes": len(prompts) * dc["method_banks"] * len(dc["method_pairs"]),
+            "costs": "synthetic engineering-only table (plumbing only)", "label": LABEL}
+
+
 def run_parts(parts: Sequence[str], cfg, bundle, scorer, scoring, dc: dict, out: Path, meta: dict,
-              progress: Callable[[str], None] = lambda s: None) -> dict:
+              progress: Callable[[str], None] = lambda s: None, aa_tag: str = "run1") -> dict:
     torch = import_torch()
     out.mkdir(parents=True, exist_ok=True)
     ids = list(pool_rows(2))
@@ -541,11 +653,16 @@ def run_parts(parts: Sequence[str], cfg, bundle, scorer, scoring, dc: dict, out:
     status, ref_latents, ref_images = {}, None, None
     for part in parts:
         t0 = time.perf_counter()
+        part_name = part
         if torch.cuda.is_available() and getattr(bundle, "backend", "") != "fake":
             torch.cuda.reset_peak_memory_stats()
         progress(f"[diag] {part} ...")
         if part == "audit":
             rep = module_audit(bundle, scorer)
+        elif part == "aa":
+            rep, tens = aa_record(bundle, scoring, cfg, rp, ru, ids, dc["ref_batch"])
+            torch.save(tens, out / f"aa_{aa_tag}.pt")
+            part_name = f"aa_{aa_tag}"
         elif part == "unet":
             rep = unet_forward_invariance(bundle, scoring, cfg, rp, ru, ids, plans, ref_name, dc["unet_forward_indices"])
         elif part == "traj":
@@ -568,6 +685,7 @@ def run_parts(parts: Sequence[str], cfg, bundle, scorer, scoring, dc: dict, out:
                 ref_images = dict(zip(ids, bundle.to_pil(imgs)))
             rep = rm_invariance(scorer, rp, dict(ref_images), ids, plans, ref_name, dc["rm_repeats"], out / "rm_inputs")
         elif part == "method":
+            _write(out, "method_plan", {**method_plan(dc), "eph": meta.get("eph"), "written_before_run": True})
             rep = method_effects(bundle, scoring, cfg, dc["prompts"][: dc["method_prompts"]], dc["method_banks"], dc["method_pairs"])
         else:
             raise ValueError(part)
@@ -576,28 +694,53 @@ def run_parts(parts: Sequence[str], cfg, bundle, scorer, scoring, dc: dict, out:
             res = {"peak_vram_allocated_bytes": int(torch.cuda.max_memory_allocated()),
                    "peak_vram_reserved_bytes": int(torch.cuda.max_memory_reserved())}
         rep.update({"part": part, "label": LABEL, "seconds": time.perf_counter() - t0, "resources": res, **meta})
-        _write(out, part, rep)
-        status[part] = {"seconds": round(rep["seconds"], 2)}
+        _write(out, part_name, rep)
+        status[part_name] = {"seconds": round(rep["seconds"], 2)}
         progress(f"[diag] {part} done in {rep['seconds']:.1f}s")
     return status
+
+
+def compare_aa_cli(out: Path, tag_a: str, tag_b: str, expect_eph: Optional[str] = None) -> int:
+    torch = import_torch()
+    if tag_a == tag_b:
+        raise DiagConfigError("A/A needs two different runs")
+    recs = [json.loads((out / f"aa_{t}.json").read_text(encoding="utf-8")) for t in (tag_a, tag_b)]
+    tens = [torch.load(out / f"aa_{t}.pt", map_location="cpu") for t in (tag_a, tag_b)]
+    if recs[0].get("pid") is not None and recs[0].get("pid") == recs[1].get("pid"):
+        raise DiagConfigError("both A/A runs come from the same process")
+    rep = compare_aa(recs[0], recs[1], tens[0], tens[1], expect_eph)
+    rep.update({"runs": [tag_a, tag_b], "pids": [r.get("pid") for r in recs], "label": LABEL})
+    _write(out, "aa_compare", rep)
+    print(json.dumps({"all_bitwise_identical": rep["all_bitwise_identical"], "eph": rep["eph"], "summary": rep["summary"]},
+                     default=str))
+    return 0
 
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="Batch-drift diagnostic harness (engineering only)")
     add_backend_args(ap)
     ap.add_argument("--diag-config", default="configs/drift_diagnostic.yaml")
-    ap.add_argument("--part", nargs="+", choices=PARTS + ("all",), required=True)
+    ap.add_argument("--part", nargs="+", choices=PARTS + EXTRA_PARTS + ("all",))
     ap.add_argument("--out", required=True)
     ap.add_argument("--prompt-pool", default=None)
+    ap.add_argument("--aa-tag", default="run1", help="name of this A/A run (part aa); one per process")
+    ap.add_argument("--compare-aa", nargs=2, metavar=("TAG_A", "TAG_B"),
+                    help="compare two A/A runs found in --out (no model loaded); writes aa_compare.json")
+    ap.add_argument("--expect-eph", default=None, help="EPH the A/A runs are expected to carry (e.g. smoke1's)")
     a = ap.parse_args(argv)
+    if a.compare_aa:
+        return compare_aa_cli(Path(a.out), *a.compare_aa, expect_eph=a.expect_eph)
+    if not a.part:
+        ap.error("--part is required unless --compare-aa is given")
     dc = load_diag_config(a.diag_config)
     guard = guard_prompts(dc, a.prompt_pool)
     cfg, bundle, scorer, scoring, rt = build_backend(a)
     eph, body = compute_eph(cfg, bundle, scorer, rt)
     parts = list(PARTS) if "all" in a.part else a.part
-    meta = {"eph": eph, "backend": body["backend"], "prompt_guard": guard, "vae_decode_chunk_cfg": cfg.get("vae_decode_chunk"),
+    meta = {"eph": eph, "pid": os.getpid(), "backend": body["backend"], "prompt_guard": guard, "vae_decode_chunk_cfg": cfg.get("vae_decode_chunk"),
             "diag_config": {k: v for k, v in dc.items()}}
-    st = run_parts(parts, cfg, bundle, scorer, scoring, dc, Path(a.out), meta, progress=lambda s: print(s, flush=True))
+    st = run_parts(parts, cfg, bundle, scorer, scoring, dc, Path(a.out), meta, progress=lambda s: print(s, flush=True),
+                   aa_tag=a.aa_tag)
     print(json.dumps({"out": a.out, "parts": st, "eph": eph}, default=str))
     return 0
 

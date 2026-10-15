@@ -159,7 +159,20 @@ default processor, with flash and mem-efficient SDPA enabled; the `audit` part r
   - The M6 reproduction uses the M6 prompt **and uid** (`m6-technical`), so the seeds are identical.
   - Research calibration prompts can replace the diagnostic prompts only after the pool is frozen (Q2/Q3) and
     research approves that use.
-- **Tests.** 13 fake-backend tests, part of 151 passing. They cover: a row-independent fake gives bitwise zero diffs
+- **A/A repeatability (added before diag1).** Part `aa` runs the reference plan `b8_fwd` end to end in its own
+  process and saves initial-latent, embedding, per-forward, final-latent, decoded-tensor and pixel hashes plus all
+  scores (and the tensors). The runner runs it twice in separate processes (`20a`, `20b`), and `--compare-aa`
+  (`20c`) compares them, refuses two records from the same process, and checks both EPHs against `EXPECT_EPH`
+  (smoke1's measured production EPH `c1351a99…`). A plan compared with its own tensors is never used as
+  repeatability evidence.
+- **Method part, extra fields.** The schedule list is written to `method_plan.json` before the part runs. Each
+  episode also records the online ranking gaps at its own cuts, and both winners' delivered score on the same k=8
+  table (`bank_y_gap_between_winners`), so a winner change can be read against its quality cost. The k=8 tables and
+  delivered pixel hashes are stored per instance.
+- **Cross-session A/A.** `scripts/diag_crosscheck.py` compares the `method` k=8 collection of the astronaut prompt
+  (bank 0) with smoke1's technical-smoke bank shard of the same (prompt, uid, bank): initial latents, the 8×16
+  preview table, delivered scores and PNG pixels. It runs on the laptop after download.
+- **Tests.** 13 fake-backend tests at `122d0c8` (18 after the A/A additions), part of 151 (156) passing. They cover: a row-independent fake gives bitwise zero diffs
   under every permutation (which validates the id mapping); injected batch-, chunk- and RM-dependence is detected
   and attributed to the right plans; the CLI; and the audit script leaves its input untouched.
 

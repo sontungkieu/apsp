@@ -21,6 +21,7 @@ to `logs/memory_evidence.txt` (free, cgroup memory.max/peak/events, nvidia-smi).
 | 10_m6_batch | report produced for batch 1/2/4/8/16 (latent/preview/delivered deltas, winner flips). Passing means the script ran; it is **not** a batch-invariance acceptance (see BATCH_DRIFT_AUDIT.md) | `p0/batch-parity.json` |
 | 11_m2_generator | report produced; `provisional: true`; every key present (den/ver/fin/prune/feat/lfeat/fixed for the ks run) | `p0/SMOKE_generator_costs*.json`, `p0/SMOKE_generator.json` |
 | 12_vae_chunk | reports produced per chunk | `p0/chunk_C/…` |
+| 20a/20b_diag_aa, 20c_diag_aa_compare (preset `diag`) | both A/A runs exit 0 in separate processes; `aa_compare.json` written. Its identity flags and the EPH check are findings to report, not a pass/fail gate | `diag/aa_run1.json`, `aa_run2.json`, `aa_compare.json` |
 
 ## Stop conditions
 
