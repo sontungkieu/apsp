@@ -18,7 +18,7 @@ to `logs/memory_evidence.txt` (free, cgroup memory.max/peak/events, nvidia-smi).
 | 07_parity | `parity.json` PASS (feasibility agrees). Report `n_trace_survivor_winner_equal` / `n` and `max_score_abs_diff`. Differences are findings to analyse, not hidden | `tsmoke/parity.json` |
 | 08_equivalence | exit 0 and a report with A/B delivered exact-hash flags, max abs diffs, C (j=4,8,16) x0/score diffs. Exactness is reported as measured, no tolerance claimed as bitwise | log (JSON printed) |
 | 09_m0_hook | `no_extra_forward: true` (64 calls/run), `mode_none_feature_kernel_calls: 0`; repeat exact flags/diffs reported | `p0/hook.json` |
-| 10_m6_batch | report produced for batch 1/2/4/8/16 (latent/preview/delivered deltas, winner flips) | `p0/batch-parity.json` |
+| 10_m6_batch | report produced for batch 1/2/4/8/16 (latent/preview/delivered deltas, winner flips). Passing means the script ran; it is **not** a batch-invariance acceptance (see BATCH_DRIFT_AUDIT.md) | `p0/batch-parity.json` |
 | 11_m2_generator | report produced; `provisional: true`; every key present (den/ver/fin/prune/feat/lfeat/fixed for the ks run) | `p0/SMOKE_generator_costs*.json`, `p0/SMOKE_generator.json` |
 | 12_vae_chunk | reports produced per chunk | `p0/chunk_C/…` |
 

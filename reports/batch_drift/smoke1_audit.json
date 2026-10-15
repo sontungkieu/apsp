@@ -1,0 +1,513 @@
+{
+  "run_dir_commit": "933e9ac0ab224a0b7840b718e89204e73c23f394",
+  "label": "ENGINEERING ONLY; technical prompt; not G1",
+  "m6": {
+    "source": "p0/batch-parity.json",
+    "eph": "c1351a998e37d89ec892abf2f5f3ac16312ca20d3d12fdc359530bb3605c83bd",
+    "seconds": 601.4486738920677,
+    "reference_batch": 8,
+    "metric_definitions": {
+      "delivered_latent_max_abs": "max over the 16 CandidateIds (pool rows (0,0)..(1,7)) and all 4x64x64 elements of |x64_b - x64_ref| on the final DDIM latent x^64 (fp16 cast to fp32, scaled latent space, before /vae_scaling_factor)",
+      "preview_score_max_abs": "max over j in {4,8,16} and the 16 CandidateIds of |IR_b - IR_ref| on preview x0 scores; decode and ImageReward ran on the same batch b (confounded)",
+      "delivered_score_max_abs": "max over CandidateIds of |IR_b - IR_ref| on delivered images (decode + RM on batch b, confounded)",
+      "B2_winner_flips": "per bank, B2 (8->4 at j=4, 4->2 at j=8, top-1 delivered) replayed on the batch-b scores vs on the batch-8 scores; counts banks whose winner differs (0..2)"
+    },
+    "rows": [
+      {
+        "batch": 1,
+        "groups": 16,
+        "delivered_latent_max_abs": 1.706787109375,
+        "delivered_latent_rmse": "not measured",
+        "delivered_latent_rel_l2": "not measured",
+        "preview_score_max_abs_over_j4_8_16": 0.28669273853302,
+        "delivered_score_max_abs": 0.17873716354370117,
+        "per_candidate_errors": "not measured",
+        "ranking_gap_at_cutoff": "not measured",
+        "B2_winner_flips_of_2_banks": 0,
+        "is_reference": false
+      },
+      {
+        "batch": 2,
+        "groups": 8,
+        "delivered_latent_max_abs": 2.4443359375,
+        "delivered_latent_rmse": "not measured",
+        "delivered_latent_rel_l2": "not measured",
+        "preview_score_max_abs_over_j4_8_16": 0.7866275310516357,
+        "delivered_score_max_abs": 0.11670362949371338,
+        "per_candidate_errors": "not measured",
+        "ranking_gap_at_cutoff": "not measured",
+        "B2_winner_flips_of_2_banks": 1,
+        "is_reference": false
+      },
+      {
+        "batch": 4,
+        "groups": 4,
+        "delivered_latent_max_abs": 2.04541015625,
+        "delivered_latent_rmse": "not measured",
+        "delivered_latent_rel_l2": "not measured",
+        "preview_score_max_abs_over_j4_8_16": 0.3439044654369354,
+        "delivered_score_max_abs": 0.3662969172000885,
+        "per_candidate_errors": "not measured",
+        "ranking_gap_at_cutoff": "not measured",
+        "B2_winner_flips_of_2_banks": 0,
+        "is_reference": false
+      },
+      {
+        "batch": 8,
+        "groups": 2,
+        "delivered_latent_max_abs": 0.0,
+        "delivered_latent_rmse": "not measured",
+        "delivered_latent_rel_l2": "not measured",
+        "preview_score_max_abs_over_j4_8_16": 0.0,
+        "delivered_score_max_abs": 0.0,
+        "per_candidate_errors": "not measured",
+        "ranking_gap_at_cutoff": "not measured",
+        "B2_winner_flips_of_2_banks": 0,
+        "is_reference": true
+      },
+      {
+        "batch": 16,
+        "groups": 1,
+        "delivered_latent_max_abs": 1.4354248046875,
+        "delivered_latent_rmse": "not measured",
+        "delivered_latent_rel_l2": "not measured",
+        "preview_score_max_abs_over_j4_8_16": 0.27927255630493164,
+        "delivered_score_max_abs": 0.26665544509887695,
+        "per_candidate_errors": "not measured",
+        "ranking_gap_at_cutoff": "not measured",
+        "B2_winner_flips_of_2_banks": 1,
+        "is_reference": false
+      }
+    ],
+    "limits": [
+      "batch 8 is the reference compared with itself: its zeros are trivial, not a repeat test",
+      "per-candidate errors, RMSE/relative error, ranking gaps and first divergent forward were not stored",
+      "latent error isolates UNet+scheduler; score errors mix UNet, VAE-decode batch and ImageReward batch",
+      "flips come from 2 banks of one prompt: no rate can be estimated"
+    ]
+  },
+  "m6_identity_audit": [
+    {
+      "item": "CandidateId",
+      "same_across_batches": "yes, by code: every plan slices pool_rows(2); rows of a group map to tensor rows in order (no prune)",
+      "recorded_in_report": false
+    },
+    {
+      "item": "initial latent bytes",
+      "same_across_batches": "by construction: derive_seed('m6-technical', bank, seed) -> CPU torch.Generator float32 randn -> fp16 cast, per candidate, independent of the batch",
+      "recorded_in_report": false,
+      "note": "init_latent_sha is not written by M6 (the collector writes it)"
+    },
+    {
+      "item": "prompt embeddings",
+      "same_across_batches": "expected: re-encoded at batch 1 by each group's prepare_request; tiled to k rows",
+      "recorded_in_report": false,
+      "note": "no embedding hash in the report; equality across groups not verified"
+    },
+    {
+      "item": "scheduler / timesteps",
+      "same_across_batches": "expected: set_timesteps(64) per engine; the EPH pins the 64 timesteps",
+      "recorded_in_report": "EPH only"
+    },
+    {
+      "item": "CFG row mapping",
+      "same_across_batches": "yes, by code: emb = [uncond x k; cond x k], x_in = cat([x, x]); eps.chunk(2)",
+      "recorded_in_report": false
+    },
+    {
+      "item": "seed integer",
+      "same_across_batches": "yes",
+      "note": "not sufficient on its own; listed for completeness"
+    }
+  ],
+  "cross_batch_from_technical_smoke": {
+    "same_prompt": {
+      "bank": "1f64b1c61ffd598384f753a48e0fcf9123711cae",
+      "psp_prompt": "a photograph of an astronaut riding a horse",
+      "single_prompt": "a photograph of an astronaut riding a horse",
+      "note": "technical_smoke derives uid = prompt_uid(text) in single, psp and collector; the bank prompt text equals the psp/single prompt",
+      "prompt_text_equal": true
+    },
+    "per_candidate": [
+      {
+        "cand": [
+          0,
+          0
+        ],
+        "quantity": "preview IR j=4",
+        "batch_online": 8,
+        "batch_bank": 8,
+        "online": 0.8314809799194336,
+        "bank": 0.8314809799194336,
+        "diff": 0.0,
+        "bitwise_equal": true,
+        "equal_as_float32": true,
+        "batch_history_online": "k=8 from j=0",
+        "init_latent_sha_bank": "a94d36901f02ad4679e1a689f92d7e074f3512b43d5ec4cf3424a26c5d331548"
+      },
+      {
+        "cand": [
+          0,
+          1
+        ],
+        "quantity": "preview IR j=4",
+        "batch_online": 8,
+        "batch_bank": 8,
+        "online": -1.3991169929504395,
+        "bank": -1.3991169929504395,
+        "diff": 0.0,
+        "bitwise_equal": true,
+        "equal_as_float32": true,
+        "batch_history_online": "k=8 from j=0",
+        "init_latent_sha_bank": "6b3470759eaeffbbff84e639df7bd5970671b180d0fd38b5e7c8966a0462ff8c"
+      },
+      {
+        "cand": [
+          0,
+          2
+        ],
+        "quantity": "preview IR j=4",
+        "batch_online": 8,
+        "batch_bank": 8,
+        "online": -1.112828254699707,
+        "bank": -1.112828254699707,
+        "diff": 0.0,
+        "bitwise_equal": true,
+        "equal_as_float32": true,
+        "batch_history_online": "k=8 from j=0",
+        "init_latent_sha_bank": "050004d44416493a0c5cd2d60945793342f1ac065b82c545e34dffe12bf55469"
+      },
+      {
+        "cand": [
+          0,
+          3
+        ],
+        "quantity": "preview IR j=4",
+        "batch_online": 8,
+        "batch_bank": 8,
+        "online": -1.2825126647949219,
+        "bank": -1.2825126647949219,
+        "diff": 0.0,
+        "bitwise_equal": true,
+        "equal_as_float32": true,
+        "batch_history_online": "k=8 from j=0",
+        "init_latent_sha_bank": "5aa727cc31bb30216b02f3b07f2a2d111e59b4df2df8bb2fb5e6923d19ff456f"
+      },
+      {
+        "cand": [
+          0,
+          4
+        ],
+        "quantity": "preview IR j=4",
+        "batch_online": 8,
+        "batch_bank": 8,
+        "online": -0.27698302268981934,
+        "bank": -0.27698302268981934,
+        "diff": 0.0,
+        "bitwise_equal": true,
+        "equal_as_float32": true,
+        "batch_history_online": "k=8 from j=0",
+        "init_latent_sha_bank": "63dab776a384255e542497de3d8ee17baf56c051f74a2648778bb47fa0ce0893"
+      },
+      {
+        "cand": [
+          0,
+          5
+        ],
+        "quantity": "preview IR j=4",
+        "batch_online": 8,
+        "batch_bank": 8,
+        "online": -0.2217460572719574,
+        "bank": -0.2217460572719574,
+        "diff": 0.0,
+        "bitwise_equal": true,
+        "equal_as_float32": true,
+        "batch_history_online": "k=8 from j=0",
+        "init_latent_sha_bank": "a505543a392789eb895ab1cf7fb10430a753837666b889cf54d27c0d60c2f205"
+      },
+      {
+        "cand": [
+          0,
+          6
+        ],
+        "quantity": "preview IR j=4",
+        "batch_online": 8,
+        "batch_bank": 8,
+        "online": -1.0844359397888184,
+        "bank": -1.0844359397888184,
+        "diff": 0.0,
+        "bitwise_equal": true,
+        "equal_as_float32": true,
+        "batch_history_online": "k=8 from j=0",
+        "init_latent_sha_bank": "8aa3ea652bcbd75003d18bf69a8ce02befd823ef860fbaebca87d6784300cde4"
+      },
+      {
+        "cand": [
+          0,
+          7
+        ],
+        "quantity": "preview IR j=4",
+        "batch_online": 8,
+        "batch_bank": 8,
+        "online": -2.1328892707824707,
+        "bank": -2.1328892707824707,
+        "diff": 0.0,
+        "bitwise_equal": true,
+        "equal_as_float32": true,
+        "batch_history_online": "k=8 from j=0",
+        "init_latent_sha_bank": "ab1de94f7f352fa5e109980abf24797ca3943c3850041b9c8c8d806ce874f01d"
+      },
+      {
+        "cand": [
+          0,
+          0
+        ],
+        "quantity": "preview IR j=8",
+        "batch_online": 4,
+        "batch_bank": 8,
+        "online": 1.8258448839187622,
+        "bank": 1.8300343751907349,
+        "diff": -0.004189491271972656,
+        "bitwise_equal": false,
+        "equal_as_float32": false,
+        "batch_history_online": "k=8 to j=4, then k=4",
+        "init_latent_sha_bank": "a94d36901f02ad4679e1a689f92d7e074f3512b43d5ec4cf3424a26c5d331548"
+      },
+      {
+        "cand": [
+          0,
+          4
+        ],
+        "quantity": "preview IR j=8",
+        "batch_online": 4,
+        "batch_bank": 8,
+        "online": 1.3459832668304443,
+        "bank": 1.3625214099884033,
+        "diff": -0.016538143157958984,
+        "bitwise_equal": false,
+        "equal_as_float32": false,
+        "batch_history_online": "k=8 to j=4, then k=4",
+        "init_latent_sha_bank": "63dab776a384255e542497de3d8ee17baf56c051f74a2648778bb47fa0ce0893"
+      },
+      {
+        "cand": [
+          0,
+          5
+        ],
+        "quantity": "preview IR j=8",
+        "batch_online": 4,
+        "batch_bank": 8,
+        "online": 1.5880544185638428,
+        "bank": 1.5682908296585083,
+        "diff": 0.019763588905334473,
+        "bitwise_equal": false,
+        "equal_as_float32": false,
+        "batch_history_online": "k=8 to j=4, then k=4",
+        "init_latent_sha_bank": "a505543a392789eb895ab1cf7fb10430a753837666b889cf54d27c0d60c2f205"
+      },
+      {
+        "cand": [
+          0,
+          6
+        ],
+        "quantity": "preview IR j=8",
+        "batch_online": 4,
+        "batch_bank": 8,
+        "online": 1.6973282098770142,
+        "bank": 1.680044412612915,
+        "diff": 0.01728379726409912,
+        "bitwise_equal": false,
+        "equal_as_float32": false,
+        "batch_history_online": "k=8 to j=4, then k=4",
+        "init_latent_sha_bank": "8aa3ea652bcbd75003d18bf69a8ce02befd823ef860fbaebca87d6784300cde4"
+      },
+      {
+        "cand": [
+          0,
+          0
+        ],
+        "quantity": "delivered IR",
+        "batch_online": 2,
+        "batch_bank": 8,
+        "online": 1.8940637111663818,
+        "bank": 1.8924541473388672,
+        "diff": 0.0016095638275146484,
+        "bitwise_equal": false,
+        "batch_history_online": "k=8 to j=4, k=4 to j=8, k=2 to j=16; decode+RM at k=2"
+      },
+      {
+        "cand": [
+          0,
+          6
+        ],
+        "quantity": "delivered IR",
+        "batch_online": 2,
+        "batch_bank": 8,
+        "online": 1.865522861480713,
+        "bank": 1.8658359050750732,
+        "diff": -0.00031304359436035156,
+        "bitwise_equal": false,
+        "batch_history_online": "k=8 to j=4, k=4 to j=8, k=2 to j=16; decode+RM at k=2"
+      },
+      {
+        "cand": [
+          0,
+          0
+        ],
+        "quantity": "delivered IR",
+        "batch_online": 1,
+        "batch_bank": 8,
+        "online": 1.88776695728302,
+        "bank": 1.8924541473388672,
+        "diff": -0.004687190055847168,
+        "bitwise_equal": false,
+        "batch_history_online": "k=1 for all 64 forwards; decode+RM at k=1"
+      },
+      {
+        "cand": [
+          0,
+          0
+        ],
+        "quantity": "delivered IR, online b2",
+        "batch_online": "schedule",
+        "batch_bank": 8,
+        "online": 1.8940637111663818,
+        "bank": 1.8924541473388672,
+        "diff": 0.0016095638275146484,
+        "bitwise_equal": false,
+        "winner_equal": true
+      },
+      {
+        "cand": [
+          0,
+          0
+        ],
+        "quantity": "delivered IR, online fixed:2,9",
+        "batch_online": "schedule",
+        "batch_bank": 8,
+        "online": 1.8926523923873901,
+        "bank": 1.8924541473388672,
+        "diff": 0.00019824504852294922,
+        "bitwise_equal": false,
+        "winner_equal": true
+      },
+      {
+        "cand": [
+          0,
+          0
+        ],
+        "quantity": "delivered IR, online random",
+        "batch_online": "schedule",
+        "batch_bank": 8,
+        "online": 1.8911399841308594,
+        "bank": 1.8924541473388672,
+        "diff": -0.0013141632080078125,
+        "bitwise_equal": false,
+        "winner_equal": true
+      }
+    ],
+    "b2_ranking_gaps_on_bank_k8": {
+      "j4_keep4": {
+        "kept": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            4
+          ],
+          [
+            0,
+            5
+          ],
+          [
+            0,
+            6
+          ]
+        ],
+        "last_kept": [
+          0,
+          6
+        ],
+        "first_dropped": [
+          0,
+          2
+        ],
+        "gap": 0.028392314910888672
+      },
+      "j8_keep2": {
+        "kept": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            6
+          ]
+        ],
+        "last_kept": [
+          0,
+          6
+        ],
+        "first_dropped": [
+          0,
+          5
+        ],
+        "gap": 0.11175358295440674
+      },
+      "final_keep1": {
+        "kept": [
+          [
+            0,
+            0
+          ]
+        ],
+        "last_kept": [
+          0,
+          0
+        ],
+        "first_dropped": [
+          0,
+          6
+        ],
+        "gap": 0.026618242263793945
+      }
+    },
+    "max_abs_diff_online_vs_bank": {
+      "j4_k8": 0.0,
+      "j8_k4": 0.019763588905334473,
+      "delivered_k2": 0.0016095638275146484
+    },
+    "j4_k8_all_equal_as_float32": true,
+    "decisions_stable": {
+      "j4": "same composition -> equal scores, same keep set",
+      "j8": "keep set equal online/bank; gap 0.1118 vs max |diff| 0.0198",
+      "final": "winner equal; gap 0.0266 vs max |diff| 0.0016"
+    },
+    "pixel_diffs": {
+      "(0,0) k=1 single vs k=8 bank": {
+        "max_abs_u8": 228,
+        "mean_abs_u8": 1.7923075358072917,
+        "rmse_u8": 7.2389768790128635,
+        "frac_pixels_changed": 0.7774887084960938,
+        "frac_pixels_gt8": 0.04456329345703125,
+        "bitwise_equal": false
+      },
+      "(0,0) k=8->4->2 psp winner vs k=8 bank": {
+        "max_abs_u8": 12,
+        "mean_abs_u8": 0.14472198486328125,
+        "rmse_u8": 0.43562131510726293,
+        "frac_pixels_changed": 0.2655372619628906,
+        "frac_pixels_gt8": 4.57763671875e-05,
+        "bitwise_equal": false
+      }
+    },
+    "png_sha256": {
+      "single_s0.png": "b6163e060bffe984b3e3c57e27c8c43f1874a8f4ce839db78f3671ca18a9225a",
+      "psp_winner.png": "dff6026a99a435dc9b2f02c02798ddb988e2f7b1820dd86bd63420d15a8f7b23",
+      "bank img_s0.png": "3025c60258238b612c24623073d73c1b755d7de2c94877db59e54e839697a6d7"
+    }
+  }
+}
