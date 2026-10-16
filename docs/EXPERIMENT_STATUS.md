@@ -28,7 +28,9 @@ time, API acceptance not read), 56224386 (RTX 4090 48 GB). Neither is used furth
 | Step | Result | Label |
 |---|---|---|
 | first login 16:05Z | identity, GPU, price, quota read | — |
-| P1 via run_project (monitor-only watchdog) | started (see below) | — |
+| launch 16:22:45Z (`54c7a3b`, monitor-only watchdog, run_project pid 2626) | 00_setup ok; 01_pytest ok (70 s); 02_env_check ok; 02b_fingerprint ok; 03_model ok (62 s) + 03b model check ok | CUDA-real env |
+| vram_check (in p1_env) | **FAILED: GPU memory corruption.** 21 × 1 GiB blocks, pattern errors in blocks 4–9 (torch total 25,336,807,424 B, D2D 918.7 GB/s). Diagnostic (3 repetitions of plain `fill_` + strided write, 19 blocks): every repetition has 6 corrupted blocks with 47k–259k wrong float32 values each; wrong values are neighbouring blocks' fill values or bit-flipped values (e.g. 5.5, 9.000129…, 17.000259…); the same in-block offsets recur (8960, 41984, 99072, 238592, 175210696) and move with the allocation → a fixed faulty physical VRAM region. No ECC on this GeForce card (ECC N/A, remapped rows 0, no Xid in dmesg). The same script passed on 56224386 (45 GiB, 0 errors). | CUDA-real, **hardware fault** |
+| P1 jobs after p1_env | **not run**: p1_env failed, dependants blocked; no measurement on this GPU is trustworthy (silent corruption of latents/images/scores) | blocked (hardware) |
 
 **56261825** (15:15–16:01Z, ≈ 46 min ≈ $0.40 at $0.527/h): deploy of `d620d6c` + live stop check; dummy workload failed to start (script bug, fixed in `790d7cb`), watchdog took the workload_died path; SSH refused 16:00:59Z. No experiment ran.
 
