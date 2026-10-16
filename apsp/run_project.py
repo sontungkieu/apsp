@@ -182,9 +182,12 @@ def gate_status(name: str, root: Path = REPO, env: Optional[dict] = None) -> tup
         bad = cal or rep.get("selected_not_in_survivors")
         return not bad, "full-pool check: no calibration prompt in a cross-split component"
     if name == "evaluation_approved":
-        cfg = yaml.safe_load((root / "configs" / "evaluation.yaml").read_text(encoding="utf-8"))
+        p = root / "configs" / "evaluation_locked.yaml"          # PREREG-B snapshot (apsp.reports.lock_b)
+        if not p.exists():
+            p = root / "configs" / "evaluation.yaml"
+        cfg = yaml.safe_load(p.read_text(encoding="utf-8"))
         ok = bool(cfg.get("approved")) and all(cfg.get(k) is not None for k in ("epsilon_ir", "r_fail", "n_primary_contrasts"))
-        return ok, "configs/evaluation.yaml approved with epsilon_ir, r_fail, n_primary_contrasts"
+        return ok, f"{p.relative_to(root)} approved with epsilon_ir, r_fail, n_primary_contrasts"
     if name == "pool_frozen":
         p = root / "reports" / "prompt_pool" / "POOL_FROZEN.json"
         return p.exists(), "research marker reports/prompt_pool/POOL_FROZEN.json (Q15/Q16 approval)"

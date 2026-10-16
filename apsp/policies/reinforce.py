@@ -273,6 +273,66 @@ def synthetic_smoke(out_dir: Optional[str] = None, iterations: int = 60, n_promp
     return summary
 
 
+def train_real(bank_dir: str, costs_path: str, snap: dict, seed: int, out_dir: str, iterations: int = 200,
+               fit_split: str = "train_fit", dev_split: str = "train_dev", alphas=(0.5, 1.0)) -> dict:
+    """Real-bank REINFORCE (PREREG-B snapshot values): replay on train_fit, checkpoint by replay train_dev score.
+
+    r_fail and sigma_R come from the snapshot; B3 per cap is the best fixed pair on train_fit; the controller dispatch
+    fee is measured on this host with this architecture (weights do not change the cost) and reported; the ledger
+    charges disp = 0 for every closed-loop method (equal accounting with the tuned B6/B8 baselines, PREREG-B B9), and
+    the actual e2e time of the online runs includes the real dispatch time.
+    """
+    from apsp.contracts.ledger import load_method_costs
+    from apsp.contracts.schema import load_bank
+    from apsp.policies.fixed import best_fixed
+    from apsp.reports.ctrl_costs import measure_dispatch
+    from apsp.sim.budget_dp import G842, initial_feasible
+    from apsp.sim.replay import ReplayContext
+    from apsp.sim.schedules import enumerate_pairs
+
+    bank = load_bank(bank_dir)
+    if (fit_split, dev_split) != ("train_fit", "train_dev") and not bank.manifest.get("synthetic"):
+        raise SystemExit("real banks train on train_fit and select on train_dev only")
+    base = load_method_costs(costs_path)
+    ctx = ReplayContext.build(bank, base, fit_split=fit_split, r_fail=float(snap["B4_r_fail"]))
+    fit, dev = bank.instances_of([fit_split]), bank.instances_of([dev_split])
+    cfg = RLConfig(iterations=iterations, seed=seed)
+    probe = ReinforcePolicy(ActorCritic(cfg.obs_dim(), cfg.hidden), cfg, mode="greedy")
+    disp = measure_dispatch(probe, ctx, fit[:40], ctx.caps.cap(1.0), base.with_overrides(method_id="M1"))
+    disp_us = int(math.ceil(disp["mean_us"]))
+    mc = base.with_overrides(method_id="M1")
+    caps = [a for a in alphas if initial_feasible(ctx.caps.cap(a), G842(), mc)]
+    Yf, C = ctx.schedule_table(fit)
+    b3 = {a: best_fixed(Yf, C, ctx.caps.cap(a)) for a in caps}
+    idx = {p: i for i, p in enumerate(enumerate_pairs())}
+    yref = {}
+    for keys in (fit, dev):
+        Yk, _ = ctx.schedule_table(keys)
+        for i, kk in enumerate(keys):
+            for a in caps:
+                yref[(kk, a)] = float(Yk[i, idx[(b3[a].j1, b3[a].j2)]])
+    cfg.sigma_R = float(snap["B5_sigma_R"])  # type: ignore[attr-defined]
+    items = [(k, a) for k in fit for a in caps]
+
+    def run_episode(pol, item, _r):
+        k, a = item
+        return ctx.run_policy(pol, k, ctx.caps.cap(a), mc).Y, yref[(k, a)]
+
+    def dev_eval(pol):
+        return float(np.mean([ctx.run_policy(pol, k, ctx.caps.cap(a), mc).Y - yref[(k, a)] for k in dev for a in caps]))
+
+    t0 = time.time()
+    res = train_reinforce(run_episode, items, dev_eval, cfg)
+    summary = {"label": "replay training (simulator); online confirmation separately", "seed": seed, "caps": caps,
+               "B3": {str(a): [b3[a].j1, b3[a].j2] for a in caps}, "sigma_R": cfg.sigma_R, "r_fail": ctx.r_fail,
+               "ctrl_dispatch_us_measured": disp_us, "ctrl_dispatch_charged_us": 0, "ctrl_dispatch_measure": {k: v for k, v in disp.items() if k != "raw_us"},
+               "train_seconds": time.time() - t0, "best_dev_replay_minus_B3": res.best_dev, "best_iter": res.best_iter,
+               "bank_bmh": bank.manifest.get("bmh"), "checkpoint_rule": "best replay train_dev mean(Y - Y_B3) over evals"}
+    cph = artifact_cph(res.net, cfg, ctx.norm.hash(), ctx.pca.hash() if ctx.pca else "none", [bank.manifest["bmh"]])
+    save_artifact(out_dir, res, cph, {"summary": summary, "synthetic": bool(bank.manifest.get("synthetic"))})
+    return summary
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="REINFORCE controller (M1)")
     ap.add_argument("--synthetic-smoke", action="store_true", help="train on a SYNTHETIC bank (no guards needed)")
@@ -281,6 +341,7 @@ def main(argv=None) -> int:
     ap.add_argument("--bank", default=None)
     ap.add_argument("--out", default=None)
     ap.add_argument("--iterations", type=int, default=60)
+    ap.add_argument("--costs", default=None, help="generator cost table (real-bank training)")
     ap.add_argument("--seed", type=int, default=0)
     a = ap.parse_args(argv)
     if a.synthetic_smoke:
@@ -294,7 +355,12 @@ def main(argv=None) -> int:
         except PreregGuardError as e:
             print(f"REFUSED: {e}")
             return 3
-        raise SystemExit("real-bank training entry is wired after PREREG-B fixes sigma_R/norm/PCA; see docs/RUNBOOK.md")
+        m = require_signed("B")
+        snap = json.loads((Path(__file__).resolve().parents[2] / m["proposal_path"]).read_text(encoding="utf-8"))
+        if not (a.bank and a.costs and a.out):
+            raise SystemExit("--train needs --bank, --costs and --out")
+        print(json.dumps(train_real(a.bank, a.costs, snap, a.seed, a.out, a.iterations), indent=2, default=float))
+        return 0
     ap.print_help()
     return 1
 

@@ -121,6 +121,7 @@ CB="--prompt-pool ${POOL_DIR}/prompt_pool.parquet --out ${RUN}/calib"
 COSTS="${COSTS:-}"                                  # merged M2 table from the calibration run (generator_costs.json)
 TUNED="${TUNED:-${APSP_STORE}/tuned}"
 FROZEN="${FROZEN:-${APSP_STORE}/frozen_operating_point.json}"
+EVAL_CFG="${EVAL_CFG:-$([[ -f configs/evaluation_locked.yaml ]] && echo configs/evaluation_locked.yaml || echo configs/evaluation.yaml)}"   # PREREG-B snapshot when locked
 BENCH_COMMON="--prompt-pool ${POOL_DIR}/prompt_pool.parquet --norm ${TUNED}/norm.json --pca ${TUNED}/pca16.npz --costs ${COSTS}"
 EXPECT_EPH="${EXPECT_EPH:-c1351a998e37d89ec892abf2f5f3ac16312ca20d3d12fdc359530bb3605c83bd}"
 
@@ -165,9 +166,12 @@ for s in "${STEPS[@]}"; do
     40_bank)        run_step "$s" 900 "${PY}" -m apsp.gpu.collect_bank --prompt-pool "${POOL_DIR}/prompt_pool.parquet"                       --split train_fit train_dev --resume --out-root "${APSP_STORE}/banks" --bank-name PILOT --machine-id "${MACHINE_ID}" ${EXPECT_EPH:+--expect-eph-file "${EXPECT_EPH}"} ;;
     41_tune)        run_step "$s" 120 "${PY}" -m apsp.sim.tune_baselines --bank "${APSP_STORE}/banks/PILOT" --costs "${COSTS}" --out "${TUNED}" ;;
     42_bench_dev)   run_step "$s" 900 "${PY}" -m apsp.gpu.benchmark ${BENCH_COMMON} --split train_dev                       --methods-file "${TUNED}/methods_frozen.json" --out "${RUN}/bench_dev" ;;
-    43_report_dev)  run_step "$s" 10 "${PY}" -m apsp.reports.quality_cost --run "${RUN}/bench_dev" --out "${RUN}/bench_dev/report" --freeze "${FROZEN}" ;;
+    41b_anchor_online) run_step "$s" 300 "${PY}" -m apsp.gpu.benchmark ${BENCH_COMMON} --split train_fit --methods psp bon:4 --out "${RUN}/anchor_online" ;;
+    42b_bench_dev_rl) run_step "$s" 300 "${PY}" -m apsp.gpu.benchmark ${BENCH_COMMON} --split train_dev --methods ${RL_METHODS} --out "${RUN}/bench_dev_rl" ;;
+    44b_bench_val_ext) run_step "$s" 600 "${PY}" -m apsp.gpu.benchmark ${BENCH_COMMON} --split val_ext --limit "${VAL_EXT_N}" --methods-file "${FROZEN}" --out "${RUN}/bench_val_ext" ;;
+    43_report_dev)  run_step "$s" 10 "${PY}" -m apsp.reports.quality_cost --run "${RUN}/bench_dev" --out "${RUN}/bench_dev/report" --config "${EVAL_CFG}" --freeze "${FROZEN}" ;;
     44_bench_val)   run_step "$s" 900 "${PY}" -m apsp.gpu.benchmark ${BENCH_COMMON} --split val --methods-file "${FROZEN}" --out "${RUN}/bench_val" ;;
-    45_report_val)  run_step "$s" 10 "${PY}" -m apsp.reports.quality_cost --run "${RUN}/bench_val" --out "${RUN}/bench_val/report" ;;
+    45_report_val)  run_step "$s" 10 "${PY}" -m apsp.reports.quality_cost --run "${RUN}/bench_val" --out "${RUN}/bench_val/report" --config "${EVAL_CFG}" ;;
     *) echo "unknown step $s" >&2; exit 2 ;;
   esac
   rc=$?

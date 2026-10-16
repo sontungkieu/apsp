@@ -122,20 +122,48 @@ jobs:
      notes: "PREREG-B proposal inputs from train_fit only (anchor, tau_prac, epsilon, r_fail, sigma_R, power)",
      cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.anchor --bank ${APSP_STORE}/banks/PILOT --costs ${COSTS_A} --proposal-only --out ${APSP_STORE}/runs/pilot1/anchor",
      outputs: ["${APSP_STORE}/runs/pilot1/anchor"]}
-  - {id: p3_freeze_dev, phase: P3, gpu: false, needs: [p3_report_dev], prereg: [A], gates: [evaluation_approved],
+  # PREREG-B protocol-lock snapshot (owner authorization 2026-10-17, docs/PREREG.md): online train_fit anchor, then
+  # every B value from train_fit/train_dev by the locked formulas (apsp.reports.lock_b), before any val outcome.
+  - {id: p3_anchor_online, phase: P3, gpu: true, needs: [p3_tune], prereg: [A], est_hours: 1.1, timeout_min: 360,
+     notes: "B2 anchor: PSP-default and BoN-4 online on train_fit (190 prompts x 2 banks), paired",
+     cmd: "RUN_ID=pilot1 COSTS=${COSTS_A} bash scripts/gpu_smoke.sh 41b_anchor_online", outputs: ["${APSP_STORE}/runs/pilot1/anchor_online/episodes.jsonl"]}
+  - {id: p3_lock_b, phase: P3, gpu: false, needs: [p3_bench_dev, p3_anchor_online, p3_anchor_proposal], prereg: [A],
+     cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.lock_b --bank ${APSP_STORE}/banks/PILOT --costs ${COSTS_A} --anchor-online ${APSP_STORE}/runs/pilot1/anchor_online --dev-run ${APSP_STORE}/runs/pilot1/bench_dev --anchor-replay ${APSP_STORE}/runs/pilot1/anchor --val-guard ${APSP_STORE}/runs/pilot1/bench_val ${APSP_STORE}/runs/pilot1/bench_val_ext ${APSP_STORE}/runs/pilot1/val_access.jsonl",
+     outputs: ["docs/PREREG_PROPOSALS/PREREG_B_LOCKED.json", "docs/PREREG_SIGNED/PREREG-B.json", "configs/evaluation_locked.yaml"]}
+  - {id: p3_gates_b, phase: P3, gpu: false, needs: [p3_lock_b], prereg: [B],
+     notes: "G1 online-replay discrepancy (train_dev) + G2-quality O1-replay - B3; writes the G2_EVALUATED marker",
+     cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.gates_b --bank ${APSP_STORE}/banks/PILOT --costs ${COSTS_A} --dev-run ${APSP_STORE}/runs/pilot1/bench_dev --out ${APSP_STORE}/runs/pilot1/gates_b.json",
+     outputs: ["${APSP_STORE}/runs/pilot1/gates_b.json", "docs/PREREG_SIGNED/G2_EVALUATED.json"]}
+  - {id: p3_freeze_dev, phase: P3, gpu: false, needs: [p3_report_dev], prereg: [A], gates: [evaluation_approved], enabled: false,
+     notes: "superseded by p4_select_dev (the dev selection includes the RL candidates)",
      cmd: "RUN_ID=pilot1 bash scripts/gpu_smoke.sh 43_report_dev", outputs: ["${FROZEN}"]}
   - {id: p3_headroom, phase: P3, gpu: false, needs: [p2_bank], prereg: [B],
      cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.headroom --bank ${APSP_STORE}/banks/PILOT --costs ${COSTS_A} > ${APSP_STORE}/runs/pilot1/headroom.json",
      outputs: ["${APSP_STORE}/runs/pilot1/headroom.json"]}
   # ---------------------------------------------------------------- P4 controller (PREREG-B + G2) --------------
-  - {id: p4_rl_train, phase: P4, gpu: false, needs: [p3_tune], prereg: [B], gates: ["marker:G2_EVALUATED"],
-     cmd: "for s in 0 1 2; do ${APSP_STORE}/venv-gpu/bin/python -m apsp.policies.reinforce --config configs/pilot.yaml --train --bank ${APSP_STORE}/banks/PILOT --seed $s --out ${APSP_STORE}/rl/seed$s || exit 1; done",
-     outputs: ["${APSP_STORE}/rl/seed0", "${APSP_STORE}/rl/seed1", "${APSP_STORE}/rl/seed2"]}
+  - {id: p4_rl_train, phase: P4, gpu: false, needs: [p3_gates_b], prereg: [B], gates: ["marker:G2_EVALUATED"],
+     cmd: "for s in 0 1 2; do ${APSP_STORE}/venv-gpu/bin/python -m apsp.policies.reinforce --config configs/pilot.yaml --train --bank ${APSP_STORE}/banks/PILOT --costs ${COSTS_A} --iterations 200 --seed $s --out ${APSP_STORE}/rl/seed$s || exit 1; done",
+     outputs: ["${APSP_STORE}/rl/seed0/artifact.json", "${APSP_STORE}/rl/seed1/artifact.json", "${APSP_STORE}/rl/seed2/artifact.json"]}
+  - {id: p4_bench_dev_rl, phase: P4, gpu: true, needs: [p4_rl_train], prereg: [B], est_hours: 0.92, timeout_min: 300,
+     cmd: "RUN_ID=pilot1 COSTS=${COSTS_A} RL_METHODS='rl:${APSP_STORE}/rl/seed0/artifact.json@0.5 rl:${APSP_STORE}/rl/seed0/artifact.json@1.0 rl:${APSP_STORE}/rl/seed1/artifact.json@0.5 rl:${APSP_STORE}/rl/seed1/artifact.json@1.0 rl:${APSP_STORE}/rl/seed2/artifact.json@0.5 rl:${APSP_STORE}/rl/seed2/artifact.json@1.0' bash scripts/gpu_smoke.sh 42b_bench_dev_rl",
+     outputs: ["${APSP_STORE}/runs/pilot1/bench_dev_rl/episodes.jsonl"]}
+  - {id: p4_select_dev, phase: P4, gpu: false, needs: [p3_bench_dev, p4_bench_dev_rl], prereg: [B], gates: [evaluation_approved],
+     notes: "operating point, G3/G3b/G4 candidates and contrast manifest frozen on train_dev before any val look",
+     cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.select_dev --runs ${APSP_STORE}/runs/pilot1/bench_dev ${APSP_STORE}/runs/pilot1/bench_dev_rl --config configs/evaluation_locked.yaml --snapshot docs/PREREG_PROPOSALS/PREREG_B_LOCKED.json --out ${FROZEN}",
+     outputs: ["${FROZEN}"]}
   # ---------------------------------------------------------------- P5 confirmation on val (PREREG-B) ----------
-  - {id: p5_bench_val, phase: P5, gpu: true, needs: [p3_freeze_dev], prereg: [B], gates: [evaluation_approved],
+  - {id: p5_bench_val, phase: P5, gpu: true, needs: [p4_select_dev], prereg: [B], gates: [evaluation_approved],
      est_hours: 2.8, timeout_min: 900,
      cmd: "RUN_ID=pilot1 COSTS=${COSTS_A} FROZEN=${FROZEN} bash scripts/gpu_smoke.sh 44_bench_val 45_report_val",
      outputs: ["${APSP_STORE}/runs/pilot1/bench_val/report/quality_cost.json"]}
+  - {id: p5_confirm_look1, phase: P5, gpu: false, needs: [p5_bench_val], prereg: [B],
+     cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.confirm --runs ${APSP_STORE}/runs/pilot1/bench_val --frozen ${FROZEN} --config configs/evaluation_locked.yaml --look 1 --val-log ${APSP_STORE}/runs/pilot1/val_access.jsonl --out ${APSP_STORE}/runs/pilot1/confirm_look1.json",
+     outputs: ["${APSP_STORE}/runs/pilot1/confirm_look1.json"]}
+  - {id: p5_val_ext, phase: P5, gpu: true, needs: [p5_confirm_look1], prereg: [B], est_hours: 3.0, timeout_min: 900,
+     notes: "look 2 only if a primary contrast is INC after look 1 (locked val_ext count); otherwise records not needed",
+     cmd: "RUN_ID=pilot1 COSTS=${COSTS_A} FROZEN=${FROZEN} bash scripts/look2.sh run", outputs: ["${APSP_STORE}/runs/pilot1/look2_status.json"]}
+  - {id: p5_confirm_final, phase: P5, gpu: false, needs: [p5_val_ext], prereg: [B],
+     cmd: "RUN_ID=pilot1 FROZEN=${FROZEN} bash scripts/look2.sh report", outputs: ["${APSP_STORE}/runs/pilot1/confirm_final.json"]}
   # ---------------------------------------------------------------- P6 test, P7 ablations, P8 extension ---------
   - {id: p6_geneval, phase: P6, gpu: true, needs: [p5_bench_val], prereg: [C], gates: [never], est_hours: null,
      notes: "GenEval adapter not implemented before PREREG-C (official repo/weights pinned then)", cmd: "false"}
