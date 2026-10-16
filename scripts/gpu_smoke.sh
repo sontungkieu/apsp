@@ -169,6 +169,7 @@ for s in "${STEPS[@]}"; do
     41b_anchor_online) run_step "$s" 300 "${PY}" -m apsp.gpu.benchmark ${BENCH_COMMON} --split train_fit --methods psp bon:4 --out "${RUN}/anchor_online" ;;
     42b_bench_dev_rl) run_step "$s" 300 "${PY}" -m apsp.gpu.benchmark ${BENCH_COMMON} --split train_dev --methods ${RL_METHODS} --out "${RUN}/bench_dev_rl" ;;
     44b_bench_val_ext) run_step "$s" 600 "${PY}" -m apsp.gpu.benchmark ${BENCH_COMMON} --split val_ext --limit "${VAL_EXT_N}" --methods-file "${FROZEN}" --out "${RUN}/bench_val_ext" ;;
+    46_geneval)     run_step "$s" 3600 "${PY}" -m apsp.gpu.benchmark ${BENCH_COMMON} --split geneval --prompts-jsonl "${GENEVAL_PROMPTS}" --banks 0 1 2 3 --methods-file "${TEST_METHODS}" --out "${RUN}/geneval" ;;
     43_report_dev)  run_step "$s" 10 "${PY}" -m apsp.reports.quality_cost --run "${RUN}/bench_dev" --out "${RUN}/bench_dev/report" --config "${EVAL_CFG}" --freeze "${FROZEN}" ;;
     44_bench_val)   run_step "$s" 900 "${PY}" -m apsp.gpu.benchmark ${BENCH_COMMON} --split val --methods-file "${FROZEN}" --out "${RUN}/bench_val" ;;
     45_report_val)  run_step "$s" 10 "${PY}" -m apsp.reports.quality_cost --run "${RUN}/bench_val" --out "${RUN}/bench_val/report" --config "${EVAL_CFG}" ;;

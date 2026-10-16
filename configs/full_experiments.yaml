@@ -165,8 +165,31 @@ jobs:
   - {id: p5_confirm_final, phase: P5, gpu: false, needs: [p5_val_ext], prereg: [B],
      cmd: "RUN_ID=pilot1 FROZEN=${FROZEN} bash scripts/look2.sh report", outputs: ["${APSP_STORE}/runs/pilot1/confirm_final.json"]}
   # ---------------------------------------------------------------- P6 test, P7 ablations, P8 extension ---------
-  - {id: p6_geneval, phase: P6, gpu: true, needs: [p5_bench_val], prereg: [C], gates: [never], est_hours: null,
-     notes: "GenEval adapter not implemented before PREREG-C (official repo/weights pinned then)", cmd: "false"}
+  - {id: p6_eval_setup, phase: P6, gpu: false, needs: [p1_env],
+     notes: "separate evaluator venvs (HPS v2.1, official GenEval + mmdet 2.x); no image generated",
+     cmd: "APSP_STORE=${APSP_STORE} bash env/setup_evaluators.sh all", outputs: ["${APSP_STORE}/evaluators/geneval_models/SHA256SUMS"]}
+  - {id: p6_geneval_prompts, phase: P6, gpu: false, needs: [p6_eval_setup],
+     cmd: "mkdir -p ${APSP_STORE}/geneval && ${APSP_STORE}/venv-gpu/bin/python scripts/geneval_tools.py prompts --metadata ${APSP_STORE}/evaluators/geneval/prompts/evaluation_metadata.jsonl --out ${APSP_STORE}/geneval/prompts.jsonl",
+     outputs: ["${APSP_STORE}/geneval/prompts.jsonl"]}
+  # PREREG-C protocol-lock snapshot after the val confirmation and before any GenEval image (apsp.reports.lock_c)
+  - {id: p6_lock_c, phase: P6, gpu: false, needs: [p5_confirm_final, p6_geneval_prompts], prereg: [B],
+     cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.lock_c --frozen ${FROZEN} --tuned ${TUNED} --rl-root ${APSP_STORE}/rl --costs ${COSTS_A} --frozen-eph ${FROZEN_EPH} --geneval-repo ${APSP_STORE}/evaluators/geneval --geneval-models ${APSP_STORE}/evaluators/geneval_models --geneval-run ${APSP_STORE}/runs/pilot1/geneval --test-methods-out ${APSP_STORE}/test_methods.json",
+     outputs: ["docs/PREREG_PROPOSALS/PREREG_C_LOCKED.json", "docs/PREREG_SIGNED/PREREG-C.json", "${APSP_STORE}/test_methods.json"]}
+  - {id: p6_geneval_gen, phase: P6, gpu: true, needs: [p6_lock_c], prereg: [C], est_hours: 41.0, timeout_min: 3600,
+     notes: "553 official prompts x 4 episodes (banks 0-3) x locked test methods, one delivered image per episode",
+     cmd: "RUN_ID=pilot1 COSTS=${COSTS_A} GENEVAL_PROMPTS=${APSP_STORE}/geneval/prompts.jsonl TEST_METHODS=${APSP_STORE}/test_methods.json bash scripts/gpu_smoke.sh 46_geneval",
+     outputs: ["${APSP_STORE}/runs/pilot1/geneval/episodes.jsonl"]}
+  - {id: p6_geneval_eval, phase: P6, gpu: true, needs: [p6_geneval_gen], prereg: [C], est_hours: 1.5, timeout_min: 600,
+     cmd: "APSP_STORE=${APSP_STORE} RUN=${APSP_STORE}/runs/pilot1/geneval PROMPTS=${APSP_STORE}/geneval/prompts.jsonl SNAP=docs/PREREG_PROPOSALS/PREREG_C_LOCKED.json bash scripts/geneval_eval.sh",
+     outputs: ["${APSP_STORE}/runs/pilot1/geneval/geneval_report.json"]}
+  - {id: p6_hps, phase: P6, gpu: true, needs: [p6_geneval_gen], prereg: [C], est_hours: 1.5, timeout_min: 600,
+     notes: "HPS v2.1 (diagnostic, evaluation only) on the GenEval test images and the val images",
+     cmd: "HF_HOME=${APSP_STORE}/hf ${APSP_STORE}/venv-hps/bin/python -m apsp.gpu.evaluators.independent --run ${APSP_STORE}/runs/pilot1/geneval --metric hpsv2 --prompts-jsonl ${APSP_STORE}/geneval/prompts.jsonl > ${APSP_STORE}/runs/pilot1/geneval/hps_summary.json && HF_HOME=${APSP_STORE}/hf ${APSP_STORE}/venv-hps/bin/python -m apsp.gpu.evaluators.independent --run ${APSP_STORE}/runs/pilot1/bench_val --metric hpsv2 --prompt-pool ${POOL_DIR}/prompt_pool.parquet > ${APSP_STORE}/runs/pilot1/bench_val/hps_summary.json",
+     outputs: ["${APSP_STORE}/runs/pilot1/geneval/hps_summary.json", "${APSP_STORE}/runs/pilot1/bench_val/hps_summary.json"]}
+  - {id: p6_test_report, phase: P6, gpu: false, needs: [p6_geneval_eval, p6_hps], prereg: [C],
+     notes: "IR / e2e / failures / HPS on the GenEval test run with the locked evaluation config (secondary, descriptive)",
+     cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.quality_cost --run ${APSP_STORE}/runs/pilot1/geneval --config configs/evaluation_locked.yaml --out ${APSP_STORE}/runs/pilot1/geneval/report",
+     outputs: ["${APSP_STORE}/runs/pilot1/geneval/report/quality_cost.json"]}
   - {id: p7_ablations, phase: P7, gpu: true, needs: [p3_freeze_dev], prereg: [B], gates: [never], est_hours: null,
      notes: "ablation list to be frozen before confirmation", cmd: "false"}
   - {id: p8_sdxl, phase: P8, gpu: true, needs: [p5_bench_val], gates: [never], est_hours: null,

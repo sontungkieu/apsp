@@ -136,7 +136,7 @@ def test_repo_plan_loads_in_explicit_no_cap_mode(tmp_path, prereg_dir, monkeypat
     out = capsys.readouterr().out
     assert "no financial cap (explicit)" in out and "budget:" not in out
     byid = {j.id: j for j in jobs}                            # science gates unchanged
-    assert byid["p2_bank"].prereg == ["A"] and byid["p5_bench_val"].prereg == ["B"] and byid["p6_geneval"].prereg == ["C"]
+    assert byid["p2_bank"].prereg == ["A"] and byid["p5_bench_val"].prereg == ["B"] and byid["p6_geneval_gen"].prereg == ["C"] and byid["p6_lock_c"].prereg == ["B"]
     assert byid["p1_bench_calib"].gates == ["pool_check_calibration"] and not byid["p1_bench_calib"].prereg
 
 

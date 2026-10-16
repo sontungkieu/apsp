@@ -41,7 +41,7 @@ from apsp.sim.caps import compute_caps
 from apsp.sim.features import PCA16, NormStats
 from apsp.sim.methods import RunContext, episode_quality, parse_method, run_method
 
-CONFIRMATORY_SPLITS = ("val", "val_ext", "test")
+CONFIRMATORY_SPLITS = ("val", "val_ext", "test", "geneval")
 LABEL = "online quality-cost benchmark (pilot instrumentation)"
 
 
@@ -52,6 +52,14 @@ def load_instances(a) -> pd.DataFrame:
         ps = [normalize(p) for p in sc["prompts"]][: a.limit or None]
         return pd.DataFrame({"prompt_uid": [prompt_uid(p) for p in ps], "text": ps, "split": "technical_smoke"})
     from apsp.contracts.prereg import require_split_access
+    if getattr(a, "prompts_jsonl", None):          # GenEval: official prompts, text kept verbatim (PREREG-C)
+        if a.split != "geneval":
+            raise SystemExit("--prompts-jsonl is only for --split geneval")
+        require_split_access("geneval", "online test generation")
+        rows = [json.loads(l) for l in Path(a.prompts_jsonl).read_text(encoding="utf-8").splitlines() if l.strip()]
+        df = pd.DataFrame({"prompt_uid": [r["prompt_uid"] for r in rows], "text": [r["text"] for r in rows],
+                           "split": "geneval"})
+        return df.head(a.limit) if a.limit else df
     if not (a.prompt_pool and a.split):
         raise SystemExit("--technical or --prompt-pool with --split is required")
     require_split_access(a.split, "online quality-cost benchmark")
@@ -109,6 +117,7 @@ def main(argv=None) -> int:
     ap.add_argument("--selector-once-us", type=int, default=0)
     ap.add_argument("--warmup", type=int, default=2)
     ap.add_argument("--limit", type=int, default=None)
+    ap.add_argument("--prompts-jsonl", default=None, help="GenEval prompts (scripts/geneval_prompts.py), --split geneval")
     ap.add_argument("--out", required=True)
     a = ap.parse_args(argv)
     if not (a.costs or a.synthetic_costs):

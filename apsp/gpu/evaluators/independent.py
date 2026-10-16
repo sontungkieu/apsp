@@ -167,8 +167,11 @@ def evaluate_run(run: Path, metric: str, cfg: dict) -> dict:
     return m
 
 
-def prompt_texts(run: Path, prompt_pool: str | None) -> dict:
+def prompt_texts(run: Path, prompt_pool: str | None, prompts_jsonl: str | None = None) -> dict:
     import pandas as pd
+    if prompts_jsonl:                      # GenEval prompts (scripts/geneval_tools.py prompts), text verbatim
+        rows = [json.loads(l) for l in Path(prompts_jsonl).read_text(encoding="utf-8").splitlines() if l.strip()]
+        return {r["prompt_uid"]: r["text"] for r in rows}
     if prompt_pool:
         df = pd.read_parquet(prompt_pool)
         return dict(zip(df["prompt_uid"], df["text"]))
@@ -183,9 +186,10 @@ def main(argv=None) -> int:
     ap.add_argument("--metric", required=True)
     ap.add_argument("--config", default="configs/evaluators.yaml")
     ap.add_argument("--prompt-pool", default=None)
+    ap.add_argument("--prompts-jsonl", default=None)
     a = ap.parse_args(argv)
     cfg = yaml.safe_load(Path(a.config).read_text(encoding="utf-8")) if Path(a.config).exists() else {}
-    cfg["_texts"] = prompt_texts(Path(a.run), a.prompt_pool)
+    cfg["_texts"] = prompt_texts(Path(a.run), a.prompt_pool, a.prompts_jsonl)
     print(json.dumps(evaluate_run(Path(a.run), a.metric, cfg), indent=1))
     return 0
 
