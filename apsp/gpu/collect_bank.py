@@ -47,8 +47,13 @@ def _key_name(uid: str, b: int) -> str:
     return f"{uid}__b{b}"
 
 
-def collect_instance(engine: DenoiseEngine, prompt: str, uid: str, bank_id: int, k0: int = 8) -> dict:
-    """Run one (prompt, bank) without pruning. Returns table rows, PIL images and timings."""
+LATENT_SPLITS = ("train_fit", "train_dev")     # PREREG-A A16: x0 latents stored for these splits only
+
+
+def collect_instance(engine: DenoiseEngine, prompt: str, uid: str, bank_id: int, k0: int = 8,
+                     store_latents: bool = False) -> dict:
+    """Run one (prompt, bank) without pruning. Returns table rows, PIL images, timings and (optionally) the x0
+    preview latents as float16[k0, J, C, H, W] indexed by seed_idx and j-1."""
     torch = import_torch()
     t0 = time.perf_counter()
     engine.prepare_request(prompt, uid)
@@ -58,10 +63,13 @@ def collect_instance(engine: DenoiseEngine, prompt: str, uid: str, bank_id: int,
              for i, (_, s) in enumerate(rows)]
     pv = []
     J = engine.steps // engine.delta
+    x0s = [] if store_latents else None
     for j in range(1, J + 1):
         engine.advance(None, engine.delta, False)
         assert engine.hook.j == j
         sb = engine.scoring.score_preview(prompt, engine.hook.x0)
+        if x0s is not None:
+            x0s.append(engine.hook.x0.detach().float().cpu().numpy().astype(np.float16))
         f = engine.hook.last
         t_in = int(engine.timesteps[engine.delta * j - 1])
         for i, (_, s) in enumerate(rows):
@@ -73,8 +81,14 @@ def collect_instance(engine: DenoiseEngine, prompt: str, uid: str, bank_id: int,
     sb = engine.scoring.score_delivered(prompt, engine.x)
     dl = [(uid, bank_id, s, sb.records[i].score if sb.records[i].score_ok else np.nan, sb.records[i].latent_ok,
            sb.records[i].img_ok, sb.records[i].score_ok) for i, (_, s) in enumerate(rows)]
+    lat = None
+    if x0s is not None:
+        a = np.stack(x0s, axis=1)                         # [row, J, C, H, W]
+        lat = np.empty_like(a)
+        for i, (_, s) in enumerate(rows):
+            lat[s] = a[i]
     return {"seeds": seeds, "previews": pv, "delivered": dl, "images": sb.images, "seconds": time.perf_counter() - t0,
-            "unet_calls": engine.n_unet_calls}
+            "unet_calls": engine.n_unet_calls, "x0_latents": lat}
 
 
 def write_shard(bank_dir: Path, uid: str, b: int, out: dict, eph: str, cfg_hash: str, prompt_emb: np.ndarray) -> Path:
@@ -101,6 +115,8 @@ def write_shard(bank_dir: Path, uid: str, b: int, out: dict, eph: str, cfg_hash:
     dl["image_path"], dl["image_sha"] = img_paths, img_sha
     dl.to_parquet(tmp / "delivered.parquet", index=False)
     np.save(tmp / "prompt_emb.npy", prompt_emb.astype(np.float16))
+    if out.get("x0_latents") is not None:
+        np.save(tmp / "x0.npy", out["x0_latents"].astype(np.float16))
     files = sorted(p.name for p in tmp.iterdir())
     meta = {"collector": COLLECTOR_VERSION, "eph": eph, "config_hash": cfg_hash, "uid": uid, "bank_id": b,
             "checksums": {f: file_sha256(tmp / f) for f in files}, "seconds": out["seconds"], "status": "complete"}
@@ -173,7 +189,8 @@ def run_collection(engine: DenoiseEngine, bundle, prompts: pd.DataFrame, bank_di
                 continue
             if emb is None:
                 emb = np.asarray(bundle.pooler(row.text), np.float32)
-            out = collect_instance(engine, row.text, row.prompt_uid, b, cfg["k0"])
+            out = collect_instance(engine, row.text, row.prompt_uid, b, cfg["k0"],
+                                   store_latents=bool(cfg.get("store_train_latents")) and row.split in LATENT_SPLITS)
             write_shard(bank_dir, row.prompt_uid, b, out, eph, cfg_hash, emb)
             done.append(shard.name)
             timings.append(out["seconds"])
@@ -186,10 +203,18 @@ def run_collection(engine: DenoiseEngine, bundle, prompts: pd.DataFrame, bank_di
 
 def finalize_bank(bank_dir: Path, prompts: pd.DataFrame, eph: str, eph_body: dict, cfg: dict, machine_id: str,
                   commit: str, banks_per_prompt: int) -> dict:
-    seeds, pv, dl, emb = [], [], [], []
+    seeds, pv, dl, emb, lat = [], [], [], [], {}
     for row in prompts.itertuples(index=False):
         for b in range(banks_per_prompt):
             sd = bank_dir / "shards" / _key_name(row.prompt_uid, b)
+            if (sd / "x0.npy").exists():
+                if row.split not in LATENT_SPLITS:
+                    raise CompatibilityError(f"{sd.name}: x0 latents present for split {row.split}")
+                dst = bank_dir / "latents" / f"x0_{row.prompt_uid}_{b}.npy"
+                dst.parent.mkdir(exist_ok=True)
+                if not dst.exists():
+                    shutil.copyfile(sd / "x0.npy", dst)
+                lat[f"latents/{dst.name}"] = file_sha256(dst)
             seeds.append(pd.read_parquet(sd / "seeds.parquet"))
             pv.append(pd.read_parquet(sd / "previews.parquet"))
             dl.append(pd.read_parquet(sd / "delivered.parquet"))
@@ -200,8 +225,10 @@ def finalize_bank(bank_dir: Path, prompts: pd.DataFrame, eph: str, eph_body: dic
     t_ck = [int(t) for t in pd.concat(pv).drop_duplicates("j").sort_values("j")["t_in"]]
     write_bank(bank_dir, prompts=ptab, prompt_emb=np.stack(emb), seeds=pd.concat(seeds), previews=pd.concat(pv),
                delivered=pd.concat(dl), eph=eph, eph_body=eph_body,
-               collection={"collector": COLLECTOR_VERSION, "mode": "full-8-seed-no-prune", "latents_stored": False,
-                           "banks_per_prompt": banks_per_prompt},
+               collection={"collector": COLLECTOR_VERSION, "mode": "full-8-seed-no-prune", "latents_stored": bool(lat),
+                           "latent_policy": {"splits": list(LATENT_SPLITS), "dtype": "float16",
+                                             "layout": "[seed_idx, j-1, C, H, W]"} if lat else None,
+                           "latent_checksums": lat, "banks_per_prompt": banks_per_prompt},
                machine_id=machine_id, commit=commit,
                extra_manifest={"synthetic": False, "backend": eph_body.get("backend"), "timesteps_at_checkpoints": t_ck,
                                "label": "FAKE BACKEND - test fixture" if eph_body.get("backend") == "fake" else None})
@@ -254,6 +281,7 @@ def main(argv=None) -> int:
     ap.add_argument("--banks-per-prompt", type=int, default=None)
     ap.add_argument("--machine-id", default="unknown")
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--expect-eph-file", default=None, help="frozen EPH (PREREG-A); refuse to collect under another EPH")
     a = ap.parse_args(argv)
     prompts = _prompts_from_args(a)
     if a.dry_run:
@@ -261,6 +289,10 @@ def main(argv=None) -> int:
         return 0
     cfg, bundle, scorer, scoring, rt = build_backend(a)
     eph, body = compute_eph(cfg, bundle, scorer, rt)
+    if a.expect_eph_file:
+        want = json.loads(Path(a.expect_eph_file).read_text(encoding="utf-8"))["eph"]
+        if want != eph:
+            raise CompatibilityError(f"EPH {eph[:12]} differs from the frozen EPH {want[:12]} ({a.expect_eph_file})")
     engine = DenoiseEngine(bundle, scoring, cfg, hook_mode="collect")
     if a.test_equivalence:
         from apsp.gpu.reference_psp import equivalence_report

@@ -74,9 +74,13 @@ def test_validity_before_pil(fake):
     assert sb.records[1].score is None and sb.images[1] is None
     orig = bundle.decode
 
-    def bad_decode(z, preview):
+    calls = []
+
+    def bad_decode(z, preview):           # poisons the first latent row only, whatever vae_decode_chunk is
         img = orig(z, preview)
-        img[0, 0, 0, 0] = float("inf")       # image invalid although latent finite
+        if not calls:
+            img[0, 0, 0, 0] = float("inf")   # image invalid although latent finite
+        calls.append(z.shape[0])
         return img
     bundle.decode = bad_decode
     sb = scoring.score_delivered("p", torch.randn(2, 4, 8, 8))
@@ -190,3 +194,37 @@ def test_online_cli_fake_smoke(tmp_path, capsys):
     assert rc == 0
     out = json.loads(capsys.readouterr().out)
     assert all(r["feasible"] and r["ledger_spend_us"] <= r["cap_us"] for r in out["records"])
+
+
+def test_collector_stores_x0_latents_for_train_splits_only(fake, tmp_path):
+    cfg, bundle, scorer, scoring, eph, body = fake
+    assert cfg["store_train_latents"] is True and cfg["preview_dtype"] == "fp16" and cfg["vae_decode_chunk"] == 1
+    pr = _prompts(3)
+    pr["split"] = ["train_fit", "train_dev", "calibration"]
+    eng = DenoiseEngine(bundle, scoring, cfg, hook_mode="collect")
+    bank_dir = tmp_path / "LAT"
+    summ = run_collection(eng, bundle, pr, bank_dir, eph=eph, eph_body=body, cfg=cfg, banks_per_prompt=2,
+                          resume=False, machine_id="t", commit="t")
+    assert summ["bank"]["valid"], summ["bank"]["errors"]
+    files = sorted(p.name for p in (bank_dir / "latents").iterdir())
+    assert files == ["x0_u000_0.npy", "x0_u000_1.npy", "x0_u001_0.npy", "x0_u001_1.npy"]   # no calibration latents
+    x = np.load(bank_dir / "latents" / "x0_u000_1.npy")
+    J = cfg["steps"] // cfg["delta"]
+    assert x.dtype == np.float16 and x.shape[:2] == (cfg["k0"], J)
+    coll = json.loads((bank_dir / "manifest.json").read_text())["bmh_body"]["collection"]
+    assert coll["latents_stored"] and set(coll["latent_checksums"]) == {f"latents/{f}" for f in files}
+
+
+def test_freeze_eph(tmp_path):
+    import subprocess
+    import sys
+    src, out = tmp_path / "model.json", tmp_path / "frozen.json"
+    run = lambda: subprocess.run([sys.executable, "scripts/freeze_eph.py", "--from", str(src), "--out", str(out)],
+                                 capture_output=True, text=True).returncode
+    src.write_text(json.dumps({"eph": "a" * 64, "backend": "fake"}))
+    assert run() == 3 and not out.exists()                     # fake backend never frozen
+    src.write_text(json.dumps({"eph": "a" * 64, "backend": "diffusers", "eph_body": {"x": 1}}))
+    assert run() == 0 and json.loads(out.read_text())["eph"] == "a" * 64
+    assert run() == 0
+    src.write_text(json.dumps({"eph": "b" * 64, "backend": "diffusers"}))
+    assert run() == 4 and json.loads(out.read_text())["eph"] == "a" * 64

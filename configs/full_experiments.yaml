@@ -37,6 +37,12 @@ env:
   COSTS: ${APSP_STORE}/runs/calib1/p0/m2/generator_costs.json
   TUNED: ${APSP_STORE}/tuned
   FROZEN: ${APSP_STORE}/frozen_operating_point.json
+  # PREREG-A (2026-10-17): preview_dtype fp16 + vae_decode_chunk 1 written to pilot.yaml. Only the parts bound to that
+  # configuration are re-measured under the new EPH in calibA (M2 table, equivalence, M2b, forecast, EPH freeze);
+  # calib1 stays as measured (P1 jobs above are not re-run).
+  CAL_A: ${APSP_STORE}/runs/calibA
+  COSTS_A: ${APSP_STORE}/runs/calibA/p0/m2/generator_costs.json
+  FROZEN_EPH: ${APSP_STORE}/frozen_eph.json
 
 # est_hours: GPU wall hours used by the budget preflight. Values marked (3090) are the RTX 3090 estimates of
 # docs/PILOT_RUN_PLAN.md, deliberately conservative for the 4090 until `p1_forecast` replaces them with measured ones.
@@ -80,28 +86,44 @@ jobs:
   - {id: p1_calibration_report, phase: P1, gpu: false, needs: [p1_report_calib],
      cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.calibration_report --cal ${CAL} --out ${CAL}/report",
      outputs: ["${CAL}/report/calibration_report.md", "${CAL}/report/calibration_quality_cost.csv"]}
+  # ---------------------------------------------------------------- P1a: re-measure what fp16/chunk 1 changes ----
+  # EPH hashes preview_dtype, vae_decode_chunk and the generation code; GCH hashes the EPH; ver/fin include the VAE
+  # decode whose chunk changed (null = batch -> 1). M3 (fp16 was already the effective preview dtype), pool check,
+  # chunk, M9 and the calibration bench are not affected by the binding and are not re-run.
+  - {id: p1a_eph, phase: P1, gpu: true, needs: [p1_env], est_hours: 0.05, timeout_min: 20,
+     cmd: "HF_HOME=${APSP_STORE}/hf ${APSP_STORE}/venv-gpu/bin/python -m apsp.gpu.profile --stage model --out-dir ${CAL_A}/p0 && ${APSP_STORE}/venv-gpu/bin/python scripts/freeze_eph.py --from ${CAL_A}/p0/model.json --out ${FROZEN_EPH}",
+     outputs: ["${CAL_A}/p0/model.json", "${FROZEN_EPH}"]}
+  - {id: p1a_m2, phase: P1, gpu: true, needs: [p1a_eph], est_hours: 0.5, timeout_min: 120,
+     cmd: "RUN_ID=calibA M2_KS='1 2 3 4 8 12 16' bash scripts/gpu_smoke.sh 35_m2 36_m2_merge", outputs: ["${COSTS_A}"]}
+  - {id: p1a_equivalence, phase: P1, gpu: true, needs: [p1a_eph], est_hours: 0.1, timeout_min: 40,
+     cmd: "RUN_ID=calibA bash scripts/gpu_smoke.sh 33_calib_equivalence", outputs: ["${CAL_A}/calib/equivalence.json"]}
+  - {id: p1a_m2b, phase: P1, gpu: true, needs: [p1a_m2], gates: [pool_check_calibration], est_hours: 0.1, timeout_min: 40,
+     cmd: "RUN_ID=calibA bash scripts/gpu_smoke.sh 37_m2b", outputs: ["${CAL_A}/calib/m2b.json"]}
+  - {id: p1a_forecast, phase: P1, gpu: false, needs: [p1a_m2b],
+     cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.forecast --m3m9 ${CAL}/calib/m3m9.json --costs ${COSTS_A} --m2b ${CAL_A}/calib/m2b.json --price ${PRICE_USD_H} --out ${CAL_A}/forecast",
+     outputs: ["${CAL_A}/forecast/phase_forecast.json"]}
   # ---------------------------------------------------------------- P2 bank (PREREG-A) -------------------------
-  - {id: p2_bank, phase: P2, gpu: true, needs: [p1_forecast, p1_equivalence], prereg: [A], est_hours: 10.9, timeout_min: 900,
-     notes: "(3090) 240 prompts x 2 banks x 81.9 s; replaced by the forecast",
-     cmd: "RUN_ID=pilot1 COSTS=${COSTS} bash scripts/gpu_smoke.sh 40_bank", outputs: ["${APSP_STORE}/banks/PILOT/manifest.json"]}
+  - {id: p2_bank, phase: P2, gpu: true, needs: [p1a_forecast, p1a_equivalence], prereg: [A], est_hours: 2.2, timeout_min: 900,
+     notes: "train_fit 190 + train_dev 50 prompts x 2 banks; forecast 2.15 h on 56272061; x0 latents stored (A16)",
+     cmd: "RUN_ID=pilot1 COSTS=${COSTS_A} EXPECT_EPH=${FROZEN_EPH} bash scripts/gpu_smoke.sh 40_bank", outputs: ["${APSP_STORE}/banks/PILOT/manifest.json"]}
   # ---------------------------------------------------------------- P3 baselines on train/dev (PREREG-A) -------
   - {id: p3_tune, phase: P3, gpu: false, needs: [p2_bank], prereg: [A],
-     cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.sim.tune_baselines --bank ${APSP_STORE}/banks/PILOT --costs ${COSTS} --out ${TUNED}",
+     cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.sim.tune_baselines --bank ${APSP_STORE}/banks/PILOT --costs ${COSTS_A} --out ${TUNED}",
      outputs: ["${TUNED}/methods_frozen.json"]}
-  - {id: p3_bench_dev, phase: P3, gpu: true, needs: [p3_tune], prereg: [A], est_hours: 10.3, timeout_min: 900,
-     cmd: "RUN_ID=pilot1 COSTS=${COSTS} bash scripts/gpu_smoke.sh 42_bench_dev", outputs: ["${APSP_STORE}/runs/pilot1/bench_dev/episodes.jsonl"]}
+  - {id: p3_bench_dev, phase: P3, gpu: true, needs: [p3_tune], prereg: [A], est_hours: 3.3, timeout_min: 900,
+     cmd: "RUN_ID=pilot1 COSTS=${COSTS_A} bash scripts/gpu_smoke.sh 42_bench_dev", outputs: ["${APSP_STORE}/runs/pilot1/bench_dev/episodes.jsonl"]}
   - {id: p3_report_dev, phase: P3, gpu: false, needs: [p3_bench_dev], prereg: [A],
      notes: "descriptive table (not_concludable until evaluation.yaml is approved); no freeze here",
      cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.quality_cost --run ${APSP_STORE}/runs/pilot1/bench_dev --out ${APSP_STORE}/runs/pilot1/bench_dev/report",
      outputs: ["${APSP_STORE}/runs/pilot1/bench_dev/report/quality_cost.json"]}
   - {id: p3_anchor_proposal, phase: P3, gpu: false, needs: [p2_bank], prereg: [A],
      notes: "PREREG-B proposal inputs from train_fit only (anchor, tau_prac, epsilon, r_fail, sigma_R, power)",
-     cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.anchor --bank ${APSP_STORE}/banks/PILOT --costs ${COSTS} --proposal-only --out ${APSP_STORE}/runs/pilot1/anchor",
+     cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.anchor --bank ${APSP_STORE}/banks/PILOT --costs ${COSTS_A} --proposal-only --out ${APSP_STORE}/runs/pilot1/anchor",
      outputs: ["${APSP_STORE}/runs/pilot1/anchor"]}
   - {id: p3_freeze_dev, phase: P3, gpu: false, needs: [p3_report_dev], prereg: [A], gates: [evaluation_approved],
      cmd: "RUN_ID=pilot1 bash scripts/gpu_smoke.sh 43_report_dev", outputs: ["${FROZEN}"]}
   - {id: p3_headroom, phase: P3, gpu: false, needs: [p2_bank], prereg: [B],
-     cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.headroom --bank ${APSP_STORE}/banks/PILOT --costs ${COSTS} > ${APSP_STORE}/runs/pilot1/headroom.json",
+     cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.headroom --bank ${APSP_STORE}/banks/PILOT --costs ${COSTS_A} > ${APSP_STORE}/runs/pilot1/headroom.json",
      outputs: ["${APSP_STORE}/runs/pilot1/headroom.json"]}
   # ---------------------------------------------------------------- P4 controller (PREREG-B + G2) --------------
   - {id: p4_rl_train, phase: P4, gpu: false, needs: [p3_tune], prereg: [B], gates: ["marker:G2_EVALUATED"],
@@ -109,8 +131,8 @@ jobs:
      outputs: ["${APSP_STORE}/rl/seed0", "${APSP_STORE}/rl/seed1", "${APSP_STORE}/rl/seed2"]}
   # ---------------------------------------------------------------- P5 confirmation on val (PREREG-B) ----------
   - {id: p5_bench_val, phase: P5, gpu: true, needs: [p3_freeze_dev], prereg: [B], gates: [evaluation_approved],
-     est_hours: 6.7, timeout_min: 900,
-     cmd: "RUN_ID=pilot1 COSTS=${COSTS} FROZEN=${FROZEN} bash scripts/gpu_smoke.sh 44_bench_val 45_report_val",
+     est_hours: 2.8, timeout_min: 900,
+     cmd: "RUN_ID=pilot1 COSTS=${COSTS_A} FROZEN=${FROZEN} bash scripts/gpu_smoke.sh 44_bench_val 45_report_val",
      outputs: ["${APSP_STORE}/runs/pilot1/bench_val/report/quality_cost.json"]}
   # ---------------------------------------------------------------- P6 test, P7 ablations, P8 extension ---------
   - {id: p6_geneval, phase: P6, gpu: true, needs: [p5_bench_val], prereg: [C], gates: [never], est_hours: null,

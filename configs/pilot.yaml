@@ -23,9 +23,10 @@ scoring_path: ir_pil_v1
 verifier: ImageReward-v1.0
 reward_revision: 5736be03b2652728fb87788c9797b0570450ab72   # THUDM/ImageReward HF commit (resolved 2026-10-14)
 reward_tokenizer_revision: 86b5e0934494bd15c9632b12f734a8a67f723594   # google-bert/bert-base-uncased, used by BLIP init
-preview_dtype: null              # proposed after M3, research freezes (fp16 | fp32)
+preview_dtype: fp16              # PREREG-A A9 (research, 2026-10-17): M3 on 56272061, 0 failures
 deliver_dtype: fp16
-vae_decode_chunk: null           # selected in P0 from measured throughput/memory (candidates 1,2,4,8,16)
+vae_decode_chunk: 1              # PREREG-A A10 (research, 2026-10-17): fastest + smallest memory on 56272061
+store_train_latents: true        # PREREG-A A16: x0 float16 latents for train_fit/train_dev only (Guide bank schema)
 calibration_prompt_count: 50
 throughput_subset_count: 20
 max_val_total: 300

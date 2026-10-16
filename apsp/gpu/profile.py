@@ -314,6 +314,8 @@ def main(argv=None) -> int:
           "batch-parity": lambda: stage_batch_parity(cfg, bundle, scoring, a)}[a.stage]
     t0 = time.perf_counter()
     rep = fn()
+    if a.stage == "model":
+        rep["eph_body"] = body
     rep.update({"stage": a.stage, "eph": eph, "backend": body["backend"], "smoke": bool(a.smoke),
                 "seconds": time.perf_counter() - t0})
     out = Path(a.out_dir)
