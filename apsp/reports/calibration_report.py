@@ -19,6 +19,7 @@ from pathlib import Path
 SECTIONS = [
     ("Runtime fingerprint", "p0/runtime_fingerprint.json"),
     ("VRAM check (PyTorch)", "p0/vram_check.json"),
+    ("VRAM check (independent CUDA memtest)", "p0/cuda_memtest.json"),
     ("Environment check", "p0/env_*.json"),
     ("Model / reward pins (M1)", "p0/M1_model.json"),
     ("Full-pool near-duplicate check", "calib/pool_full_check.json"),

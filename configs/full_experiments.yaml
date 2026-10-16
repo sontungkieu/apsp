@@ -43,8 +43,9 @@ env:
 jobs:
   # ---------------------------------------------------------------- P1 calibration (no PREREG; engineering) ----
   - {id: p1_env, phase: P1, gpu: true, est_hours: 0.15, timeout_min: 60,
-     cmd: "RUN_ID=calib1 bash scripts/gpu_smoke.sh 00_setup 01_pytest 02_env_check 02b_fingerprint 03_model && ${APSP_STORE}/venv-gpu/bin/python scripts/vram_check.py --out ${CAL}/p0/vram_check.json",
-     outputs: ["${CAL}/p0/runtime_fingerprint.json", "${CAL}/p0/vram_check.json", "${CAL}/p0/M1_model.json"]}
+     cmd: "RUN_ID=calib1 bash scripts/gpu_smoke.sh 00_setup 01_pytest 02_env_check 02b_fingerprint 03_model && ${APSP_STORE}/venv-gpu/bin/python scripts/vram_check.py --out ${CAL}/p0/vram_check.json && /usr/local/cuda/bin/nvcc -O2 -arch=sm_89 -o ${CAL}/p0/cuda_memtest scripts/cuda_memtest.cu && ${CAL}/p0/cuda_memtest 2 600 > ${CAL}/p0/cuda_memtest.json",
+     notes: "VRAM must pass both the torch pattern check and the independent CUDA memtest (docs/VRAM_FAULT_56267276.md)",
+     outputs: ["${CAL}/p0/runtime_fingerprint.json", "${CAL}/p0/vram_check.json", "${CAL}/p0/cuda_memtest.json", "${CAL}/p0/M1_model.json"]}
   - {id: p1_pool_check, phase: P1, gpu: true, needs: [p1_env], est_hours: 0.25, timeout_min: 40,
      cmd: "RUN_ID=calib1 bash scripts/gpu_smoke.sh 30_pool_full_check", outputs: ["${CAL}/calib/pool_full_check.json"]}
   - {id: p1_m3m9, phase: P1, gpu: true, needs: [p1_pool_check], gates: [pool_check_calibration], est_hours: 2.2, timeout_min: 180,
