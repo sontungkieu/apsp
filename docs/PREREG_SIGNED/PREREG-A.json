@@ -1,0 +1,14 @@
+{
+ "prereg": "A",
+ "role": "research",
+ "signed_by": "project owner (git user Mmmjnh); approval given in chat and recorded by the agent, not a signature of anyone else",
+ "approval_kind": "owner_approval",
+ "authorization_record": "docs/PREREG_SIGNED/AUTHORIZATION_20261017.md",
+ "authorization_sha256": "7ff8ac8b6ad1044d2a433d472a0e0ba7a3557e1063b1e9440baf2f82323e9cc6",
+ "proposal_path": "docs/PREREG_PROPOSALS/PREREG_A_LOCKED.md",
+ "proposal_sha256": "25ef58a6e9584c7d0f5441b6871315d94dc86e7f86042233547a326ac9586cf6",
+ "frozen_eph": "097d7a3c01af4c504b3811bece3404ba42cdd5e16d4a12ff0668b91290b13fc7",
+ "gch": "bffb378d71080a2c",
+ "recorded_at": "2026-10-16T22:42:20Z",
+ "recorded_by": "Claude Code agent (claude-opus-5-5), session c8081ba0-a4d8-4c0d-baa8-d73f41b08105"
+}
