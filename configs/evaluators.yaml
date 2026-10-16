@@ -1,14 +1,26 @@
 # Evaluation-only metrics independent of ImageReward (Guide CC-8). Not used for decisions or inference cost.
 # An evaluator runs only when fully pinned. HPS on val is a diagnostic (Spec §10.1), never used to select a policy.
 hpsv2:
-  package_version: null        # e.g. the hpsv2 release installed in the GPU env; pin before use
+  # Every artifact the hpsv2 1.2.0 code path really loads (audit 2026-10-16, wheel sha256 below, code read, not run):
+  #   img_score.initialize_model -> open_clip create_model_and_transforms('ViT-H-14', 'laion2B-s32B-b79K', amp)
+  #   = hub download of laion/CLIP-ViT-H-14-laion2B-s32B-b79K/open_clip_pytorch_model.bin at the CURRENT revision,
+  #   then torch.load(HPS checkpoint)['state_dict'] over it; tokenizer = package-local bpe_simple_vocab_16e6.txt.gz.
+  #   hpsv2.score() without cp downloads the latest checkpoint and defaults to v2.0 -> the adapter never calls it.
+  package_version: "1.2.0"
+  package_wheel_sha256: 3ee638b06847bef24e1de43d0b5e3890a4a850034b4bf618e4bb3e78e2d806a1
   hps_version: v2.1
-  checkpoint_repo: xswu/HPSv2  # HPS_v2.1_compressed.pt
-  checkpoint_revision: null    # resolve and pin the HF commit before use
-  checkpoint_sha256: null
-  # candidates resolved 2026-10-15 (read-only, NOT yet installed or verified): hpsv2 1.2.0 (PyPI);
-  #   xswu/HPSv2 @ 697403c78157020a1ae59d23f111aa58ced35b0a, HPS_v2.1_compressed.pt 1,972,490,005 B,
-  #   sha256 c57a38fb4a2f7e7c15bf00da2ea377cdf165448b4dd1052a484c215a998c9837.
-  #   hpsv2 1.2.0 pins protobuf<4 and pytest==7.2.0 -> install in a separate venv, not the GPU env.
+  checkpoint_repo: xswu/HPSv2
+  checkpoint_file: HPS_v2.1_compressed.pt
+  checkpoint_revision: 697403c78157020a1ae59d23f111aa58ced35b0a
+  checkpoint_sha256: c57a38fb4a2f7e7c15bf00da2ea377cdf165448b4dd1052a484c215a998c9837   # 1,972,490,005 B
+  base_repo: laion/CLIP-ViT-H-14-laion2B-s32B-b79K
+  base_file: open_clip_pytorch_model.bin
+  base_revision: 1c2b8495b28150b8a4922ee1c8edee224c284c0c
+  base_sha256: 9a78ef8e8c73fd0df621682e7a8e8eb36c6916cb3c16b291a082ecd52ab79cc4          # 3,944,692,325 B
+  tokenizer_bpe_url: https://openaipublic.blob.core.windows.net/clip/bpe_simple_vocab_16e6.txt.gz
+  tokenizer_bpe_sha256: 924691ac288e54409236115652ad4aa250f48203de50a9e4722a6ecd48d6804a
+  preprocessing: "package preprocess_val (ViT-H-14 224 px, OpenAI mean/std), amp autocast, diag(img_f @ txt_f.T)"
+  environment: "separate venv: hpsv2==1.2.0 pins protobuf<4 and pytest==7.2.0 (conflicts with the generator env)"
+  verified_on_gpu: false        # resolved and hashed only; first real run must reproduce the package's own score
 geneval:
   status: "not before PREREG-C (official repo/weights pinned then; per-tag official aggregation)"

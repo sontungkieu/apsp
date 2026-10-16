@@ -1,9 +1,31 @@
 # Session plan calib1 (waiting for the session budget; nothing started)
 
-**Machine.** First choice: restart **56070930** (RTX 3090 24 GB, its 200 GB disk holds venv + pinned weights + diag1
-evidence). Last verified price $0.359/h (compute $0.267 + storage $0.093, bandwidth $0.026/GB, 2026-10-15). If it
-cannot start (host GPU taken), a new RTX 3090 instance at ≤ $0.40/h incl. storage, provided by the user.
-**The price is re-read from the API at login; the session stops if it exceeds $0.40/h.**
+**Machine (updated 2026-10-16).** Vast **56224386**: RTX 4090 48 GB (verified, docs/EXPERIMENT_STATUS.md), API price
+**$0.778/h**. The disk already holds the pinned venv from prep0 (00_setup ok). The earlier 3090 plan (56070930,
+≤ $0.40/h) is superseded. 3090 timings below are kept only as conservative upper bounds; the 4090 is measured here.
+**The price is re-read from the API at start (run_project); GPU jobs refuse to start above the approved ceiling.**
+
+**Proposed P1 package** (Q19): budget **$5.00**, price ceiling **$0.80/h**, watchdog deadline **start + 330 min**.
+Jobs (configs/full_experiments.yaml, 3090-based upper bounds): p1_env 0.15 h, p1_pool_check 0.25 h, p1_m3m9 2.2 h,
+p1_chunk 0.35 h, p1_m2 (k = 1,2,3,4,8,12,16) 0.7 h, p1_equivalence 0.35 h, p1_m2b 0.25 h = 4.25 h, plus the watchdog
+live check and restart ≈ 0.25 h → 4.5 h × $0.778 = $3.50 central, $4.38 with ×1.25.
+
+Commands on the instance (after the live check of §A and the restart):
+
+```bash
+cd /workspace/DMRL && git fetch /workspace/xfer/dmrl_<sha>.bundle && git checkout <sha>
+export APSP_STORE=/workspace/apsp
+START=$(date +%s); DEADLINE=$(( START + 330*60 ))
+bash scripts/arm_watchdog.sh "$CONTAINER_ID" "$DEADLINE" "$APSP_STORE/watchdog"   --finished-marker "$APSP_STORE/calib1.finished" --idle-grace-s 900   --save-cmd "pkill -TERM -f '[s]cripts/gpu_smoke.sh'; pkill -TERM -f '[a]psp.run_project'"   --save-cmd "tar --exclude='*.lock' -czf $APSP_STORE/calib1_artifacts.tgz -C $APSP_STORE/runs calib1"
+# after approval: approved_total_usd / approved_max_usd_per_h filled in configs/full_experiments.yaml by the user
+$APSP_STORE/venv-gpu/bin/python -m apsp.run_project --plan configs/full_experiments.yaml --resume --only   p1_env p1_pool_check p1_m3m9 p1_chunk p1_m2 p1_equivalence p1_m2b p1_forecast
+touch "$APSP_STORE/calib1.finished"
+```
+
+(`p1_m3m9` and `p1_m2b` also need the research marker `reports/prompt_pool/POOL_FROZEN.json` = Q15/Q16 approval;
+without it the orchestrator runs the other P1 jobs and reports those two as blocked.)
+
+### Previous 3090 plan (kept for the record)
 
 ## Order on the instance
 

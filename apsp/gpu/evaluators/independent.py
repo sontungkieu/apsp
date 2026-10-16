@@ -6,8 +6,8 @@ to inference cost. Guards: the split of every episode passes `require_split_acce
 (images or scoring) is refused before PREREG-C and is not implemented here.
 
 Evaluators:
-  hpsv2   Human Preference Score v2 via the `hpsv2` package. The package version and checkpoint revision must be pinned
-          in configs/evaluators.yaml; an unpinned evaluator refuses to run.
+  hpsv2   Human Preference Score v2.1 via the `hpsv2` package code with every artifact pinned in
+          configs/evaluators.yaml (package, HPS checkpoint, OpenCLIP base weights, tokenizer BPE); unpinned -> refused.
   fake    deterministic image statistic, TEST ONLY (labelled; never a result)
 
   python -m apsp.gpu.evaluators.independent --run DIR --metric hpsv2 --config configs/evaluators.yaml
@@ -38,13 +38,36 @@ class FakeEvaluator:
         return [float(np.asarray(im.convert("L"), np.float64).mean() / 255.0) for im in images]
 
 
+HPS_REQUIRED = ("package_version", "checkpoint_repo", "checkpoint_file", "checkpoint_revision", "checkpoint_sha256",
+                "base_repo", "base_file", "base_revision", "base_sha256", "tokenizer_bpe_sha256")
+
+
+def _sha256_file(p: str | Path) -> str:
+    h = hashlib.sha256()
+    with open(p, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
 class HPSv2Evaluator:
+    """HPS v2.1 with EVERY loaded artifact pinned (audit of hpsv2 1.2.0, 2026-10-16):
+      - `hpsv2.score()` must NOT be used: without `cp` it downloads the latest HPS checkpoint from the hub, it builds
+        the model with the OpenCLIP tag 'laion2B-s32B-b79K' (an unpinned ~3.9 GB download of
+        laion/CLIP-ViT-H-14-laion2B-s32B-b79K/open_clip_pytorch_model.bin at the hub's current revision), its default
+        hps_version is "v2.0", and it reloads the checkpoint on every call.
+      - Here: the base OpenCLIP weights and the HPS checkpoint are fetched at pinned revisions and verified by sha256;
+        the model is built from the LOCAL base file (same create_model_and_transforms arguments as the package), then
+        the HPS state_dict is loaded once; the BPE vocabulary file of the package tokenizer is verified by sha256.
+      - Scoring math is the package's: amp autocast, model(image, text) -> image_features @ text_features.T, diagonal.
+    Runs in a separate venv (hpsv2 1.2.0 pins protobuf<4 and pytest==7.2.0)."""
     name = "hpsv2"
 
-    def __init__(self, spec: dict):
-        if not spec.get("package_version") or not spec.get("checkpoint_revision") or not spec.get("checkpoint_sha256"):
-            raise EvaluatorError("hpsv2 is not pinned (package_version, checkpoint_revision, checkpoint_sha256 in "
-                                 "configs/evaluators.yaml); refusing to run an unpinned evaluator")
+    def __init__(self, spec: dict, device: str | None = None):
+        missing = [k for k in HPS_REQUIRED if not spec.get(k)]
+        if missing:
+            raise EvaluatorError(f"hpsv2 is not pinned ({', '.join(missing)} null in configs/evaluators.yaml); "
+                                 "refusing to run an unpinned evaluator")
         try:
             import hpsv2  # noqa: F401
             from importlib.metadata import version
@@ -53,15 +76,46 @@ class HPSv2Evaluator:
         got = version("hpsv2")
         if got != spec["package_version"]:
             raise EvaluatorError(f"hpsv2 {got} installed, {spec['package_version']} pinned")
-        self.spec = spec
-        self.hps_version = spec.get("hps_version", "v2.1")
+        if spec.get("hps_version", "v2.1") != "v2.1":
+            raise EvaluatorError("only HPS v2.1 is declared for this project")
+        import torch
+        from huggingface_hub import hf_hub_download
+        from hpsv2.src.open_clip import create_model_and_transforms, get_tokenizer
+        from hpsv2.src.open_clip.tokenizer import default_bpe
+        self.spec, self.hps_version = spec, "v2.1"
+        self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
+        base = hf_hub_download(spec["base_repo"], spec["base_file"], revision=spec["base_revision"])
+        ckpt = hf_hub_download(spec["checkpoint_repo"], spec["checkpoint_file"], revision=spec["checkpoint_revision"])
+        for path, want, what in ((base, spec["base_sha256"], "base OpenCLIP weights"),
+                                 (ckpt, spec["checkpoint_sha256"], "HPS checkpoint"),
+                                 (default_bpe(), spec["tokenizer_bpe_sha256"], "tokenizer BPE vocabulary")):
+            got_sha = _sha256_file(path)
+            if got_sha != want:
+                raise EvaluatorError(f"{what} sha256 {got_sha} != pinned {want}")
+        model, _, preprocess_val = create_model_and_transforms(
+            "ViT-H-14", base, precision="amp", device=self.device, jit=False, force_quick_gelu=False,
+            force_custom_text=False, force_patch_dropout=False, force_image_size=None, pretrained_image=False,
+            image_mean=None, image_std=None, light_augmentation=True, aug_cfg={}, output_dict=True,
+            with_score_predictor=False, with_region_predictor=False)
+        sd = torch.load(ckpt, map_location=self.device)
+        model.load_state_dict(sd["state_dict"])
+        self.model, self.preprocess, self.tokenizer = model.to(self.device).eval(), preprocess_val, get_tokenizer("ViT-H-14")
         self.manifest = {"name": "hpsv2", "package_version": got, "hps_version": self.hps_version,
-                         "checkpoint_revision": spec["checkpoint_revision"], "checkpoint_sha256": spec["checkpoint_sha256"]}
+                         **{k: spec[k] for k in HPS_REQUIRED if k != "package_version"}, "precision": "amp",
+                         "device": self.device, "note": "evaluation-only; never used for selection or inference cost"}
 
     def score(self, prompt: str, images: Sequence) -> list[float]:
-        import hpsv2
-        out = hpsv2.score(list(images), prompt, hps_version=self.hps_version)
-        return [float(v) for v in np.asarray(out, np.float64).ravel()]
+        import torch
+        out = []
+        text = self.tokenizer([prompt]).to(device=self.device)
+        for im in images:
+            with torch.no_grad():
+                x = self.preprocess(im).unsqueeze(0).to(device=self.device)
+                with torch.cuda.amp.autocast(enabled=self.device.startswith("cuda")):
+                    o = self.model(x, text)
+                    v = torch.diagonal(o["image_features"] @ o["text_features"].T).float().cpu().numpy()
+            out.append(float(v[0]))
+        return out
 
 
 def make_evaluator(metric: str, cfg: dict):
