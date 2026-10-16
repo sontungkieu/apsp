@@ -236,7 +236,7 @@ class Watchdog:
                     api_result=None, stop_attempts=[], confirmed_stopped=False, observed_status=[],
                     note="confirmed_stopped is only set when a status read returns a stopped state; from inside the "
                          "instance that is usually impossible, so confirm externally")
-        self._event("armed", deadline_epoch=self.deadline)
+        self._event("armed", deadline_epoch=None if no_deadline else self.deadline)
 
     # -- main loop --------------------------------------------------------------------------------------------
     def trigger_due(self) -> Optional[str]:

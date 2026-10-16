@@ -22,10 +22,12 @@ fi
 if [[ "${MODE:-no_deadline}" == "no_deadline" ]]; then
   # the mode P1 uses (D47): a dummy workload in its own session runs 90 s, then writes the finished marker; the
   # watchdog ends it by process group if needed, waits the 60 s idle grace and stops -> stop request at about +2.5 min
+  mkdir -p "$STATE"
   rm -f "$STATE/workload.finished" "$STATE/workload.pid"
   setsid nohup bash -c "echo \$\$ > '$STATE/workload.pid'; sleep 90; date -u +%FT%TZ > '$STATE/workload.finished'; sleep 600" \
     > /dev/null 2>&1 < /dev/null &
   for _ in $(seq 1 20); do [[ -s "$STATE/workload.pid" ]] && break; sleep 0.5; done
+  [[ -s "$STATE/workload.pid" ]] || { echo "dummy workload did not start; not arming" >&2; exit 5; }
   echo "== 2. arming (no-financial-deadline mode): instance $CONTAINER_ID, dummy workload pid $(cat "$STATE/workload.pid")"
   bash scripts/arm_watchdog.sh "$CONTAINER_ID" none "$STATE" --poll-s 5 --retry-s 15 --idle-grace-s 60 \
     --finished-marker "$STATE/workload.finished" --workload-pidfile "$STATE/workload.pid" --stall-s 900 \
