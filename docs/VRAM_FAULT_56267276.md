@@ -18,6 +18,12 @@ Examples (expected → actual):
 - C, pass 0: offset 5,002,081,536: expect `37b2141e`, GPU `37b3141b`, host re-read `37b3141b` (xor `00010005`).
   Pass 1, offset 5,015,432,484: GPU read `487f8874`, host re-read `487f8875` (two reads of the same word differ).
 
+| D. **Third-party** `cuda_memtest` (ComputationalRadiationPhysics, commit `e94e1ee5…`, v1.2.3, 16:37:52Z) | Test1 own-address, Test2 moving inversions ones/zeros, Test4 moving inversions random; 1 pass | tool's own | **Test1: 564,833 errors in 35 blocks of 1 MiB, first block 4736 (≈ 4.6 GiB, same region as C)**; second read equals the wrong value (e.g. expected `0x7f59a0cfdfe8`, read `0x107f19a08bdfb9`, diff `0x10004000440051`); Test2/Test4 (uniform patterns): 0 errors. Log sha256 `88723b13…` |
+| E. `scripts/vram_gate.sh` self-test (D + C combined, 16:4xZ) | as D and C | — | FAIL (third-party: 455 blocks with errors in that run) |
+
+The fault is data-dependent: patterns that vary from word to word (own address, xorshift, neighbouring blocks with
+different fill values) fail; uniform all-ones/all-zeros/single random word moving inversions pass.
+
 ## 2. Review of the original script (`vram_check.py`)
 
 - Aliasing / reuse: each block is its own allocation held in a list until the end; the caching allocator cannot
@@ -31,8 +37,9 @@ Examples (expected → actual):
 
 ## 3. Suspected cause and confidence
 
-- **Measured (high confidence):** this GPU returns wrong data from a region of its VRAM, reproducibly (6/6 torch
-  repetitions, 4/4 independent CUDA passes), confirmed by host-side reads, with occasional unstable re-reads.
+- **Measured (high confidence):** this GPU returns wrong data from a region of its VRAM (≈ 4.6 GiB onward),
+  reproducibly: 6/6 torch repetitions, 4/4 passes of our CUDA test and the third-party cuda_memtest Test1, confirmed
+  by host-side reads, with occasional unstable re-reads.
 - **Suspected (moderate):** a faulty memory device / data lane: the flipped bits concentrate on fixed positions within
   each 32-bit word (xor masks drawn from bits 0, 2, 4, 6, 16, 18, 20, 22, e.g. `00550055`, `00400000`), and wrong
   values often equal a neighbouring block's fill value. Overheating/overclock cannot be excluded from inside the
@@ -42,5 +49,6 @@ Examples (expected → actual):
 ## 4. Consequence
 
 No calibration, bank or benchmark runs on this GPU: latents, images and scores could be silently wrong. Proposal:
-replace the instance (any RTX 4090 24 GB is enough for SD1.5); on the new machine `p1_env` runs `vram_check.py` and
-`cuda_memtest` before any measurement.
+per the user's rule (independent check also fails → 1× RTX 4090 24 GB on another host). On the new machine
+`scripts/launch_project.sh` runs `scripts/vram_gate.sh` (third-party + own CUDA test, torch-free) BEFORE any setup or
+model download, and `p1_env` repeats the torch check and the CUDA test.

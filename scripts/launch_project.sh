@@ -36,6 +36,14 @@ s = json.load(open(sys.argv[1]))
 assert s.get("monitor_only") is True and s.get("stop_path", "").startswith("disabled"), s
 print("watchdog:", {k: s.get(k) for k in ("instance_id", "monitor_only", "stop_path", "deadline_epoch", "pid")})
 PY
+# VRAM gate before any model download / environment setup (torch-free); refuses to continue on a failing GPU
+if [[ ! -f "${APSP_STORE}/vram_gate/PASSED" ]]; then
+  if OUT="${APSP_STORE}/vram_gate" bash scripts/vram_gate.sh > "${APSP_STORE}/vram_gate_${TS}.log" 2>&1; then
+    date -u +%FT%TZ > "${APSP_STORE}/vram_gate/PASSED"
+  else
+    echo "VRAM gate FAILED; see ${APSP_STORE}/vram_gate_${TS}.log. No setup, no model download, no workload." >&2; exit 4
+  fi
+fi
 # fresh disk: the pinned generator venv must exist before the orchestrator itself can run
 if [[ ! -x "${APSP_STORE}/venv-gpu/bin/python" ]]; then
   VENV="${APSP_STORE}/venv-gpu" HF_HOME="${APSP_STORE}/hf" bash env/setup_gpu_linux.sh > "${APSP_STORE}/setup_${TS}.log" 2>&1 \
