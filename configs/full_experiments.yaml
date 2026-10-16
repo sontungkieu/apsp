@@ -6,7 +6,7 @@
 # Spend is still recorded (budget.json) for reporting. Episode compute caps, DP masks, protocol and PREREG gates are
 # unchanged. Plan v1.3: the watchdog is monitor-only (no stop path) until the whole project is complete.
 project_run: apsp_full_sd15_v1
-instance_id: 56267276              # measurement machine (user, 2026-10-16, plan v1.3): RTX 4090 24 GB, ES
+instance_id: 56272061              # measurement machine (user, 2026-10-16): RTX 4090 24 GB, Oregon US; replaces 56267276 (VRAM fault)
 measurement_gpu: null              # from runtime_fingerprint.json of the calibration run (not from the UI)
 financial_cap_mode: none           # explicit; see header
 approved_total_usd: null           # not used in financial_cap_mode none
@@ -32,7 +32,7 @@ watchdog_state_dir: ${APSP_STORE}/watchdog
 env:
   APSP_STORE: ${APSP_STORE}
   POOL_DIR: ${APSP_STORE}/prompts
-  MACHINE_ID: vast_56267276_rtx4090_24g
+  MACHINE_ID: vast_56272061_rtx4090_24g
   CAL: ${APSP_STORE}/runs/calib1
   COSTS: ${APSP_STORE}/runs/calib1/p0/m2/generator_costs.json
   TUNED: ${APSP_STORE}/tuned

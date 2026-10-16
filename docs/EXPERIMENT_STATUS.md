@@ -6,24 +6,24 @@ logic only, never evidence; **not run**; **blocked** (by what).
 Financial mode: **explicit no-financial-cap** (user decision, D47). Spend is still recorded below and in
 `budget.json` of the project run.
 
-## Machine (measurement machine, D50)
+## Machine (measurement machine, D51)
 
 | Item | Value | Source |
 |---|---|---|
-| Instance | Vast **56267276** (Spain), label `NgocMinh_robotos_data`, image `vastai/base-image:cuda-12.8.1-auto` | `$CONTAINER_ID`, API read 2026-10-16 16:05Z |
-| GPU | NVIDIA GeForce RTX 4090 **24 GB** (24,564 MiB), UUID GPU-168b0ee8-2947-feac-8089-e16aa6bc4123 | nvidia-smi; PyTorch check in p1_env |
-| Driver | 615.71.09 | nvidia-smi |
-| CPU / RAM | 256 visible cores, **cgroup quota ≈ 30.7 CPUs** (cpu.max 3071999/100000); 1 TB host RAM visible | cgroup |
-| Disk | 200 GB container overlay, empty at first login | df |
-| Price (API) | dph_total **$0.626/h** (storage share $0.333/h) | API `instances/56267276` |
-| Stop policy | **no stop before the whole project is complete** (D50); watchdog monitor-only | user order, plan v1.3 |
+| Instance | Vast **56272061** (Oregon, US), host 24953, machine 7913, image `vastai/base-image:cuda-12.8.1-auto` | `$CONTAINER_ID`, API read 16:48Z |
+| GPU | NVIDIA GeForce RTX 4090 **24 GB** (24,564 MiB), UUID GPU-8d7d5042-94e5-7bd3-27ff-62409aea3aac | nvidia-smi |
+| VRAM gate | **PASS** 16:49Z: third-party cuda_memtest `e94e1ee5` Test1/2/4 0 errors; own CUDA test 2 passes 0 mismatches | `scripts/vram_gate.sh` |
+| Driver | 575.57.08 | nvidia-smi |
+| CPU | 128 visible cores (quota read by p1_env) | nproc |
+| Disk | 200 GB overlay, empty at first login | df |
+| Price (API) | dph_total **$0.496/h** (storage share $0.200/h) | API `instances/56272061` |
+| Stop policy | no stop before the whole project is complete; watchdog monitor-only | D50 |
 
-Earlier machines: 56261825 (RTX 4090 24 GB, NL; live stop check 15:58–16:00:59Z, partial: SSH lost at the expected
-time, API acceptance not read), 56224386 (RTX 4090 48 GB). Neither is used further.
+Excluded: **56267276** (VRAM corruption, D51, docs/VRAM_FAULT_56267276.md). Earlier: 56261825, 56224386.
 
 ## Sessions
 
-**56267276**
+**56267276 — excluded (VRAM fault, D51)**
 
 | Step | Result | Label |
 |---|---|---|
@@ -66,4 +66,5 @@ time, API acceptance not read), 56224386 (RTX 4090 48 GB). Neither is used furth
 | diag1 | 56070930 | ~5.67 h (mostly idle) | $0.359/h | ≈ $2.04 |
 | prep0 | 56224386 | ~32 min (if stopped at ~09:21Z) | $0.778/h | ≈ $0.41 |
 | deploy + stop check | 56261825 | ≤ 15:15–16:01Z (≈ 46 min seen; start time from the console) | $0.527/h | ≈ $0.40 |
-| P1 onward | 56267276 | running from ≤ 16:05Z | $0.626/h | recorded in budget.json |
+| setup + VRAM fault diagnosis | 56267276 | ≤ 16:05Z – (user handles the instance) | $0.626/h | ≈ $0.47 to 16:50Z |
+| P1 onward | 56272061 | running from ≤ 16:48Z | $0.496/h | recorded in budget.json |
