@@ -129,7 +129,9 @@ def test_repo_plan_loads_in_explicit_no_cap_mode(tmp_path, prereg_dir, monkeypat
     monkeypatch.setenv("APSP_STORE", str(tmp_path / "store"))
     plan, jobs = rp.load_plan(Path(rp.REPO) / "configs" / "full_experiments.yaml")
     assert plan["financial_cap_mode"] == "none" and plan["destroy_instance"] is False
-    assert plan["instance_id"] == 56261825
+    assert plan["instance_id"] == 56267276
+    assert plan["stop_instance_before_project_complete"] is False and plan["stop_instance_on_deadline"] is False
+    assert not plan.get("finished_marker")                    # plan v1.3: no completion marker from the runner
     assert rp.main(["--plan", str(Path(rp.REPO) / "configs" / "full_experiments.yaml"), "--status"], runtime=_rt()) == 0
     out = capsys.readouterr().out
     assert "no financial cap (explicit)" in out and "budget:" not in out
@@ -153,7 +155,7 @@ def test_no_cap_mode_skips_only_budget_and_price(tmp_path, prereg_dir):
     assert fr.calls == ["echo a"] and st.get("b")["reason"] == "prereg:A"
     assert st.get("a")["cost_usd_est"] >= 0 and (tmp_path / "wl.pid").read_text().strip().isdigit()
     fin = json.loads((tmp_path / "wl.finished").read_text())
-    assert fin["blocked"] == {"b": "prereg:A"}
+    assert fin["blocked"] == {"b": "prereg:A"} and fin["project_state"] == "waiting_research"
     fr2 = FakeRunner(tmp_path)
     rp.main(["--plan", str(p), "--resume"], runner=fr2, runtime=_rt(armed=False))   # watchdog still required
     d["jobs"].append(J("c"))

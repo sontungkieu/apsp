@@ -19,7 +19,9 @@ if "${PY}" "${HERE}/vast_watchdog.py" --check-armed --instance-id "${IID}" --sta
 fi
 # DEADLINE "none" = explicit no-financial-cap mode (D47): vast_watchdog.py then requires --finished-marker,
 # --workload-pidfile and --stall-s, and stops on completion, workload death or a stall instead of a clock.
-if [[ "${DEADLINE}" == "none" ]]; then DL=(--no-financial-deadline); else DL=(--deadline-epoch "${DEADLINE}"); fi
+# DEADLINE "monitor" = monitor-only (plan v1.3): no stop path at all, alerts only.
+if [[ "${DEADLINE}" == "monitor" ]]; then DL=(--monitor-only)
+elif [[ "${DEADLINE}" == "none" ]]; then DL=(--no-financial-deadline); else DL=(--deadline-epoch "${DEADLINE}"); fi
 setsid nohup "${PY}" "${HERE}/vast_watchdog.py" --instance-id "${IID}" "${DL[@]}" \
   --state-dir "${STATE}" "$@" > "${STATE}/watchdog.out" 2>&1 < /dev/null &
 for _ in $(seq 1 30); do

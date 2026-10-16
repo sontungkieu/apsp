@@ -176,6 +176,37 @@ def test_terminate_workload_by_process_group_not_pattern(tmp_path):
     assert alive == [] and w.state["workload_terminate"]["own_group"] is False
 
 
+def test_monitor_only_never_stops_and_keeps_running(tmp_path, monkeypatch):
+    """Plan v1.3: no stop path before project completion. No provider client exists; alerts only."""
+    monkeypatch.delenv("CONTAINER_API_KEY", raising=False)
+    c = Clock()
+    (tmp_path / "pid").write_text("999999999\n")            # workload dead from the start
+    w = wdm.Watchdog(IID, None, str(tmp_path / "st"), None, monitor_only=True, workload_pidfile=str(tmp_path / "pid"),
+                     stall_s=600, idle_grace_s=60, poll_s=10, gpu_util=lambda: 0.0, clock=c, sleep=c.sleep)
+    w.arm()
+    st = w.monitor(max_polls=24 * 360)                     # 24 h: died + stalled alerts, never a stop
+    assert w.api is None and st["monitor_only"] and st["stop_path"].startswith("disabled")
+    assert not st["stop_requested"] and not st["api_accepted"]
+    assert {a["alert"] for a in st["alerts"]} <= {"workload_died", "stalled"} and st["alerts"]
+    w.stop()                                               # even a direct call is refused
+    assert wdm.read_state(str(tmp_path / "st"))["stop_blocked"] is True
+    assert not (tmp_path / "fake").exists()
+    assert wdm.is_armed(str(tmp_path / "st"), IID)[0]       # pid of this test process is the watchdog pid
+
+
+def test_monitor_only_cli_refuses_stop_related_options(tmp_path):
+    for extra in (["--deadline-epoch", "1e10"], ["--save-cmd", "true"]):
+        with pytest.raises(SystemExit):
+            wdm.main(["--instance-id", str(IID), "--state-dir", str(tmp_path), "--monitor-only",
+                      "--workload-pidfile", str(tmp_path / "p"), *extra])
+
+
+def test_monitor_only_source_has_no_stop_call_on_its_path():
+    src = SCRIPT.read_text(encoding="utf-8")
+    body = src.split("def monitor(", 1)[1].split("\n    def ", 1)[0]
+    assert "stop(" not in body and "api." not in body
+
+
 def test_cli_rejects_mixed_or_missing_modes(tmp_path, capsys):
     with pytest.raises(SystemExit):
         wdm.main(["--instance-id", str(IID), "--state-dir", str(tmp_path), "--fake-api-dir", str(tmp_path / "f")])

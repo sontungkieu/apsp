@@ -4,9 +4,9 @@
 # financial_cap_mode: none = the user's explicit decision of 2026-10-16 (DECISIONS D47) to drop the rental budget gate
 # and the price ceiling for this experiment suite. Null budget fields WITHOUT this mode still block every GPU job.
 # Spend is still recorded (budget.json) for reporting. Episode compute caps, DP masks, protocol and PREREG gates are
-# unchanged; the watchdog stops on completion / no eligible work / workload death / stall, never on a money clock.
+# unchanged. Plan v1.3: the watchdog is monitor-only (no stop path) until the whole project is complete.
 project_run: apsp_full_sd15_v1
-instance_id: 56261825              # user-provided endpoint 2026-10-16; RTX 4090 24 GB, NL (56224386 no longer used)
+instance_id: 56267276              # measurement machine (user, 2026-10-16, plan v1.3): RTX 4090 24 GB, ES
 measurement_gpu: null              # from runtime_fingerprint.json of the calibration run (not from the UI)
 financial_cap_mode: none           # explicit; see header
 approved_total_usd: null           # not used in financial_cap_mode none
@@ -15,20 +15,24 @@ approved_max_wall_hours: null
 bandwidth_storage_reserve_usd: null
 forecast_safety: 1.25              # job forecast multiplier in the budget preflight (approved_budget mode only)
 pack_stop_margin_min: 20           # time kept for packing artifacts and stopping
-workload_pidfile: ${APSP_STORE}/run_project.pid       # read by the watchdog (workload_died trigger)
-finished_marker: ${APSP_STORE}/run_project.finished   # written when no eligible job is left (idle_after_finish)
+workload_pidfile: ${APSP_STORE}/run_project.pid       # read by the monitor-only watchdog (alerts)
+# Plan v1.3 / user order 2026-10-16: NO instance stop before the whole project is complete. No finished marker:
+# the watchdog runs --monitor-only (no stop path); run_project only writes its project state (waiting_research /
+# incomplete_blocked), never a completion.
+stop_instance_before_project_complete: false
+project_state_file: ${APSP_STORE}/project_state.json
 scope: [sd15]
 prereg: {A: null, B: null, C: null}   # informational; the gate reads docs/PREREG_SIGNED/ markers
 resume: true
 gpu_workers: 1
-stop_instance_on_deadline: true
+stop_instance_on_deadline: false   # plan v1.3: never stop before project completion
 destroy_instance: false
 runs_root: ${APSP_STORE}/project_runs
 watchdog_state_dir: ${APSP_STORE}/watchdog
 env:
   APSP_STORE: ${APSP_STORE}
   POOL_DIR: ${APSP_STORE}/prompts
-  MACHINE_ID: vast_56261825_rtx4090_24g
+  MACHINE_ID: vast_56267276_rtx4090_24g
   CAL: ${APSP_STORE}/runs/calib1
   COSTS: ${APSP_STORE}/runs/calib1/p0/m2/generator_costs.json
   TUNED: ${APSP_STORE}/tuned
@@ -72,6 +76,9 @@ jobs:
   - {id: p1_report_calib, phase: P1, gpu: false, needs: [p1_bench_calib],
      cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.quality_cost --run ${CAL}/bench_calib --out ${CAL}/bench_calib/report",
      outputs: ["${CAL}/bench_calib/report/quality_cost.json", "${CAL}/bench_calib/report/quality_cost.csv"]}
+  - {id: p1_calibration_report, phase: P1, gpu: false, needs: [p1_report_calib],
+     cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.calibration_report --cal ${CAL} --out ${CAL}/report",
+     outputs: ["${CAL}/report/calibration_report.md", "${CAL}/report/calibration_quality_cost.csv"]}
   # ---------------------------------------------------------------- P2 bank (PREREG-A) -------------------------
   - {id: p2_bank, phase: P2, gpu: true, needs: [p1_forecast, p1_equivalence], prereg: [A], est_hours: 10.9, timeout_min: 900,
      notes: "(3090) 240 prompts x 2 banks x 81.9 s; replaced by the forecast",

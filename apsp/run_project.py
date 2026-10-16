@@ -436,7 +436,16 @@ def main(argv=None, runner=shell_runner, runtime: Optional[Runtime] = None, now_
     summary = {"done": [j.id for j in jobs if state.get(j.id)["status"] == "done"], "failed": failed,
                "blocked": {j.id: state.get(j.id).get("reason") for j in jobs if state.get(j.id)["status"] == "blocked"},
                "spent_usd_est": round(spent_usd(state.budget(), now_fn()), 3)}
+    # plan v1.3 §8: "no job ready" is never project completion; this tool never declares the project complete
+    if any(str(r).startswith("prereg:") for r in summary["blocked"].values()):
+        summary["project_state"] = "waiting_research"
+    else:
+        summary["project_state"] = "incomplete_blocked"
     print(json.dumps(summary, indent=1))
+    if plan.get("project_state_file"):
+        p = Path(expand(os.path.expandvars(plan["project_state_file"]), env))
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(json.dumps({"t": now_fn(), **summary}, indent=1), encoding="utf-8")
     if marker:                                # no eligible job left in this run: the watchdog may stop the instance
         marker.parent.mkdir(parents=True, exist_ok=True)
         marker.write_text(json.dumps({"t": now_fn(), **summary}, indent=1), encoding="utf-8")

@@ -172,9 +172,14 @@ class Watchdog:
                  api_timeout_s: float = 30.0, max_stop_attempts: int = 5, retry_s: float = 20.0,
                  status_checks: int = 3, workload_pidfile: Optional[str] = None, progress_paths=(),
                  stall_s: Optional[float] = None, gpu_busy_pct: float = 10.0,
-                 gpu_util: Optional[Callable[[], Optional[float]]] = None,
+                 gpu_util: Optional[Callable[[], Optional[float]]] = None, monitor_only: bool = False,
                  clock: Callable[[], float] = time.time, sleep: Callable[[float], None] = time.sleep):
         self.iid, self.api = int(instance_id), api
+        # monitor-only (plan v1.3 §2, user order 2026-10-16: no Stop before the whole project is complete): no
+        # provider client, no stop call; triggers are recorded as alerts and the loop keeps running
+        self.monitor_only = bool(monitor_only)
+        if self.monitor_only:
+            self.api = None
         self.deadline = float("inf") if deadline_epoch is None else float(deadline_epoch)
         self.workload_pidfile = Path(workload_pidfile) if workload_pidfile else None
         self.progress_paths = [Path(x) for x in progress_paths]
@@ -214,7 +219,10 @@ class Watchdog:
         if own_instance_id is not None and str(own_instance_id) != str(self.iid):
             raise WatchdogError(f"refusing to arm: this machine is instance {own_instance_id}, not {self.iid}")
         no_deadline = self.deadline == float("inf")
-        if no_deadline:
+        if self.monitor_only:
+            if not no_deadline or self.workload_pidfile is None:
+                raise WatchdogError("monitor-only mode takes no deadline and needs --workload-pidfile")
+        elif no_deadline:
             # without a wall-clock bound these triggers are the only stop paths, so all three are required
             if self.finished_marker is None or self.workload_pidfile is None or not self.stall_s:
                 raise WatchdogError("refusing to arm without a deadline: --finished-marker, --workload-pidfile and "
@@ -229,6 +237,8 @@ class Watchdog:
         self.dir.mkdir(parents=True, exist_ok=True)
         self._write(schema=SCHEMA, instance_id=self.iid, pid=os.getpid(), armed_at=now,
                     deadline_epoch=None if no_deadline else self.deadline, financial_deadline=not no_deadline,
+                    monitor_only=self.monitor_only, stop_path="disabled (monitor-only)" if self.monitor_only else "enabled",
+                    alerts=[],
                     stall_s=self.stall_s, workload_pidfile=str(self.workload_pidfile) if self.workload_pidfile else None,
                     progress_paths=[str(x) for x in self.progress_paths], last_progress_at=now, progress_mtime=None,
                     workload_seen=False, dead_since=None, idle_grace_s=self.idle_grace_s, save_margin_s=self.save_margin_s, phase="armed", trigger=None,
@@ -282,7 +292,33 @@ class Watchdog:
             self._write(last_progress_at=now, last_gpu_util=busy,
                         progress_mtime=m if m is not None else self.state.get("progress_mtime"))
 
+    def monitor(self, max_polls: Optional[int] = None) -> dict:
+        """Monitor-only loop: record each trigger once as an alert (and again if it clears and recurs); never stops
+        the instance, never ends the workload. Runs until killed (max_polls for tests)."""
+        active = None
+        n = 0
+        while max_polls is None or n < max_polls:
+            n += 1
+            t = None
+            if self.finished_marker is None or not self.finished_marker.exists():
+                t = self.trigger_due()
+                if t == "deadline":
+                    t = None
+            if t != active:
+                if t:
+                    self._write(alerts=self.state.get("alerts", [])[-50:] + [{"t": self.clock(), "alert": t}])
+                    self._event("alert", alert=t)
+                else:
+                    self._event("alert_cleared", alert=active)
+                    self._write(dead_since=None)
+                active = t
+            self._write(heartbeat=self.clock(), active_alert=active)
+            self.sleep(self.poll_s)
+        return self.state
+
     def run(self) -> dict:
+        if self.monitor_only:
+            return self.monitor()
         while True:
             t = self.trigger_due()
             if t:
@@ -362,6 +398,10 @@ class Watchdog:
         self._event("saved", n=len(results))
 
     def stop(self) -> None:
+        if self.monitor_only or self.api is None:
+            self._write(stop_blocked=True, phase="armed")
+            self._event("stop_blocked", reason="monitor-only: instance stop disabled until the project is complete")
+            return
         attempts = []
         for i in range(self.max_stop_attempts):
             now = self.clock()
@@ -480,7 +520,7 @@ def is_armed(state_dir: str, instance_id: Optional[int] = None, now: Optional[fl
     if instance_id is not None and int(st.get("instance_id", -1)) != int(instance_id):
         return False, "watchdog armed for another instance"
     if st.get("deadline_epoch") is None:
-        if st.get("financial_deadline", True):
+        if st.get("financial_deadline", True) and not st.get("monitor_only"):
             return False, "watchdog state has no deadline and is not in no-financial-deadline mode"
     elif float(st["deadline_epoch"]) <= now:
         return False, "watchdog deadline already passed"
@@ -518,6 +558,8 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="instance cost watchdog (stop, never destroy)")
     ap.add_argument("--instance-id", type=int, required=True)
     ap.add_argument("--deadline-epoch", type=float)
+    ap.add_argument("--monitor-only", action="store_true",
+                    help="never stop the instance: record alerts only (no provider client is created)")
     ap.add_argument("--no-financial-deadline", action="store_true",
                     help="explicit no-financial-cap mode: no wall-clock deadline; needs marker, pidfile and --stall-s")
     ap.add_argument("--workload-pidfile", help="file holding the workload (orchestrator) pid")
@@ -548,6 +590,17 @@ def main(argv=None) -> int:
         ok, why = is_armed(a.state_dir, a.instance_id)
         print(why)
         return 0 if ok else 1
+    if a.monitor_only:
+        if a.deadline_epoch is not None or a.save_cmd or a.check_status:
+            ap.error("--monitor-only takes no deadline, no save commands and no status call")
+        wd = Watchdog(a.instance_id, None, a.state_dir, None, finished_marker=a.finished_marker, monitor_only=True,
+                      workload_pidfile=a.workload_pidfile, progress_paths=a.progress_path, stall_s=a.stall_s,
+                      gpu_busy_pct=a.gpu_busy_pct, idle_grace_s=a.idle_grace_s, poll_s=a.poll_s)
+        wd.arm(own_instance_id=os.environ.get(a.own_id_env))
+        if hasattr(signal, "SIGHUP"):
+            signal.signal(signal.SIGHUP, signal.SIG_IGN)
+        wd.run()
+        return 0
     api = FakeAPI(a.fake_api_dir) if a.fake_api_dir else VastAPI(a.api_key_env)
     if a.check_status:
         print(json.dumps({"instance_id": a.instance_id, "actual_status": api.status(a.instance_id)}))
