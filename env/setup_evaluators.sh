@@ -28,6 +28,10 @@ setup_hps() {
   local whl; whl=$(ls "$EV"/wheels/hpsv2-1.2.0*.whl)
   echo "$(cfg hpsv2 package_wheel_sha256)  $whl" | sha256sum -c -
   uv pip install --python "$V/bin/python" "$whl" huggingface_hub pyyaml pandas pillow
+  # the 1.2.0 wheel ships without the tokenizer BPE file; fetch the pinned file into the package and verify it
+  local bpe; bpe="$("$V/bin/python" -c 'import hpsv2, os; print(os.path.join(os.path.dirname(hpsv2.__file__), "src/open_clip/bpe_simple_vocab_16e6.txt.gz"))')"
+  [[ -s "$bpe" ]] || curl -fsSL "$(cfg hpsv2 tokenizer_bpe_url)" -o "$bpe"
+  echo "$(cfg hpsv2 tokenizer_bpe_sha256)  $bpe" | sha256sum -c -
   "$V/bin/python" - <<PY
 import hashlib, yaml
 from huggingface_hub import hf_hub_download
