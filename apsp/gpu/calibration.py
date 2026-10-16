@@ -331,7 +331,7 @@ def main(argv=None) -> int:
     (out / f"{a.part}.json").write_text(json.dumps(rep, indent=1, default=str), encoding="utf-8")
     print(json.dumps({k: v for k, v in rep.items() if k not in ("records", "episodes", "results", "runtime_fingerprint")},
                      indent=1, default=str))
-    return 0 if rep.get("status") not in ("error",) else 5
+    return 0 if rep.get("status") not in ("error", "incomplete") else 5      # incomplete is not a result
 
 
 if __name__ == "__main__":

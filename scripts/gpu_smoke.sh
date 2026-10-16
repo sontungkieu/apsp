@@ -158,6 +158,9 @@ for s in "${STEPS[@]}"; do
     35_m2)          for k in ${M2_KS:-$(seq 1 16)}; do kk=$(printf %02d "$k")      # M2_KS="1 2 4 8 16" = pilot subset
                       run_step "35_m2_k${kk}" 25 "${PY}" -m apsp.gpu.profile --stage generator --ks "$k"                         --out-dir "${RUN}/p0/m2/k${kk}" ${M2_MEASUREMENT:+--measurement} || break; done ;;
     36_m2_merge)    run_step "$s" 5 "${PY}" scripts/merge_m2.py "${RUN}/p0/m2" --out "${RUN}/p0/m2/generator_costs.json" ;;
+    33b_equivalence_fresh) run_step "$s" 30 "${PY}" scripts/equivalence_fresh.py --prompt-pool "${POOL_DIR}/prompt_pool.parquet" --out "${RUN}/calib/equivalence_fresh.json" ;;
+    38_eph)         run_step "$s" 15 "${PY}" -m apsp.gpu.profile --stage model --out-dir "${RUN}/p0/eph" ;;
+    39_freeze_eph)  run_step "$s" 2 "${PY}" scripts/freeze_eph.py --from "${RUN}/p0/eph/model.json" --out "${FROZEN_EPH:-${APSP_STORE}/frozen_eph.json}" ;;
     37_m2b)         run_step "$s" 30 "${PY}" -m apsp.gpu.calibration --part m2b ${CB} --costs "${RUN}/p0/m2/generator_costs.json" ;;
     40_bank)        run_step "$s" 900 "${PY}" -m apsp.gpu.collect_bank --prompt-pool "${POOL_DIR}/prompt_pool.parquet"                       --split train_fit train_dev --resume --out-root "${APSP_STORE}/banks" --bank-name PILOT --machine-id "${MACHINE_ID}" ${EXPECT_EPH:+--expect-eph-file "${EXPECT_EPH}"} ;;
     41_tune)        run_step "$s" 120 "${PY}" -m apsp.sim.tune_baselines --bank "${APSP_STORE}/banks/PILOT" --costs "${COSTS}" --out "${TUNED}" ;;

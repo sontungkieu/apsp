@@ -91,12 +91,14 @@ jobs:
   # decode whose chunk changed (null = batch -> 1). M3 (fp16 was already the effective preview dtype), pool check,
   # chunk, M9 and the calibration bench are not affected by the binding and are not re-run.
   - {id: p1a_eph, phase: P1, gpu: true, needs: [p1_env], est_hours: 0.05, timeout_min: 20,
-     cmd: "HF_HOME=${APSP_STORE}/hf ${APSP_STORE}/venv-gpu/bin/python -m apsp.gpu.profile --stage model --out-dir ${CAL_A}/p0 && ${APSP_STORE}/venv-gpu/bin/python scripts/freeze_eph.py --from ${CAL_A}/p0/model.json --out ${FROZEN_EPH}",
-     outputs: ["${CAL_A}/p0/model.json", "${FROZEN_EPH}"]}
+     notes: "through gpu_smoke.sh: the EPH includes its runtime env (CUBLAS_WORKSPACE_CONFIG), as in every GPU step",
+     cmd: "RUN_ID=calibA FROZEN_EPH=${FROZEN_EPH} bash scripts/gpu_smoke.sh 38_eph 39_freeze_eph",
+     outputs: ["${CAL_A}/p0/eph/model.json", "${FROZEN_EPH}"]}
   - {id: p1a_m2, phase: P1, gpu: true, needs: [p1a_eph], est_hours: 0.5, timeout_min: 120,
      cmd: "RUN_ID=calibA M2_KS='1 2 3 4 8 12 16' bash scripts/gpu_smoke.sh 35_m2 36_m2_merge", outputs: ["${COSTS_A}"]}
   - {id: p1a_equivalence, phase: P1, gpu: true, needs: [p1a_eph], est_hours: 0.1, timeout_min: 40,
-     cmd: "RUN_ID=calibA bash scripts/gpu_smoke.sh 33_calib_equivalence", outputs: ["${CAL_A}/calib/equivalence.json"]}
+     notes: "fresh: collector and pinned PSP reference both generated now (calib1 used stored M3 tensors)",
+     cmd: "RUN_ID=calibA bash scripts/gpu_smoke.sh 33b_equivalence_fresh", outputs: ["${CAL_A}/calib/equivalence_fresh.json"]}
   - {id: p1a_m2b, phase: P1, gpu: true, needs: [p1a_m2], gates: [pool_check_calibration], est_hours: 0.1, timeout_min: 40,
      cmd: "RUN_ID=calibA bash scripts/gpu_smoke.sh 37_m2b", outputs: ["${CAL_A}/calib/m2b.json"]}
   - {id: p1a_forecast, phase: P1, gpu: false, needs: [p1a_m2b],
