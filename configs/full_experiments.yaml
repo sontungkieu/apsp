@@ -1,15 +1,22 @@
 # Full SD1.5 experiment plan for `python -m apsp.run_project` (docs/FULL_EXPERIMENT_PLAN.md §9).
 # Jobs run in this order when their dependencies, PREREG markers, gates, budget, price and watchdog allow it.
-# Budget/price fields are RESEARCH/USER decisions: null blocks every GPU job. Agents never fill them in.
+# Budget/price fields are RESEARCH/USER decisions. Agents never fill them in.
+# financial_cap_mode: none = the user's explicit decision of 2026-10-16 (DECISIONS D47) to drop the rental budget gate
+# and the price ceiling for this experiment suite. Null budget fields WITHOUT this mode still block every GPU job.
+# Spend is still recorded (budget.json) for reporting. Episode compute caps, DP masks, protocol and PREREG gates are
+# unchanged; the watchdog stops on completion / no eligible work / workload death / stall, never on a money clock.
 project_run: apsp_full_sd15_v1
-instance_id: 56224386
+instance_id: 56261825              # user-provided endpoint 2026-10-16; RTX 4090 24 GB, NL (56224386 no longer used)
 measurement_gpu: null              # from runtime_fingerprint.json of the calibration run (not from the UI)
-approved_total_usd: null           # user approves; cumulative across restarts (budget.json), never reset by RUN_ID
-approved_max_usd_per_h: null       # price ceiling checked against the provider price at every start
+financial_cap_mode: none           # explicit; see header
+approved_total_usd: null           # not used in financial_cap_mode none
+approved_max_usd_per_h: null       # not used in financial_cap_mode none
 approved_max_wall_hours: null
 bandwidth_storage_reserve_usd: null
-forecast_safety: 1.25              # job forecast multiplier in the budget preflight
+forecast_safety: 1.25              # job forecast multiplier in the budget preflight (approved_budget mode only)
 pack_stop_margin_min: 20           # time kept for packing artifacts and stopping
+workload_pidfile: ${APSP_STORE}/run_project.pid       # read by the watchdog (workload_died trigger)
+finished_marker: ${APSP_STORE}/run_project.finished   # written when no eligible job is left (idle_after_finish)
 scope: [sd15]
 prereg: {A: null, B: null, C: null}   # informational; the gate reads docs/PREREG_SIGNED/ markers
 resume: true
@@ -21,7 +28,7 @@ watchdog_state_dir: ${APSP_STORE}/watchdog
 env:
   APSP_STORE: ${APSP_STORE}
   POOL_DIR: ${APSP_STORE}/prompts
-  MACHINE_ID: vast_56224386_rtx4090_48g
+  MACHINE_ID: vast_56261825_rtx4090_24g
   CAL: ${APSP_STORE}/runs/calib1
   COSTS: ${APSP_STORE}/runs/calib1/p0/m2/generator_costs.json
   TUNED: ${APSP_STORE}/tuned
@@ -36,7 +43,7 @@ jobs:
      outputs: ["${CAL}/p0/runtime_fingerprint.json", "${CAL}/p0/vram_check.json", "${CAL}/p0/M1_model.json"]}
   - {id: p1_pool_check, phase: P1, gpu: true, needs: [p1_env], est_hours: 0.25, timeout_min: 40,
      cmd: "RUN_ID=calib1 bash scripts/gpu_smoke.sh 30_pool_full_check", outputs: ["${CAL}/calib/pool_full_check.json"]}
-  - {id: p1_m3m9, phase: P1, gpu: true, needs: [p1_env], gates: [pool_frozen], est_hours: 2.2, timeout_min: 180,
+  - {id: p1_m3m9, phase: P1, gpu: true, needs: [p1_pool_check], gates: [pool_check_calibration], est_hours: 2.2, timeout_min: 180,
      notes: "(3090) 50 calibration x bank 0 + fp32 preview, 20 subset x bank 1 clean collector",
      cmd: "RUN_ID=calib1 bash scripts/gpu_smoke.sh 31_calib_m3m9 32_calib_summary", outputs: ["${CAL}/calib/m3m9.json"]}
   - {id: p1_chunk, phase: P1, gpu: true, needs: [p1_env], est_hours: 0.35, timeout_min: 40,
@@ -47,7 +54,7 @@ jobs:
      outputs: ["${COSTS}"]}
   - {id: p1_equivalence, phase: P1, gpu: true, needs: [p1_m3m9], est_hours: 0.35, timeout_min: 40,
      cmd: "RUN_ID=calib1 bash scripts/gpu_smoke.sh 33_calib_equivalence", outputs: ["${CAL}/calib/equivalence.json"]}
-  - {id: p1_m2b, phase: P1, gpu: true, needs: [p1_m2], gates: [pool_frozen], est_hours: 0.25, timeout_min: 40,
+  - {id: p1_m2b, phase: P1, gpu: true, needs: [p1_m2, p1_pool_check], gates: [pool_check_calibration], est_hours: 0.25, timeout_min: 40,
      cmd: "RUN_ID=calib1 bash scripts/gpu_smoke.sh 37_m2b", outputs: ["${CAL}/calib/m2b.json"]}
   - {id: p1_m2_rest, phase: P1, gpu: true, needs: [p1_m2], est_hours: 1.5, enabled: false, timeout_min: 150,
      notes: "k = 5..7, 9..11, 13..15: only for any-N BoN / extended grids; not needed by this plan",
@@ -55,6 +62,16 @@ jobs:
   - {id: p1_forecast, phase: P1, gpu: false, needs: [p1_m3m9, p1_m2, p1_m2b],
      cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.forecast --m3m9 ${CAL}/calib/m3m9.json --costs ${COSTS} --m2b ${CAL}/calib/m2b.json --price ${PRICE_USD_H} --out ${CAL}/forecast",
      outputs: ["${CAL}/forecast/phase_forecast.json"]}
+  # First real-data quality-cost table (D49): FIXED, untuned baselines only, online, on the 50 calibration prompts
+  # (no PREREG needed for that split). Descriptive engineering evidence: never used to select methods, thresholds,
+  # pilot size or epsilon; runs after the forecast so it cannot influence it. Not a claim set.
+  - {id: p1_bench_calib, phase: P1, gpu: true, needs: [p1_forecast], gates: [pool_check_calibration], est_hours: 1.5,
+     timeout_min: 300,
+     cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.gpu.benchmark --prompt-pool ${POOL_DIR}/prompt_pool.parquet --split calibration --banks 0 1 --methods single single32 bon:2 bon:4 bon:8 psp --costs ${COSTS} --out ${CAL}/bench_calib",
+     outputs: ["${CAL}/bench_calib/episodes.jsonl", "${CAL}/bench_calib/manifest.json"]}
+  - {id: p1_report_calib, phase: P1, gpu: false, needs: [p1_bench_calib],
+     cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.quality_cost --run ${CAL}/bench_calib --out ${CAL}/bench_calib/report",
+     outputs: ["${CAL}/bench_calib/report/quality_cost.json", "${CAL}/bench_calib/report/quality_cost.csv"]}
   # ---------------------------------------------------------------- P2 bank (PREREG-A) -------------------------
   - {id: p2_bank, phase: P2, gpu: true, needs: [p1_forecast, p1_equivalence], prereg: [A], est_hours: 10.9, timeout_min: 900,
      notes: "(3090) 240 prompts x 2 banks x 81.9 s; replaced by the forecast",

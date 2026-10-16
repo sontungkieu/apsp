@@ -18,6 +18,10 @@ A job runs only if
   - for GPU jobs: an approved budget exists, the hourly price read at start is <= the approved maximum, the remaining
     budget covers the job's forecast + the pack/stop margin, and (on a Vast instance) a watchdog is armed for this
     instance with enough time left before its deadline.
+    `financial_cap_mode: none` (explicit, D47) drops the budget and price checks only; null budget fields without it
+    still block. Spend is recorded either way, and the instance/watchdog checks stay.
+With `workload_pidfile` / `finished_marker` in the plan, a --resume run writes its pid at start and the marker at exit
+(whatever the outcome), so the watchdog stops the instance once no eligible work is left.
 Otherwise the job is `blocked` with a machine-readable reason. A failing job is `failed` with a class
 (engineering / data / gate / budget / timeout); dependants stay blocked, independent jobs continue.
 Spend is wall time x quoted hourly price (estimate; the provider bill is authoritative).
@@ -95,7 +99,16 @@ def load_plan(path: str | Path) -> tuple[dict, list[Job]]:
             raise PlanError(f"{j.id}: unknown PREREG {bad}")
     if d.get("destroy_instance"):
         raise PlanError("destroy_instance must be false: this orchestrator never destroys")
+    if d.get("financial_cap_mode", "approved_budget") not in FINANCIAL_MODES:
+        raise PlanError(f"financial_cap_mode must be one of {FINANCIAL_MODES}")
     return d, jobs
+
+
+FINANCIAL_MODES = ("approved_budget", "none")
+
+
+def no_financial_cap(plan: dict) -> bool:
+    return plan.get("financial_cap_mode") == "none"
 
 
 # ------------------------------------------------------------------------- state -----------------------------------
@@ -158,7 +171,16 @@ def outputs_ok(job: Job, env: dict) -> tuple[bool, dict]:
 
 
 # ------------------------------------------------------------------------- gates -----------------------------------
-def gate_status(name: str, root: Path = REPO) -> tuple[bool, str]:
+def gate_status(name: str, root: Path = REPO, env: Optional[dict] = None) -> tuple[bool, str]:
+    if name == "pool_check_calibration":
+        # the GPU full-pool check found no near-duplicate component joining a calibration prompt to another split
+        p = Path(expand("${CAL}/calib/pool_full_check.json", env or {}))
+        if not p.exists():
+            return False, f"{p} missing"
+        rep = json.loads(p.read_text(encoding="utf-8"))
+        cal = [r for r in rep.get("cross_split_full_pool", []) if r.get("split") == "calibration"]
+        bad = cal or rep.get("selected_not_in_survivors")
+        return not bad, "full-pool check: no calibration prompt in a cross-split component"
     if name == "evaluation_approved":
         cfg = yaml.safe_load((root / "configs" / "evaluation.yaml").read_text(encoding="utf-8"))
         ok = bool(cfg.get("approved")) and all(cfg.get(k) is not None for k in ("epsilon_ir", "r_fail", "n_primary_contrasts"))
@@ -239,13 +261,21 @@ def blocked_reason(job: Job, plan: dict, state: State, env: dict, rt: Runtime, n
         if not is_signed(x):
             return f"prereg:{x}"
     for g in job.gates:
-        ok, what = gate_status(g)
+        ok, what = gate_status(g, env=env)
         if not ok:
             return f"gate:{g} ({what})"
     if not job.gpu:
         return None
     if rt.on_vast and str(os.environ.get("CONTAINER_ID")) != str(plan.get("instance_id")):
         return f"instance:{os.environ.get('CONTAINER_ID')}!={plan.get('instance_id')}"
+    est = job.est_hours
+    if no_financial_cap(plan):
+        ok, why, deadline = rt.watchdog()
+        if not ok:
+            return f"watchdog:{why}"
+        if deadline is not None and est is not None and now + est * 3600 > deadline:
+            return f"watchdog:deadline too close for {est:.2f} h"
+        return None
     total = plan.get("approved_total_usd")
     if total is None:
         return "budget:not_approved"
@@ -254,7 +284,6 @@ def blocked_reason(job: Job, plan: dict, state: State, env: dict, rt: Runtime, n
     cap_h = plan.get("approved_max_usd_per_h")
     if cap_h is None or rt.price_usd_h > float(cap_h) + 1e-9:
         return f"price:{rt.price_usd_h:.3f}>approved_max {cap_h}"
-    est = job.est_hours
     if est is None:
         return "forecast:missing"
     margin_h = float(plan.get("pack_stop_margin_min", 20)) / 60.0
@@ -358,14 +387,22 @@ def main(argv=None, runner=shell_runner, runtime: Optional[Runtime] = None, now_
         why = None if rec["status"] == "done" else blocked_reason(j, plan, state, env, rt, now)
         rows.append((j, rec, why))
     if a.status or a.dry_run or not a.resume:
-        print(f"project {plan['project_run']} | price {rt.price_usd_h} ({rt.price_source}) | approved "
-              f"{plan.get('approved_total_usd')} USD | spent est {spent_usd(state.budget(), now):.2f} USD")
+        cap = "no financial cap (explicit)" if no_financial_cap(plan) else f"approved {plan.get('approved_total_usd')} USD"
+        print(f"project {plan['project_run']} | price {rt.price_usd_h} ({rt.price_source}) | {cap} | spent est "
+              f"{spent_usd(state.budget(), now):.2f} USD")
         for j, rec, why in rows:
             st = rec["status"] if rec["status"] in ("done", "failed") else ("eligible" if why is None else "blocked")
             print(f"  {j.id:24s} {j.phase:4s} {'GPU' if j.gpu else 'CPU'} est {j.est_hours if j.est_hours is not None else '?':>5} h"
                   f"  {st:8s} {why or ''}")
         return 0
     lock = acquire_lock(root)
+    pidfile = plan.get("workload_pidfile") and Path(expand(os.path.expandvars(plan["workload_pidfile"]), env))
+    marker = plan.get("finished_marker") and Path(expand(os.path.expandvars(plan["finished_marker"]), env))
+    if marker and marker.exists():
+        marker.unlink()                       # a new run: the watchdog must not see the previous run's marker
+    if pidfile:
+        pidfile.parent.mkdir(parents=True, exist_ok=True)
+        pidfile.write_text(f"{os.getpid()}\n")
     b = state.budget()
     session = {"start": now, "end": None, "usd_per_h": rt.price_usd_h or 0.0, "price_source": rt.price_source,
                "instance_id": os.environ.get("CONTAINER_ID")}
@@ -396,9 +433,13 @@ def main(argv=None, runner=shell_runner, runtime: Optional[Runtime] = None, now_
         state.save_budget(b)
         lock.close()
     failed = [j.id for j in jobs if state.get(j.id)["status"] == "failed"]
-    print(json.dumps({"done": [j.id for j in jobs if state.get(j.id)["status"] == "done"], "failed": failed,
-                      "blocked": {j.id: state.get(j.id).get("reason") for j in jobs if state.get(j.id)["status"] == "blocked"},
-                      "spent_usd_est": round(spent_usd(state.budget(), now_fn()), 3)}, indent=1))
+    summary = {"done": [j.id for j in jobs if state.get(j.id)["status"] == "done"], "failed": failed,
+               "blocked": {j.id: state.get(j.id).get("reason") for j in jobs if state.get(j.id)["status"] == "blocked"},
+               "spent_usd_est": round(spent_usd(state.budget(), now_fn()), 3)}
+    print(json.dumps(summary, indent=1))
+    if marker:                                # no eligible job left in this run: the watchdog may stop the instance
+        marker.parent.mkdir(parents=True, exist_ok=True)
+        marker.write_text(json.dumps({"t": now_fn(), **summary}, indent=1), encoding="utf-8")
     return 1 if failed else 0
 
 

@@ -125,10 +125,56 @@ def test_plan_validation(tmp_path):
         rp.load_plan(p)
 
 
-def test_repo_plan_loads_and_blocks_gpu_without_budget(tmp_path, prereg_dir, monkeypatch, capsys):
+def test_repo_plan_loads_in_explicit_no_cap_mode(tmp_path, prereg_dir, monkeypatch, capsys):
     monkeypatch.setenv("APSP_STORE", str(tmp_path / "store"))
     plan, jobs = rp.load_plan(Path(rp.REPO) / "configs" / "full_experiments.yaml")
-    assert plan["approved_total_usd"] is None and plan["destroy_instance"] is False
+    assert plan["financial_cap_mode"] == "none" and plan["destroy_instance"] is False
+    assert plan["instance_id"] == 56261825
     assert rp.main(["--plan", str(Path(rp.REPO) / "configs" / "full_experiments.yaml"), "--status"], runtime=_rt()) == 0
     out = capsys.readouterr().out
-    assert "p1_env" in out and "budget:not_approved" in out
+    assert "no financial cap (explicit)" in out and "budget:" not in out
+    byid = {j.id: j for j in jobs}                            # science gates unchanged
+    assert byid["p2_bank"].prereg == ["A"] and byid["p5_bench_val"].prereg == ["B"] and byid["p6_geneval"].prereg == ["C"]
+    assert byid["p1_bench_calib"].gates == ["pool_check_calibration"] and not byid["p1_bench_calib"].prereg
+
+
+def test_no_cap_mode_skips_only_budget_and_price(tmp_path, prereg_dir):
+    p = _plan(tmp_path, [J("a", est=50.0), J("b", prereg=["A"])], total=None, max_h=None)
+    d = yaml.safe_load(p.read_text())
+    assert rp.main(["--plan", str(p), "--resume"], runner=FakeRunner(tmp_path), runtime=_rt(price=None)) == 0
+    assert rp.State(tmp_path / "runs" / "t").get("a")["reason"] == "budget:not_approved"   # null without the mode
+    d["financial_cap_mode"] = "none"
+    d["workload_pidfile"] = str(tmp_path / "wl.pid")
+    d["finished_marker"] = str(tmp_path / "wl.finished")
+    p.write_text(yaml.safe_dump(d))
+    fr = FakeRunner(tmp_path)
+    rp.main(["--plan", str(p), "--resume"], runner=fr, runtime=_rt(price=0.527))
+    st = rp.State(tmp_path / "runs" / "t")
+    assert fr.calls == ["echo a"] and st.get("b")["reason"] == "prereg:A"
+    assert st.get("a")["cost_usd_est"] >= 0 and (tmp_path / "wl.pid").read_text().strip().isdigit()
+    fin = json.loads((tmp_path / "wl.finished").read_text())
+    assert fin["blocked"] == {"b": "prereg:A"}
+    fr2 = FakeRunner(tmp_path)
+    rp.main(["--plan", str(p), "--resume"], runner=fr2, runtime=_rt(armed=False))   # watchdog still required
+    d["jobs"].append(J("c"))
+    p.write_text(yaml.safe_dump(d))
+    rp.main(["--plan", str(p), "--resume"], runner=fr2, runtime=_rt(armed=False))
+    assert fr2.calls == [] and st.get("c")["reason"].startswith("watchdog:")
+    d["financial_cap_mode"] = "unlimited"
+    p.write_text(yaml.safe_dump(d))
+    with pytest.raises(rp.PlanError, match="financial_cap_mode"):
+        rp.load_plan(p)
+
+
+def test_pool_check_calibration_gate(tmp_path):
+    env = {"CAL": str(tmp_path)}
+    assert not rp.gate_status("pool_check_calibration", env=env)[0]
+    (tmp_path / "calib").mkdir()
+    f = tmp_path / "calib" / "pool_full_check.json"
+    f.write_text(json.dumps({"cross_split_full_pool": [{"prompt_uid": "x", "split": "train_fit"},
+                                                       {"prompt_uid": "y", "split": "val"}],
+                             "selected_not_in_survivors": []}))
+    assert rp.gate_status("pool_check_calibration", env=env)[0]       # research splits only: calibration unaffected
+    f.write_text(json.dumps({"cross_split_full_pool": [{"prompt_uid": "x", "split": "calibration"}],
+                             "selected_not_in_survivors": []}))
+    assert not rp.gate_status("pool_check_calibration", env=env)[0]

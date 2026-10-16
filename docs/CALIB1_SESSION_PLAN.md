@@ -1,29 +1,25 @@
-# Session plan calib1 (waiting for the session budget; nothing started)
+# Session plan calib1 (P1 on 56261825, no-financial-cap mode)
 
-**Machine (updated 2026-10-16).** Vast **56224386**: RTX 4090 48 GB (verified, docs/EXPERIMENT_STATUS.md), API price
-**$0.778/h**. The disk already holds the pinned venv from prep0 (00_setup ok). The earlier 3090 plan (56070930,
-≤ $0.40/h) is superseded. 3090 timings below are kept only as conservative upper bounds; the 4090 is measured here.
-**The price is re-read from the API at start (run_project); GPU jobs refuse to start above the approved ceiling.**
+**Machine (D48).** Vast **56261825**, RTX 4090 24 GB, API price $0.527/h. Fresh disk. 48 GB / 3090 timings are not
+reused. **Financial mode (D47):** no budget gate and no price ceiling; spend recorded. The watchdog has no money
+deadline and stops on completion / no eligible job / run_project death / stall.
 
-**Proposed P1 package** (Q19): budget **$5.00**, price ceiling **$0.80/h**, watchdog deadline **start + 330 min**.
-Jobs (configs/full_experiments.yaml, 3090-based upper bounds): p1_env 0.15 h, p1_pool_check 0.25 h, p1_m3m9 2.2 h,
-p1_chunk 0.35 h, p1_m2 (k = 1,2,3,4,8,12,16) 0.7 h, p1_equivalence 0.35 h, p1_m2b 0.25 h = 4.25 h, plus the watchdog
-live check and restart ≈ 0.25 h → 4.5 h × $0.778 = $3.50 central, $4.38 with ×1.25.
+**A. Live stop check** (control path, before the long workload): `bash scripts/watchdog_live_check.sh` arms the
+no-financial-deadline mode around a 90 s dummy workload; stop request at about +2.5 min. The user confirms
+*Stopped* in the console and starts the instance again; then read `/workspace/apsp/watchdog_live_check/state.json`.
 
-Commands on the instance (after the live check of §A and the restart):
+**B. P1** (one command; jobs p1_env → p1_pool_check → p1_m3m9 → p1_chunk → p1_m2 → p1_equivalence → p1_m2b →
+p1_forecast → p1_bench_calib → p1_report_calib; P2+ stay blocked by PREREG-A, so run_project then writes its finished
+marker and the watchdog stops the instance after the idle grace):
 
 ```bash
 cd /workspace/DMRL && git fetch /workspace/xfer/dmrl_<sha>.bundle && git checkout <sha>
+# prompt files (sha256 in reports/prompt_pool/pool_manifest.json): /workspace/apsp/prompts/{prompt_pool,val_ext_sealed,survivors}.parquet
 export APSP_STORE=/workspace/apsp
-START=$(date +%s); DEADLINE=$(( START + 330*60 ))
-bash scripts/arm_watchdog.sh "$CONTAINER_ID" "$DEADLINE" "$APSP_STORE/watchdog"   --finished-marker "$APSP_STORE/calib1.finished" --idle-grace-s 900   --save-cmd "pkill -TERM -f '[s]cripts/gpu_smoke.sh'; pkill -TERM -f '[a]psp.run_project'"   --save-cmd "tar --exclude='*.lock' -czf $APSP_STORE/calib1_artifacts.tgz -C $APSP_STORE/runs calib1"
-# after approval: approved_total_usd / approved_max_usd_per_h filled in configs/full_experiments.yaml by the user
-$APSP_STORE/venv-gpu/bin/python -m apsp.run_project --plan configs/full_experiments.yaml --resume --only   p1_env p1_pool_check p1_m3m9 p1_chunk p1_m2 p1_equivalence p1_m2b p1_forecast
-touch "$APSP_STORE/calib1.finished"
+bash scripts/launch_project.sh
 ```
 
-(`p1_m3m9` and `p1_m2b` also need the research marker `reports/prompt_pool/POOL_FROZEN.json` = Q15/Q16 approval;
-without it the orchestrator runs the other P1 jobs and reports those two as blocked.)
+3090-based upper bounds for the job list (replaced by `p1_forecast`): ≈ 4.25 h + bench_calib ≈ 1.5 h.
 
 ### Previous 3090 plan (kept for the record)
 

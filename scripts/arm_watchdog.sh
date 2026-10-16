@@ -17,11 +17,14 @@ mkdir -p "${STATE}"
 if "${PY}" "${HERE}/vast_watchdog.py" --check-armed --instance-id "${IID}" --state-dir "${STATE}" >/dev/null 2>&1; then
   echo "watchdog already armed for ${IID} in ${STATE}"; exit 0
 fi
-setsid nohup "${PY}" "${HERE}/vast_watchdog.py" --instance-id "${IID}" --deadline-epoch "${DEADLINE}" \
+# DEADLINE "none" = explicit no-financial-cap mode (D47): vast_watchdog.py then requires --finished-marker,
+# --workload-pidfile and --stall-s, and stops on completion, workload death or a stall instead of a clock.
+if [[ "${DEADLINE}" == "none" ]]; then DL=(--no-financial-deadline); else DL=(--deadline-epoch "${DEADLINE}"); fi
+setsid nohup "${PY}" "${HERE}/vast_watchdog.py" --instance-id "${IID}" "${DL[@]}" \
   --state-dir "${STATE}" "$@" > "${STATE}/watchdog.out" 2>&1 < /dev/null &
 for _ in $(seq 1 30); do
   if "${PY}" "${HERE}/vast_watchdog.py" --check-armed --instance-id "${IID}" --state-dir "${STATE}" >/dev/null 2>&1; then
-    echo "watchdog armed: instance ${IID}, deadline $(date -u -d "@${DEADLINE%.*}" +%FT%TZ 2>/dev/null || echo "${DEADLINE}")"
+    echo "watchdog armed: instance ${IID}, deadline $(date -u -d "@${DEADLINE%.*}" +%FT%TZ 2>/dev/null || echo "${DEADLINE} (completion/death/stall triggers)")"
     exit 0
   fi
   sleep 1

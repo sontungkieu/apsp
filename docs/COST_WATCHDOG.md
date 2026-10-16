@@ -86,3 +86,21 @@ HARD_DEADLINE_EPOCH=$(( DEADLINE - 600 )) MAX_MINUTES=<n> bash scripts/gpu_smoke
 
 Then download within the idle grace. If the download is not finished, the instance stops anyway; the tarball stays
 on the kept disk.
+
+## No-financial-deadline mode (D47, current)
+
+The user removed the rental cap for the agreed suite. `scripts/launch_project.sh` arms
+`vast_watchdog.py --no-financial-deadline` and starts `apsp.run_project` under `setsid`. Triggers (all mandatory when
+arming in this mode):
+
+| Trigger | Condition |
+|---|---|
+| `idle_after_finish` | run_project wrote `$APSP_STORE/run_project.finished` (no eligible job left: done, failed, or PREREG-blocked) and the idle grace passed |
+| `workload_died` | the pid in `$APSP_STORE/run_project.pid` is gone without the marker (or never appeared) for the idle grace |
+| `stalled` | `--stall-s` without progress: no watched log/state file changed and GPU utilisation below `--gpu-busy-pct` |
+
+On a trigger the watchdog ends the workload by the process group of that pid (TERM, KILL after 60 s; never its own
+group, never a command-line pattern), runs the bounded packaging command, and then sends the stop whatever the
+packaging result. Stop levels stay separate in `state.json`: `stop_requested`, `api_accepted`, `confirmed_stopped`.
+A progressing job is never stopped for time; per-job timeouts in the plan still bound hangs. Live check of this mode:
+`bash scripts/watchdog_live_check.sh` (90 s dummy workload, stop request at about +2.5 min).

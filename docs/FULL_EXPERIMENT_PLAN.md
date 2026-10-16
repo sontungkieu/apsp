@@ -47,9 +47,10 @@ Known limitations kept explicit:
 ## 3. Orchestration
 
 `python -m apsp.run_project --plan configs/full_experiments.yaml --resume` (new). Jobs P1–P8 in dependency order;
-each GPU job needs an approved total budget, a provider price ≤ the approved ceiling, enough budget left for its
-forecast × 1.25 plus a 20 min pack/stop margin, and an armed watchdog for **56224386** with enough time before its
-deadline. PREREG markers are read, never written. Budget is cumulative across restarts (`budget.json`; external
+in `approved_budget` mode each GPU job needs an approved total budget, a provider price ≤ the approved ceiling and
+enough budget left for its forecast × 1.25 plus a 20 min pack/stop margin; in the explicit `financial_cap_mode: none`
+(current, D47) those checks are skipped and spend is only recorded. Always: an armed watchdog for the plan's
+instance (**56261825**). `scripts/launch_project.sh` arms it and starts run_project in its own process group. PREREG markers are read, never written. Budget is cumulative across restarts (`budget.json`; external
 spend recorded with `--add-spend`). `--status` prints why each job is blocked.
 
 `python -m apsp.reports.forecast` turns the measured M9/M2/M2b of the calibration run into the P2–P7 table (GPU h,
@@ -78,9 +79,17 @@ USD central, USD × safety). It refuses synthetic tables.
 
 ## 6. Conflicts with older documents (resolved in favour of the 2026-10-16 plan)
 
-- Measurement machine: older plans assume an RTX 3090 at ≤ $0.40/h (56070930). The current instance is
-  **56224386, RTX 4090 48 GB at $0.778/h**. 3090 latencies are never reused as 4090 latencies; the 3090 numbers in
-  `configs/full_experiments.yaml` are only conservative budget placeholders until `p1_forecast` replaces them.
+- Measurement machine: older plans assume an RTX 3090 at ≤ $0.40/h (56070930), the plan v1.0 names 56224386
+  (RTX 4090 48 GB, $0.778/h). The measurement machine is now **56261825, RTX 4090 24 GB at $0.527/h** (D48). Neither
+  3090 nor 48 GB latencies are reused; the 3090 numbers in `configs/full_experiments.yaml` are placeholders until
+  `p1_forecast` replaces them.
+- Budget: plan §2/§8 require an approved total budget and price checks; the user removed the rental cap for the
+  agreed suite (D47, explicit `financial_cap_mode: none`). The watchdog stops on completion / no eligible job /
+  workload death / stall instead of a money deadline. Scientific gates are unchanged.
+- Calibration-split table (D49): an addition approved by the user, descriptive only; plan §P1 still forbids choosing
+  pilot size from method results on calibration (the table runs after the forecast).
+- The user referred to a "plan v1.1"; the only plan file present is v1.0 (identical copies in the repo root and
+  `docs/plans/`), so v1.0 + Spec/Guide v1.1.1 are followed.
 - M2 subset: `CALIB1_SESSION_PLAN.md` measured k ∈ {1,2,4,8,16}; B4b needs 3 and 12 too, so the plan adds them.
 - Equivalence: was optional in the minimal calibration; the plan puts it in P1 (input to PREREG-A).
 - The 33 GPU-hour total of `PILOT_RUN_PLAN.md` is a pilot figure for a 3090, not a full-paper ETA.
