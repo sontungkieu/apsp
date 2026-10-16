@@ -51,9 +51,8 @@ Excluded: **56267276** (VRAM corruption, D51, docs/VRAM_FAULT_56267276.md). Earl
 | Evidence | Status |
 |---|---|
 | smoke1 / diag1 (RTX 3090, 2026-10-15) | CUDA-real, previous machine; not reused as 4090 latency |
-| Calibration M2/M3/M9/chunk/equivalence/M2b on 56267276 | **not run yet** |
-| Prompt pool full-pool duplicate check (Q16) | **not run yet** (first P1 GPU job) |
-| Calibration-split quality–cost table (D49, descriptive) | **not run yet** |
+| **P1 calibration on 56272061** (2026-10-16 16:54–18:43Z, commit `d4cb987`) | **CUDA-real, complete** (11/11 jobs): VRAM gate + torch 21 GiB + CUDA memtest clean; pool full check 0 cross-split; M3 fp16/fp32 0 failures (6,400 previews each); M9 16.1 s per prompt-bank; chunk 1 fastest + smallest; M2 k ∈ {1,2,3,4,8,12,16} (provisional); equivalence 10/10 exact; M2b residual −2.8 %; forecast 32.4 GPU-h. Report: `runs/calib1/report/calibration_report.md` |
+| **Calibration-split fixed baselines** (D49, descriptive) | **CUDA-real**: 6 methods × 50 prompts × 2 banks = 600 episodes, 0 failures; `calibration_quality_cost.csv`. HPS not run (adapter unverified) |
 | New baselines B4b/B7/B10, RL registry, orchestrator, forecast, no-cap watchdog | **synthetic** only (tests) |
 | HPS v2.1 adapter | code + pins only; **not run** (bench_calib reports HPS as missing) |
 | Bank, tuning, online train_dev benchmark, controller, val, test | **blocked**: PREREG-A/B/C unsigned |

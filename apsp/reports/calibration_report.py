@@ -81,7 +81,7 @@ def build(cal: Path) -> tuple[str, dict]:
                 lines += ["", "| method | n | mean IR | mean e2e s | p95 e2e s | fail rate | peak VRAM GiB |",
                           "|---|---|---|---|---|---|---|"]
                 for r in d.get("summary", []):
-                    vr = r.get("peak_vram_reserved_bytes") or r.get("max_peak_vram_reserved_bytes")
+                    vr = r.get("peak_vram_reserved_max") or r.get("peak_vram_reserved_bytes")
                     lines.append(f"| {r.get('method')} | {r.get('n_episodes')} | {_f(r.get('mean_Q'))} | "
                                  f"{_f(r.get('mean_e2e_s'))} | {_f(r.get('p95_e2e_s'))} | {_f(r.get('failure_rate'))} | "
                                  f"{_f(vr / 2**30) if vr else 'n/a'} |")
