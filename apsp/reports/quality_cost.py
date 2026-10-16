@@ -202,6 +202,33 @@ def freeze_selection(rep: dict, df: pd.DataFrame, cfg: dict, cfg_path: Path, epi
     return frozen
 
 
+CSV_COLUMNS = ["method", "family", "split", "reference", "n_episodes", "n_prompts", "mean_Q", "dQ", "dQ_lo", "dQ_hi",
+               "ci_level", "ni", "mean_e2e_s", "p50_e2e_s", "p95_e2e_s", "mean_ledger_us", "savings", "savings_lo",
+               "savings_hi", "cost_decision", "failure_rate", "peak_vram_reserved_max", "mean_verify",
+               "mean_candidate_forwards", "mean_forwards", "rm_in_inference", "pareto", "label", "backend",
+               "costs_provisional", "costs_synthetic", "commit"]
+
+
+def to_csv_rows(rep: dict, man: dict) -> list[dict]:
+    """One row per method (plan §10.1 `sd15_quality_cost.csv`): quality, paired effect/CI vs the reference, NI,
+    e2e savings/CI, latency p50/p95, failure, VRAM, VERIFY/compute counts, n, verdict and provenance."""
+    con = {c["method"]: c for c in rep["contrasts_vs_reference"]}
+    par = {c["method"]: c["pareto"] for c in rep["curve"]}
+    costs = rep.get("costs") or {}
+    rows = []
+    for r in rep["summary"]:
+        m = r["method"]
+        c = con.get(m, {})
+        row = {**{k: r.get(k) for k in CSV_COLUMNS if k in r}, "split": rep.get("split"), "reference": rep["reference"],
+               "ci_level": rep["ci_level"], "pareto": par.get(m), "label": rep["label"], "backend": rep.get("backend"),
+               "costs_provisional": costs.get("provisional"), "costs_synthetic": costs.get("synthetic"),
+               "commit": man.get("commit")}
+        for k in ("dQ", "dQ_lo", "dQ_hi", "ni", "savings", "savings_lo", "savings_hi", "cost_decision"):
+            row[k] = c.get(k) if m != rep["reference"] else ("reference" if k in ("ni", "cost_decision") else None)
+        rows.append({k: row.get(k) for k in CSV_COLUMNS})
+    return rows
+
+
 def to_markdown(rep: dict) -> str:
     L = [f"# Quality-cost report", "", f"**{rep['label']}**", "",
          f"Split: `{rep['split']}` · reference: `{rep['reference']}` · cost measure: `{rep['cost_measure']}` · CI level {rep['ci_level']:.4f}",
@@ -250,6 +277,7 @@ def main(argv=None) -> int:
     rep = build_report(df, man, cfg)
     (out / "quality_cost.json").write_text(json.dumps(rep, indent=1, default=str), encoding="utf-8")
     (out / "quality_cost.md").write_text(to_markdown(rep), encoding="utf-8")
+    pd.DataFrame(to_csv_rows(rep, man), columns=CSV_COLUMNS).to_csv(out / "quality_cost.csv", index=False)
     if a.freeze:
         print(json.dumps(freeze_selection(rep, df, cfg, Path(a.config), run / "episodes.jsonl", Path(a.freeze)), indent=1))
     print(json.dumps({"status": rep["status"], "label": rep["label"]}, indent=1))

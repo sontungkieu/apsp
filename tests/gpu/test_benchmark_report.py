@@ -85,6 +85,10 @@ def test_report_not_concludable_without_approved_config(run_dir, tmp_path):
     assert all(c["ni"] == "not_concludable" for c in rep["contrasts_vs_reference"] if "ni" in c)
     assert any(r["basis"].startswith("DESCRIPTIVE") for r in rep["cost_to_reach"])
     assert {p["method"] for p in rep["curve"]} >= set(BASE)
+    csv = pd.read_csv(tmp_path / "r" / "quality_cost.csv")
+    assert set(qcr.CSV_COLUMNS) == set(csv.columns) and set(BASE) <= set(csv["method"])
+    assert (csv.loc[csv["method"] == "psp", "ni"] == "reference").all()
+    assert csv["label"].str.contains("SYNTHETIC").all() and bool(csv["costs_synthetic"].all())
     with pytest.raises(SystemExit, match="train_dev"):
         qcr.main(["--run", str(run_dir), "--out", str(tmp_path / "r2"), "--freeze", str(tmp_path / "f.json")])
 
