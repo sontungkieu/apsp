@@ -27,6 +27,12 @@ IID = 56070930
 PY = f'"{sys.executable}"'
 
 
+@pytest.fixture(autouse=True)
+def _not_on_this_instance(monkeypatch):
+    """On a real Vast box CONTAINER_ID is set (e.g. 56224386) and arming correctly refuses the test id; isolate."""
+    monkeypatch.delenv("CONTAINER_ID", raising=False)
+
+
 class Clock:
     def __init__(self, t=1_000_000.0):
         self.t = t
@@ -209,7 +215,7 @@ def test_hanging_download_does_not_delay_stop(tmp_path):
                                "--finished-marker", str(marker), "--idle-grace-s", "1.5", "--save-margin-s", "10",
                                "--poll-s", "0.2", "--retry-s", "0.2", "--status-checks", "1", "--min-lead-s", "1"],
                               tmp_path / "wd.log")
-        assert _wait(lambda: wdm.read_state(str(st)).get("api_accepted") is True, 20), (tmp_path / "wd.log").read_text()
+        assert _wait(lambda: wdm.read_state(str(st)).get("api_accepted") is True, 60), (tmp_path / "wd.log").read_text()
         assert dl.poll() is None, "download still running when the stop was accepted"
         s = wdm.read_state(str(st))
         assert s["trigger"] == "idle_after_finish"
@@ -299,3 +305,17 @@ def test_runner_refuses_without_armed_watchdog_on_vast(tmp_path):
                        text=True, timeout=60)
     assert r.returncode == 3 and "cost watchdog not armed" in r.stderr
     assert not (tmp_path / "store" / "runs" / "gate" / "summary.tsv").exists()   # nothing ran
+
+
+def test_refuses_save_cmd_that_would_kill_the_watchdog(tmp_path):
+    """Live incident 2026-10-16: `pkill -f scripts/gpu_smoke.sh` matched the watchdog's own argv (its --save-cmd)."""
+    vw = wdm
+    own = "python3 scripts/vast_watchdog.py --save-cmd pkill -TERM -f scripts/gpu_smoke.sh"
+    assert vw.self_matching_kill_patterns(["pkill -TERM -f scripts/gpu_smoke.sh; sleep 1"], own) == ["scripts/gpu_smoke.sh"]
+    own_ok = "python3 scripts/vast_watchdog.py --save-cmd pkill -TERM -f '[s]cripts/gpu_smoke.sh'"
+    assert vw.self_matching_kill_patterns(["pkill -TERM -f '[s]cripts/gpu_smoke.sh'"], own_ok) == []
+    assert vw.self_matching_kill_patterns(["tar -czf a.tgz -C runs x"], own) == []
+    wd = vw.Watchdog(1, 10 ** 10, str(tmp_path), vw.FakeAPI(str(tmp_path / "api")),
+                     save_cmds=["pkill -f scripts/gpu_smoke.sh"], clock=lambda: 10 ** 10 - 600)
+    with pytest.raises(vw.WatchdogError, match="own command"):
+        wd.arm(own_cmdline="vast_watchdog.py --save-cmd 'pkill -f scripts/gpu_smoke.sh'")

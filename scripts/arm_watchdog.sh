@@ -5,7 +5,7 @@
 #   bash scripts/arm_watchdog.sh <instance_id> <deadline_epoch> <state_dir> [extra vast_watchdog.py args...]
 #   e.g. bash scripts/arm_watchdog.sh "$CONTAINER_ID" $(( $(date +%s) + 115*60 )) /workspace/apsp/watchdog \
 #          --finished-marker /workspace/apsp/diag2.finished --idle-grace-s 900 \
-#          --save-cmd 'pkill -TERM -f scripts/gpu_smoke.sh' \
+#          --save-cmd "pkill -TERM -f '[s]cripts/gpu_smoke.sh'" \
 #          --save-cmd 'tar --exclude="*.lock" -czf /workspace/apsp/diag2_artifacts.tgz -C /workspace/apsp/runs diag2'
 #
 # The API key stays in the environment (CONTAINER_API_KEY on Vast); never pass it as an argument.

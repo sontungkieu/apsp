@@ -27,7 +27,7 @@ START=$(date +%s); BUDGET_MIN=<approved minutes>          # minimal plan 270, fu
 DEADLINE=$(( START + BUDGET_MIN*60 - 300 ))
 bash scripts/arm_watchdog.sh "$CONTAINER_ID" "$DEADLINE" "$APSP_STORE/watchdog" \
   --finished-marker "$APSP_STORE/calib1.finished" --idle-grace-s 900 \
-  --save-cmd "pkill -TERM -f scripts/gpu_smoke.sh; sleep 20; pkill -KILL -f scripts/gpu_smoke.sh" \
+  --save-cmd "pkill -TERM -f '[s]cripts/gpu_smoke.sh'; sleep 20; pkill -KILL -f '[s]cripts/gpu_smoke.sh'" \
   --save-cmd "tar --exclude='*.lock' -czf $APSP_STORE/calib1_artifacts.tgz -C $APSP_STORE/runs calib1"
 export HARD_DEADLINE_EPOCH=$(( DEADLINE - 600 )) MAX_MINUTES=$(( BUDGET_MIN - 30 ))
 # minimal plan (M2 on the k the pilot methods use):

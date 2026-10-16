@@ -79,7 +79,7 @@ export APSP_STORE=/workspace/apsp RUN_ID=<run>
 DEADLINE=$(( <session_start_epoch> + <budget_minutes>*60 - 300 ))   # leave 5 min for the stop to take effect
 bash scripts/arm_watchdog.sh "$CONTAINER_ID" "$DEADLINE" "$APSP_STORE/watchdog" \
   --finished-marker "$APSP_STORE/$RUN_ID.finished" --idle-grace-s 900 \
-  --save-cmd "pkill -TERM -f scripts/gpu_smoke.sh; sleep 20; pkill -KILL -f scripts/gpu_smoke.sh" \
+  --save-cmd "pkill -TERM -f '[s]cripts/gpu_smoke.sh'; sleep 20; pkill -KILL -f '[s]cripts/gpu_smoke.sh'" \
   --save-cmd "tar --exclude='*.lock' -czf $APSP_STORE/${RUN_ID}_artifacts.tgz -C $APSP_STORE/runs $RUN_ID"
 HARD_DEADLINE_EPOCH=$(( DEADLINE - 600 )) MAX_MINUTES=<n> bash scripts/gpu_smoke.sh <preset>; touch "$APSP_STORE/$RUN_ID.finished"
 ```

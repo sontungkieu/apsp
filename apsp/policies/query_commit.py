@@ -122,8 +122,9 @@ def fit_selector(X: np.ndarray, Y: np.ndarray, groups: Sequence[str], j_c: int, 
             tr, te = folds != f, folds == f
             if not te.any() or not tr.any():
                 continue
-            W = _ridge(Xs[tr], Y[tr], a)
-            P = np.concatenate([Xs[te], np.ones((te.sum(), 1))], 1) @ W
+            fmu, fsd = X[tr].mean(0), np.maximum(X[tr].std(0), 1e-6)     # standardisation fit inside the fold
+            W = _ridge((X[tr] - fmu) / fsd, Y[tr], a)
+            P = np.concatenate([(X[te] - fmu) / fsd, np.ones((te.sum(), 1))], 1) @ W
             err.append(float(((P - Y[te]) ** 2).mean()))
         cv[f"{a:.6g}"] = float(np.mean(err)) if err else float("inf")
     best = min(alphas, key=lambda a: (cv[f"{a:.6g}"], -a))

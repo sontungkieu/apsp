@@ -115,6 +115,19 @@ class DenoiseEngine:
         self.rows = [self.rows[i] for i in retained]
         self._check_rows(state)
 
+    def lfeat(self, state) -> dict:
+        """B10 features at the current checkpoint (hook mode "lfeat"), same layout as the bank:
+        [drift, cfg_gap, mean_c0..3, std_c0..3]; drift is NaN at the first checkpoint."""
+        self._check_rows(state)
+        if self.hook.j != state.j or self.forward_idx != self.delta * state.j:
+            raise AssertionError("lfeat must read the x0 of the current checkpoint forward")
+        eu, ec = self.last_eps
+        f = self.hook.lfeat(eu, ec)
+        k = len(self.rows)
+        d = f["drift"].tolist() if f["drift"] is not None else [float("nan")] * k
+        g, m, s = f["cfg_gap"].tolist(), f["mean_c"].tolist(), f["std_c"].tolist()
+        return {c: [float(d[i]), float(g[i]), *map(float, m[i]), *map(float, s[i])] for i, c in enumerate(self.rows)}
+
     def finalize_scores(self, state) -> dict:
         self._check_rows(state)
         assert self.forward_idx == self.steps

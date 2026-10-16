@@ -1,7 +1,8 @@
 """Tune and freeze the pilot baselines on replay (train_fit search, train_dev selection, per cap) - CPU only.
 
-B3 best fixed pair (select_b3_dev), B5 screen-and-resume (select_sr_dev), B6 threshold (tune_threshold, <= 2000 fit
-evaluations), B8 one query then commit (tune_b8). Fixed-configuration methods (single, single32, BoN-2/4/8, PSP) are
+B3 best fixed pair (select_b3_dev), B4b best PSP-grid strategy (select_b4b_dev, covered primitives only), B5
+screen-and-resume (select_sr_dev), B6 threshold (tune_threshold, <= 2000 fit evaluations), B7 prompt-only selector
+(tune_b7), B8 one query then commit (tune_b8), B10-min cheap latent predictor (tune_b10). Fixed-configuration methods (single, single32, BoN-2/4/8, PSP) are
 always listed. Output: a methods file `{"selected_on": "train_dev", "methods": [...]}` plus the artifacts it names
 (threshold parameters, B8 selector, NormStats, PCA16) and their hashes. Research splits pass the PREREG guards of the
 accessor; val/test are never read here.
@@ -43,7 +44,7 @@ def main(argv=None) -> int:
     ap.add_argument("--alphas", type=float, nargs="+", default=[0.5, 1.0])
     ap.add_argument("--b6-evals", type=int, default=2000)
     ap.add_argument("--disp-us", type=int, default=0)
-    ap.add_argument("--skip", nargs="*", default=[], choices=["b3", "b5", "b6", "b8"])
+    ap.add_argument("--skip", nargs="*", default=[], choices=["b3", "b4b", "b5", "b6", "b7", "b8", "b10"])
     ap.add_argument("--out", required=True)
     a = ap.parse_args(argv)
     if a.fit_split in FORBIDDEN or a.dev_split in FORBIDDEN:
@@ -65,6 +66,15 @@ def main(argv=None) -> int:
     methods, log = list(FIXED_METHODS), {}
     Yf, C = ctx.schedule_table(fit)
     Yd, _ = ctx.schedule_table(dev)
+    b4b_tables = None
+    if "b4b" not in a.skip:
+        from apsp.sim import b4b_select as b4
+        uf, ud = b4.prompts_with_pool(fit), b4.prompts_with_pool(dev)
+        C4, missing4 = b4.strategy_costs(fx)
+        b4b_tables = (b4.grid_outcomes([b4.pool_arrays(ctx.accessor, u) for u in uf], ctx.r_fail),
+                      b4.grid_outcomes([b4.pool_arrays(ctx.accessor, u) for u in ud], ctx.r_fail), C4)
+        log["b4b_coverage"] = {"n_grid": int(len(C4)), "n_uncovered": int((C4 < 0).sum()), "missing_primitives": missing4,
+                               "grid_hash": b4.grid_hash(), "n_fit_prompts": len(uf), "n_dev_prompts": len(ud)}
     for alpha in a.alphas:
         cap = ctx.caps.cap(alpha)
         tag = str(alpha)
@@ -74,6 +84,29 @@ def main(argv=None) -> int:
             log[tag]["b3"] = asdict(b3) if b3 else None
             if b3:
                 methods.append(f"fixed:{b3.j1},{b3.j2}@{alpha}")
+        if b4b_tables is not None:
+            from apsp.sim.b4b_select import select_b4b_dev
+            b4 = select_b4b_dev(*b4b_tables, cap)
+            log[tag]["b4b"] = b4
+            if b4:
+                methods.append(f"{b4['name']}@{alpha}")
+        if "b7" not in a.skip:
+            from apsp.policies.prompt_selector import tune_b7
+            b7 = tune_b7(ctx, fit, dev, cap)
+            if b7:
+                p7 = out / f"b7_selector_alpha{alpha}.json"
+                p7.write_text(json.dumps(b7["selector"], indent=1), encoding="utf-8")
+                log[tag]["b7"] = {"path": str(p7), "dev_mean": b7["dev_mean"], "alpha_ridge": b7["alpha"]}
+                methods.append(f"b7:{p7.as_posix()}@{alpha}")
+        if "b10" not in a.skip:
+            from apsp.policies.latent_predictor import tune_b10
+            b10 = tune_b10(ctx, fit, dev, cap, fx)
+            if b10:
+                p10 = out / f"b10_predictor_alpha{alpha}.json"
+                p10.write_text(json.dumps(b10["predictor"], indent=1), encoding="utf-8")
+                log[tag]["b10"] = {"path": str(p10), "pair": [b10["j1"], b10["j2"]], "dev_mean": b10["dev_mean"],
+                                   "cost_us": b10["cost_us"]}
+                methods.append(f"b10:{p10.as_posix()}@{alpha}")
         if "b5" not in a.skip:
             keys = {a.fit_split: fit, a.dev_split: dev}
             b5 = select_sr_dev(lambda c, s: replay_mean(ctx, c, keys[s], cap), fx, cap,

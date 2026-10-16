@@ -201,6 +201,21 @@ def save_artifact(out_dir: str | Path, res: TrainResult, cph: str, extra: dict) 
     return out
 
 
+def load_policy(path: str | Path, method_id: Optional[str] = None) -> ReinforcePolicy:
+    """Frozen greedy policy from a save_artifact directory (or its artifact.json); used by the method registry."""
+    p = Path(path)
+    d = p.parent if p.is_file() else p
+    meta = json.loads((d / "artifact.json").read_text(encoding="utf-8"))
+    known = set(RLConfig.__dataclass_fields__)
+    cfg = RLConfig(**{k: v for k, v in meta["cfg"].items() if k in known})
+    net = ActorCritic(cfg.obs_dim(), cfg.hidden)
+    net.load_state_dict(torch.load(d / "policy.pt", map_location="cpu", weights_only=True))
+    net.eval()
+    pol = ReinforcePolicy(net, cfg, mode="greedy", method_id=method_id or f"rl:{d.as_posix()}")
+    pol.cph = meta.get("cph", "M1-unknown")
+    return pol
+
+
 # ---------------------------------------------------------------------------------------------
 def synthetic_smoke(out_dir: Optional[str] = None, iterations: int = 60, n_prompts: int = 40, seed: int = 0) -> dict:
     """End-to-end REINFORCE smoke on a SYNTHETIC bank (replay, real ledger/mask/obs). Not a research result."""

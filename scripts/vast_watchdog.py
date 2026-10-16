@@ -21,13 +21,15 @@ Stop outcome is recorded in three separate levels:
 
   python3 scripts/vast_watchdog.py --instance-id 56070930 --deadline-epoch 1792060869 \
       --state-dir /workspace/apsp/watchdog --finished-marker /workspace/apsp/diag1.finished --idle-grace-s 900 \
-      --save-cmd 'pkill -TERM -f scripts/gpu_smoke.sh' --save-cmd 'tar --exclude="*.lock" -czf ... ' &
+      --save-cmd "pkill -TERM -f '[s]cripts/gpu_smoke.sh'" --save-cmd 'tar --exclude="*.lock" -czf ... ' &
 """
 from __future__ import annotations
 
 import argparse
 import json
 import os
+import re
+import shlex
 import signal
 import subprocess
 import sys
@@ -112,6 +114,32 @@ class FakeAPI:
         return p.read_text().strip() if p.exists() else "running"
 
 
+def self_matching_kill_patterns(save_cmds, own_cmdline: str) -> list[str]:
+    """Patterns of `pkill -f` / `pgrep -f` / `killall -r` in the save commands that also match the watchdog's OWN
+    command line. The save commands are part of that command line, so `pkill -f scripts/gpu_smoke.sh` kills the
+    watchdog itself (seen live on 2026-10-16). Bracket one character instead: `pkill -f '[s]cripts/gpu_smoke.sh'`."""
+    bad = []
+    for cmd in save_cmds:
+        for part in re.split(r"[;&|]+", cmd):
+            try:
+                toks = shlex.split(part)
+            except ValueError:
+                continue
+            if not toks or os.path.basename(toks[0]) not in ("pkill", "pgrep", "killall"):
+                continue
+            if "-f" not in toks and toks[0].endswith(("pkill", "pgrep")):
+                continue
+            pats = [t for t in toks[1:] if not t.startswith("-")]
+            for pat in pats:
+                try:
+                    if re.search(pat, own_cmdline):
+                        bad.append(pat)
+                except re.error:
+                    if pat in own_cmdline:
+                        bad.append(pat)
+    return bad
+
+
 def _safe_json(raw: str) -> dict:
     try:
         v = json.loads(raw) if raw else {}
@@ -161,8 +189,14 @@ class Watchdog:
             f.write(json.dumps({"t": self.clock(), "event": kind, **kw}, default=str) + "\n")
 
     # -- arming -----------------------------------------------------------------------------------------------
-    def arm(self, max_hours: float = 6.0, own_instance_id: Optional[str] = None, min_lead_s: float = 60.0) -> None:
+    def arm(self, max_hours: float = 6.0, own_instance_id: Optional[str] = None, min_lead_s: float = 60.0,
+            own_cmdline: Optional[str] = None) -> None:
         now = self.clock()
+        own = own_cmdline if own_cmdline is not None else " ".join(sys.argv)
+        bad = self_matching_kill_patterns(self.save_cmds, own)
+        if bad:
+            raise WatchdogError(f"refusing to arm: save-cmd kill pattern(s) {bad} also match the watchdog's own command "
+                                "line; bracket one character, e.g. '[s]cripts/gpu_smoke.sh'")
         if own_instance_id is not None and str(own_instance_id) != str(self.iid):
             raise WatchdogError(f"refusing to arm: this machine is instance {own_instance_id}, not {self.iid}")
         if self.deadline <= now + min_lead_s:

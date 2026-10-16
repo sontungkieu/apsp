@@ -12,6 +12,10 @@ run uncapped and their ledger spend is recorded):
   sr:M,JS,Q         B5 screen-and-resume (our same-bank breadth baseline; not Flash-BoN)
   b8:PATH           B8 one query then commit, selector frozen in PATH (needs @alpha)
   random:SEED       B9 uniform feasible random (sanity; needs @alpha)
+  b4b:IDX           B4b strategy IDX of the pinned PSP SD1.5 grid (apsp.sim.b4b_grid), pool 16, one episode per prompt
+  rl:PATH           RL-M1 REINFORCE controller frozen in PATH (apsp.policies.reinforce checkpoint; needs @alpha)
+  b7:PATH           B7 prompt-only selector of a fixed pair, frozen in PATH (needs @alpha)
+  b10:PATH          B10-min cheap latent predictor with fixed cuts, frozen in PATH (needs @alpha)
 """
 from __future__ import annotations
 
@@ -32,8 +36,8 @@ from apsp.sim.features import NormStats
 from apsp.sim.schedules import bon_spec, fixed_pair_spec
 
 UNCAPPED = 10 ** 15
-FAMILIES = ("single", "single32", "bon", "psp", "fixed", "threshold", "sr", "b8", "random")
-NEEDS_CAP = ("threshold", "b8", "random")
+FAMILIES = ("single", "single32", "bon", "psp", "fixed", "threshold", "sr", "b8", "random", "b4b", "rl", "b7", "b10")
+NEEDS_CAP = ("threshold", "b8", "random", "rl", "b7", "b10")
 ONLINE_ONLY = ("single32",)
 
 
@@ -69,7 +73,8 @@ class Method:
 
     def per_prompt(self) -> bool:
         """Pool-16 methods use both banks of a prompt in one episode."""
-        return (self.family == "bon" and self.params[0] == 16) or (self.family == "sr" and self.params[0] == 16)
+        return ((self.family == "bon" and self.params[0] == 16) or (self.family == "sr" and self.params[0] == 16)
+                or self.family == "b4b")
 
 
 def parse_method(s: str) -> Method:
@@ -90,7 +95,13 @@ def parse_method(s: str) -> Method:
     elif fam == "sr":
         M, js, q = (int(x) for x in arg.split(","))
         params = (M, js, q)
-    elif fam in ("threshold", "b8"):
+    elif fam == "b4b":
+        from apsp.sim.b4b_select import sd15_grid
+        i = int(arg)
+        if not 0 <= i < len(sd15_grid()):
+            raise MethodError(f"b4b index {i} outside the grid (0..{len(sd15_grid()) - 1})")
+        params = (i,)
+    elif fam in ("threshold", "b8", "rl", "b7", "b10"):
         art = arg
         sha = file_sha256(Path(arg))
         params = ()
@@ -111,6 +122,9 @@ def rows_for(m: Method, bank_id: int):
         return tuple(pool_rows(2)) if n == 16 else tuple(bank_rows(bank_id)[:n])
     if m.family == "sr" and m.params[0] == 16:
         return tuple(pool_rows(2))
+    if m.family == "b4b":
+        from apsp.sim.b4b_select import sd15_grid
+        return tuple(pool_rows(2))[: sd15_grid()[m.params[0]].k_init]
     return tuple(bank_rows(bank_id))
 
 
@@ -151,6 +165,26 @@ def run_method(m: Method, engine, *, bank_id: int, ctx: RunContext, prompt_feat=
         from apsp.policies.screen_resume import SRConfig, sr_spec
         M, js, q = m.params
         return run_schedule(sr_spec(SRConfig(M, js, q), bank_id), engine, mc=fx, cap_us=cap, C_ref=C_ref, method_id=m.spec)
+    if f == "b4b":
+        from apsp.sim.b4b_grid import to_spec
+        from apsp.sim.b4b_select import sd15_grid
+        return run_schedule(to_spec(sd15_grid()[m.params[0]]), engine, mc=fx, cap_us=cap, C_ref=C_ref, method_id=m.spec)
+    if f == "b7":
+        from apsp.policies.prompt_selector import PromptSelector
+        sel = ctx.loaded.setdefault(m.artifact, PromptSelector.from_dict(_load_json(m.artifact)))
+        j1, j2 = sel.choose(prompt_feat)
+        return run_schedule(fixed_pair_spec(j1, j2, rows), engine, mc=fx.with_overrides(once=ctx.selector_once_us),
+                            cap_us=cap, C_ref=C_ref, method_id=m.spec)
+    if f == "b10":
+        from apsp.policies.latent_predictor import LatentPredictor, run_b10
+        pr = ctx.loaded.setdefault(m.artifact, LatentPredictor.from_dict(_load_json(m.artifact)))
+        return run_b10(pr, engine, rows=rows, mc=ctx.base, cap_us=cap, C_ref=C_ref, method_id=m.spec)
+    if f == "rl":
+        from apsp.policies.reinforce import load_policy
+        pol = ctx.loaded.setdefault(m.artifact, load_policy(m.artifact))
+        ctrl = ctx.base.with_overrides(disp=ctx.ctrl_disp_us, method_id="controller")
+        return run_closed_loop(pol, engine, rows=rows, grammar=G842(), mc=ctrl, cap_us=cap, C_ref=C_ref, norm=ctx.norm,
+                               prompt_feat=prompt_feat)
     if f == "b8":
         from apsp.policies.query_commit import RidgeSelector, run_query_commit
         sel = ctx.loaded.setdefault(m.artifact, RidgeSelector.from_dict(_load_json(m.artifact).get("selector", _load_json(m.artifact))))

@@ -27,6 +27,10 @@ export HF_HOME="${APSP_STORE}/hf"
 export VENV="${APSP_STORE}/venv-gpu"
 export CUBLAS_WORKSPACE_CONFIG=":4096:8"
 export PYTHONUTF8=1
+# CPU thread pools: the container may expose far more cores than its cgroup quota (Vast 56224386: 256 visible,
+# ~61 CPU quota), and torch/BLAS default to all visible cores -> heavy throttling. Fixed for every measurement run.
+export OMP_NUM_THREADS="${OMP_NUM_THREADS:-16}" MKL_NUM_THREADS="${MKL_NUM_THREADS:-16}"
+export OPENBLAS_NUM_THREADS="${OPENBLAS_NUM_THREADS:-16}" NUMEXPR_NUM_THREADS="${NUMEXPR_NUM_THREADS:-16}"
 mkdir -p "${RUN}/logs" "${RUN}/.done" "${HF_HOME}"
 
 exec 9>"${RUN}/.lock"
@@ -48,6 +52,7 @@ PY="${VENV}/bin/python"
 P1="a photograph of an astronaut riding a horse"   # = configs/technical_smoke.yaml prompts[0]
 
 git rev-parse HEAD > "${RUN}/commit.txt" 2>/dev/null || true
+echo "OMP_NUM_THREADS=${OMP_NUM_THREADS} MKL_NUM_THREADS=${MKL_NUM_THREADS}" > "${RUN}/threads.txt"
 git submodule status > "${RUN}/submodule.txt" 2>/dev/null || true
 
 # shellcheck source=scripts/gpu_smoke_lib.sh

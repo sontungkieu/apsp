@@ -264,6 +264,13 @@ class ReplayEngine:
             out.update(self.acc.delivered_flags((self.uid, b), cids, purpose="env"))
         return out
 
+    def lfeat(self, state):
+        """B10 cheap latent features at the current checkpoint: [drift, cfg_gap, mean_c0..3, std_c0..3]."""
+        out = {}
+        for b, cids in self._by_bank(state.alive).items():
+            out.update(self.acc.lfeat((self.uid, b), state.j, cids, purpose="env"))
+        return out
+
 
 def episode_reward(res: EpisodeResult, accessor: PrivilegedAccessor, uid: str, r_fail: float) -> float:
     """Delivered IR of the winner (privileged, reward purpose) or the frozen failure penalty.

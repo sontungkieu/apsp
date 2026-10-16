@@ -53,7 +53,7 @@ export APSP_STORE=/workspace/apsp RUN_ID=calib1 MACHINE_ID=vast_<id>_rtx3090 POO
 START=$(date +%s); DEADLINE=$(( START + <approved_minutes>*60 - 300 ))
 bash scripts/arm_watchdog.sh "$CONTAINER_ID" "$DEADLINE" "$APSP_STORE/watchdog" \
   --finished-marker "$APSP_STORE/$RUN_ID.finished" --idle-grace-s 900 \
-  --save-cmd "pkill -TERM -f scripts/gpu_smoke.sh; sleep 20; pkill -KILL -f scripts/gpu_smoke.sh" \
+  --save-cmd "pkill -TERM -f '[s]cripts/gpu_smoke.sh'; sleep 20; pkill -KILL -f '[s]cripts/gpu_smoke.sh'" \
   --save-cmd "tar --exclude='*.lock' --exclude='banks' -czf $APSP_STORE/${RUN_ID}_artifacts.tgz -C $APSP_STORE/runs $RUN_ID"
 HARD_DEADLINE_EPOCH=$(( DEADLINE - 600 )) MAX_MINUTES=<approved_minutes - 20> bash scripts/gpu_smoke.sh calib
 touch "$APSP_STORE/$RUN_ID.finished"

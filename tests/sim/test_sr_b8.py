@@ -89,7 +89,8 @@ def test_tune_baselines_cli_freezes_methods(syn_bank_dir, tmp_path):
                                 "--out", str(tmp_path)]) == 0
     fr = json.loads((tmp_path / "methods_frozen.json").read_text())
     fams = {m.split(":")[0].split("@")[0] for m in fr["methods"]}
-    assert {"single", "single32", "bon", "psp", "fixed", "sr", "threshold", "b8"} <= fams
+    assert {"single", "single32", "bon", "psp", "fixed", "sr", "threshold", "b8", "b4b", "b7", "b10"} <= fams
+    assert "b4b_coverage" in fr["selection_log"]
     assert fr["selected_on"].startswith("syn_train_dev") and (tmp_path / "norm.json").exists()
     with pytest.raises(SystemExit, match="val/test"):
         tune_baselines.main(["--bank", str(syn_bank_dir), "--synthetic-costs", "--dev-split", "val", "--out", str(tmp_path)])
