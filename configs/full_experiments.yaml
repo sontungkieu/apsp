@@ -211,3 +211,7 @@ jobs:
 
   - {id: p8_sdxl, phase: P8, gpu: true, needs: [p5_bench_val], gates: [never], est_hours: null,
      notes: "deferred: separate budget and calibration per backbone", cmd: "false"}
+  # ---------------------------------------------------------------- final report (partial results allowed) ------
+  - {id: p9_final_report, phase: P9, gpu: false, needs: [p6_test_report, p7_ablations_report],
+     cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.final_report --store ${APSP_STORE} --run-id pilot1 --out ${APSP_STORE}/final",
+     outputs: ["${APSP_STORE}/final/final_report.md"]}

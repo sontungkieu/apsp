@@ -117,10 +117,11 @@ def classify(g: dict, p: dict, prev: dict | None, pr: dict, now: float) -> tuple
     grew = prev is not None and p["newest_output_mtime"] > prev.get("newest_output_mtime", 0)
     if job and not pr["run_project_alive"]:
         return "job_dead", f"job {job['id']} marked running but run_project is gone"
-    if pr["run_project_alive"] and job and job.get("gpu") and g.get("util", 0) > 0 and g.get("n_procs", 0) > 0:
+    if pr["run_project_alive"] and job and g.get("util", 0) > 0 and g.get("n_procs", 0) > 0:
         return "gpu_compute", f"{job['id']} util {g['util']}%"
     if pr["run_project_alive"] and job and (grew or now - p["newest_output_mtime"] < STALL_S):
-        return ("cpu_progress" if not job.get("gpu") else "gpu_job_low_util"), f"{job['id']} outputs advancing"
+        low = "gpu_job_low_util" if g.get("n_procs", 0) > 0 else "cpu_progress"
+        return low, f"{job['id']} outputs advancing (GPU util {g.get('util')}%, {g.get('n_procs', 0)} GPU procs)"
     if pr["run_project_alive"] and job:
         return "job_dead", f"{job['id']}: no output progress for > {STALL_S}s"
     if rclone_active():
