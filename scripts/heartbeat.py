@@ -97,9 +97,11 @@ def project() -> dict:
 
 
 def rclone_active() -> bool:
+    """Our backup daemon is transferring (its own rclone child), not any rclone process of the platform."""
     try:
-        return subprocess.run(["pgrep", "-x", "rclone"], capture_output=True).returncode == 0
-    except OSError:
+        pid = (STORE / "backup.pid").read_text().strip()
+        return subprocess.run(["pgrep", "-P", pid, "-x", "rclone"], capture_output=True).returncode == 0
+    except (OSError, ValueError):
         return False
 
 

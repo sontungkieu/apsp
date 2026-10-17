@@ -129,7 +129,7 @@ def test_repo_plan_loads_in_explicit_no_cap_mode(tmp_path, prereg_dir, monkeypat
     monkeypatch.setenv("APSP_STORE", str(tmp_path / "store"))
     plan, jobs = rp.load_plan(Path(rp.REPO) / "configs" / "full_experiments.yaml")
     assert plan["financial_cap_mode"] == "none" and plan["destroy_instance"] is False
-    assert plan["instance_id"] == 56272061
+    assert plan["instance_id"] == 56353913
     assert plan["stop_instance_before_project_complete"] is False and plan["stop_instance_on_deadline"] is False
     assert not plan.get("finished_marker")                    # plan v1.3: no completion marker from the runner
     assert rp.main(["--plan", str(Path(rp.REPO) / "configs" / "full_experiments.yaml"), "--status"], runtime=_rt()) == 0

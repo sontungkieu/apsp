@@ -6,7 +6,7 @@
 # Spend is still recorded (budget.json) for reporting. Episode compute caps, DP masks, protocol and PREREG gates are
 # unchanged. Plan v1.3: the watchdog is monitor-only (no stop path) until the whole project is complete.
 project_run: apsp_full_sd15_v1
-instance_id: 56272061              # measurement machine (user, 2026-10-16): RTX 4090 24 GB, Oregon US; replaces 56267276 (VRAM fault)
+instance_id: 56353913              # measurement machine after PREREG-A amendment 2 (owner, 2026-10-17): RTX 4090 48 GB; 56272061 deleted
 measurement_gpu: null              # from runtime_fingerprint.json of the calibration run (not from the UI)
 financial_cap_mode: none           # explicit; see header
 approved_total_usd: null           # not used in financial_cap_mode none
@@ -32,7 +32,7 @@ watchdog_state_dir: ${APSP_STORE}/watchdog
 env:
   APSP_STORE: ${APSP_STORE}
   POOL_DIR: ${APSP_STORE}/prompts
-  MACHINE_ID: vast_56272061_rtx4090_24g
+  MACHINE_ID: vast_56353913_rtx4090_48g
   CAL: ${APSP_STORE}/runs/calib1
   COSTS: ${APSP_STORE}/runs/calib1/p0/m2/generator_costs.json
   TUNED: ${APSP_STORE}/tuned
@@ -48,49 +48,56 @@ env:
 # docs/PILOT_RUN_PLAN.md, deliberately conservative for the 4090 until `p1_forecast` replaces them with measured ones.
 jobs:
   # ---------------------------------------------------------------- P1 calibration (no PREREG; engineering) ----
-  - {id: p1_env, phase: P1, gpu: true, est_hours: 0.15, timeout_min: 60,
+  - {id: p1_env, enabled: false, phase: P1, gpu: true, est_hours: 0.15, timeout_min: 60,
      cmd: "RUN_ID=calib1 bash scripts/gpu_smoke.sh 00_setup 01_pytest 02_env_check 02b_fingerprint 03_model && ${APSP_STORE}/venv-gpu/bin/python scripts/vram_check.py --out ${CAL}/p0/vram_check.json && /usr/local/cuda/bin/nvcc -O2 -arch=sm_89 -o ${CAL}/p0/cuda_memtest scripts/cuda_memtest.cu && ${CAL}/p0/cuda_memtest 2 600 > ${CAL}/p0/cuda_memtest.json",
      notes: "VRAM must pass both the torch pattern check and the independent CUDA memtest (docs/VRAM_FAULT_56267276.md)",
      outputs: ["${CAL}/p0/runtime_fingerprint.json", "${CAL}/p0/vram_check.json", "${CAL}/p0/cuda_memtest.json", "${CAL}/p0/M1_model.json"]}
-  - {id: p1_pool_check, phase: P1, gpu: true, needs: [p1_env], est_hours: 0.25, timeout_min: 40,
+  - {id: p1_pool_check, enabled: false, phase: P1, gpu: true, needs: [p1_env], est_hours: 0.25, timeout_min: 40,
      cmd: "RUN_ID=calib1 bash scripts/gpu_smoke.sh 30_pool_full_check", outputs: ["${CAL}/calib/pool_full_check.json"]}
-  - {id: p1_m3m9, phase: P1, gpu: true, needs: [p1_pool_check], gates: [pool_check_calibration], est_hours: 2.2, timeout_min: 180,
+  - {id: p1_m3m9, enabled: false, phase: P1, gpu: true, needs: [p1_pool_check], gates: [pool_check_calibration], est_hours: 2.2, timeout_min: 180,
      notes: "(3090) 50 calibration x bank 0 + fp32 preview, 20 subset x bank 1 clean collector",
      cmd: "RUN_ID=calib1 bash scripts/gpu_smoke.sh 31_calib_m3m9 32_calib_summary", outputs: ["${CAL}/calib/m3m9.json"]}
-  - {id: p1_chunk, phase: P1, gpu: true, needs: [p1_env], est_hours: 0.35, timeout_min: 40,
+  - {id: p1_chunk, enabled: false, phase: P1, gpu: true, needs: [p1_env], est_hours: 0.35, timeout_min: 40,
      cmd: "RUN_ID=calib1 CHUNK_N=50 bash scripts/gpu_smoke.sh 34_calib_chunk", outputs: ["${CAL}/calib/chunk.json"]}
-  - {id: p1_m2, phase: P1, gpu: true, needs: [p1_env], est_hours: 0.7, timeout_min: 120,
+  - {id: p1_m2, enabled: false, phase: P1, gpu: true, needs: [p1_env], est_hours: 0.7, timeout_min: 120,
      notes: "k = 1,2,3,4,8,12,16: every k of the pilot methods and of the B4b grid (16,12,8,4,3,2,1)",
      cmd: "RUN_ID=calib1 M2_KS='1 2 3 4 8 12 16' bash scripts/gpu_smoke.sh 35_m2 36_m2_merge",
      outputs: ["${COSTS}"]}
-  - {id: p1_equivalence, phase: P1, gpu: true, needs: [p1_m3m9], est_hours: 0.35, timeout_min: 40,
+  - {id: p1_equivalence, enabled: false, phase: P1, gpu: true, needs: [p1_m3m9], est_hours: 0.35, timeout_min: 40,
      cmd: "RUN_ID=calib1 bash scripts/gpu_smoke.sh 33_calib_equivalence", outputs: ["${CAL}/calib/equivalence.json"]}
-  - {id: p1_m2b, phase: P1, gpu: true, needs: [p1_m2, p1_pool_check], gates: [pool_check_calibration], est_hours: 0.25, timeout_min: 40,
+  - {id: p1_m2b, enabled: false, phase: P1, gpu: true, needs: [p1_m2, p1_pool_check], gates: [pool_check_calibration], est_hours: 0.25, timeout_min: 40,
      cmd: "RUN_ID=calib1 bash scripts/gpu_smoke.sh 37_m2b", outputs: ["${CAL}/calib/m2b.json"]}
   - {id: p1_m2_rest, phase: P1, gpu: true, needs: [p1_m2], est_hours: 1.5, enabled: false, timeout_min: 150,
      notes: "k = 5..7, 9..11, 13..15: only for any-N BoN / extended grids; not needed by this plan",
      cmd: "RUN_ID=calib1 M2_KS='5 6 7 9 10 11 13 14 15' bash scripts/gpu_smoke.sh 35_m2 36_m2_merge", outputs: ["${COSTS}"]}
-  - {id: p1_forecast, phase: P1, gpu: false, needs: [p1_m3m9, p1_m2, p1_m2b],
+  - {id: p1_forecast, enabled: false, phase: P1, gpu: false, needs: [p1_m3m9, p1_m2, p1_m2b],
      cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.forecast --m3m9 ${CAL}/calib/m3m9.json --costs ${COSTS} --m2b ${CAL}/calib/m2b.json --price ${PRICE_USD_H} --out ${CAL}/forecast",
      outputs: ["${CAL}/forecast/phase_forecast.json"]}
   # First real-data quality-cost table (D49): FIXED, untuned baselines only, online, on the 50 calibration prompts
   # (no PREREG needed for that split). Descriptive engineering evidence: never used to select methods, thresholds,
   # pilot size or epsilon; runs after the forecast so it cannot influence it. Not a claim set.
-  - {id: p1_bench_calib, phase: P1, gpu: true, needs: [p1_forecast], gates: [pool_check_calibration], est_hours: 1.5,
+  - {id: p1_bench_calib, enabled: false, phase: P1, gpu: true, needs: [p1_forecast], gates: [pool_check_calibration], est_hours: 1.5,
      timeout_min: 300,
      cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.gpu.benchmark --prompt-pool ${POOL_DIR}/prompt_pool.parquet --split calibration --banks 0 1 --methods single single32 bon:2 bon:4 bon:8 psp --costs ${COSTS} --out ${CAL}/bench_calib",
      outputs: ["${CAL}/bench_calib/episodes.jsonl", "${CAL}/bench_calib/manifest.json"]}
-  - {id: p1_report_calib, phase: P1, gpu: false, needs: [p1_bench_calib],
+  - {id: p1_report_calib, enabled: false, phase: P1, gpu: false, needs: [p1_bench_calib],
      cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.quality_cost --run ${CAL}/bench_calib --out ${CAL}/bench_calib/report",
      outputs: ["${CAL}/bench_calib/report/quality_cost.json", "${CAL}/bench_calib/report/quality_cost.csv"]}
-  - {id: p1_calibration_report, phase: P1, gpu: false, needs: [p1_report_calib],
+  - {id: p1_calibration_report, enabled: false, phase: P1, gpu: false, needs: [p1_report_calib],
      cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.calibration_report --cal ${CAL} --out ${CAL}/report",
      outputs: ["${CAL}/report/calibration_report.md", "${CAL}/report/calibration_quality_cost.csv"]}
+  # PREREG-A amendment 2 (docs/PREREG_PROPOSALS/PREREG_A_AMENDMENT_2_machine.md): P1 jobs above were measured on
+  # 56272061 (calib1, restored from the laptop copy: pool check, M3/M9, chunk, calibration table) and are not re-run.
+  # On 56353913 only the environment/model check runs, then the machine-bound values (EPH, M2, M2b, equivalence).
+  # The VRAM gate passed on this GPU on 2026-10-17 (scripts/vram_gate.sh, third-party + own CUDA test).
+  - {id: a2_env, phase: P1, gpu: true, est_hours: 0.2, timeout_min: 90,
+     cmd: "RUN_ID=calibA bash scripts/gpu_smoke.sh 00_setup 02_env_check 02b_fingerprint 03_model",
+     outputs: ["${CAL_A}/p0/runtime_fingerprint.json", "${CAL_A}/p0/M1_model.json"]}
   # ---------------------------------------------------------------- P1a: re-measure what fp16/chunk 1 changes ----
   # EPH hashes preview_dtype, vae_decode_chunk and the generation code; GCH hashes the EPH; ver/fin include the VAE
   # decode whose chunk changed (null = batch -> 1). M3 (fp16 was already the effective preview dtype), pool check,
   # chunk, M9 and the calibration bench are not affected by the binding and are not re-run.
-  - {id: p1a_eph, phase: P1, gpu: true, needs: [p1_env], est_hours: 0.05, timeout_min: 20,
+  - {id: p1a_eph, phase: P1, gpu: true, needs: [a2_env], est_hours: 0.05, timeout_min: 20,
      notes: "through gpu_smoke.sh: the EPH includes its runtime env (CUBLAS_WORKSPACE_CONFIG), as in every GPU step",
      cmd: "RUN_ID=calibA FROZEN_EPH=${FROZEN_EPH} bash scripts/gpu_smoke.sh 38_eph 39_freeze_eph",
      outputs: ["${CAL_A}/p0/eph/model.json", "${FROZEN_EPH}"]}
@@ -176,7 +183,7 @@ jobs:
      cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.ablations --bank ${APSP_STORE}/banks/PILOT --costs ${COSTS_A} --frozen ${FROZEN} --runs ${APSP_STORE}/runs/pilot1/bench_dev ${APSP_STORE}/runs/pilot1/bench_dev_rl ${APSP_STORE}/runs/pilot1/bench_dev_ablate --out ${APSP_STORE}/runs/pilot1/ablations.json",
      outputs: ["${APSP_STORE}/runs/pilot1/ablations.json"]}
   # ---------------------------------------------------------------- P6 test, P7 ablations, P8 extension ---------
-  - {id: p6_eval_setup, phase: P6, gpu: false, needs: [p1_env],
+  - {id: p6_eval_setup, phase: P6, gpu: false, needs: [a2_env],
      notes: "separate evaluator venvs (HPS v2.1, official GenEval + mmdet 2.x); no image generated",
      cmd: "APSP_STORE=${APSP_STORE} bash env/setup_evaluators.sh all", outputs: ["${APSP_STORE}/evaluators/geneval_models/SHA256SUMS"]}
   - {id: p6_geneval_prompts, phase: P6, gpu: false, needs: [p6_eval_setup],

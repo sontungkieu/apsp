@@ -1,0 +1,12 @@
+{
+ "amends": "PREREG-A",
+ "amendment": 2,
+ "role": "research",
+ "signed_by": "project owner (git user Mmmjnh); instruction recorded by the agent, not a signature of anyone else",
+ "approval_kind": "owner_instruction",
+ "source": "Claude Code session c8081ba0-a4d8-4c0d-baa8-d73f41b08105, owner message 2026-10-17",
+ "proposal_path": "docs/PREREG_PROPOSALS/PREREG_A_AMENDMENT_2_machine.md",
+ "proposal_sha256": "c49f18b32994c48dc39a30e853408d6b8387344ebc46cda46d3b42c2e8e42da9",
+ "recorded_at": "2026-10-17T07:05:50Z",
+ "recorded_by": "Claude Code agent (claude-opus-5-5)"
+}

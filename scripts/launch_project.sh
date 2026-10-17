@@ -45,15 +45,15 @@ if [[ ! -f "${APSP_STORE}/vram_gate/PASSED" ]]; then
   fi
 fi
 # heartbeat (real progress states) and off-instance backup run independently of the laptop. A workload is only
-# started once the backup has completed a pass (owner rule 2026-10-17: verify upload/restore before a new run);
-# APSP_ALLOW_NO_BACKUP=1 overrides for a deliberate exception.
+# started once the backup has completed a pass only when APSP_REQUIRE_BACKUP=1 (owner, 2026-10-17: cloud backup is
+# optional in the 56353913 session; artifacts are pulled to the laptop instead, never as a gate).
 if ! { [[ -s "${APSP_STORE}/heartbeat.pid" ]] && kill -0 "$(cat "${APSP_STORE}/heartbeat.pid")" 2>/dev/null; }; then
   APSP_STORE="$APSP_STORE" setsid nohup python3 scripts/heartbeat.py >> "${APSP_STORE}/heartbeat.log" 2>&1 < /dev/null &
 fi
 if [[ -n "${APSP_BACKUP_REMOTE:-}" ]] && ! { [[ -s "${APSP_STORE}/backup.pid" ]] && kill -0 "$(cat "${APSP_STORE}/backup.pid")" 2>/dev/null; }; then
   APSP_STORE="$APSP_STORE" APSP_BACKUP_REMOTE="$APSP_BACKUP_REMOTE" setsid nohup bash scripts/backup_daemon.sh     >> "${APSP_STORE}/backup.log" 2>&1 < /dev/null &
 fi
-if [[ "${APSP_ALLOW_NO_BACKUP:-0}" != 1 && ! -s "${APSP_STORE}/backup_status.json" ]]; then
+if [[ "${APSP_REQUIRE_BACKUP:-0}" == 1 && ! -s "${APSP_STORE}/backup_status.json" ]]; then
   echo "no completed off-instance backup pass (set APSP_BACKUP_REMOTE and wait for backup_status.json); not starting the workload" >&2
   exit 5
 fi
