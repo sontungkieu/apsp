@@ -182,9 +182,10 @@ def run_method(m: Method, engine, *, bank_id: int, ctx: RunContext, prompt_feat=
     if f == "rl":
         from apsp.policies.reinforce import load_policy
         pol = ctx.loaded.setdefault(m.artifact, load_policy(m.artifact))
-        ctrl = ctx.base.with_overrides(disp=ctx.ctrl_disp_us, method_id="controller")
+        variant = getattr(pol.cfg, "variant", "main")
+        ctrl = ctx.base.with_overrides(disp=ctx.ctrl_disp_us, method_id="controller", uses_traj=variant == "traj")
         return run_closed_loop(pol, engine, rows=rows, grammar=G842(), mc=ctrl, cap_us=cap, C_ref=C_ref, norm=ctx.norm,
-                               prompt_feat=prompt_feat)
+                               prompt_feat=prompt_feat, variant=variant)
     if f == "b8":
         from apsp.policies.query_commit import RidgeSelector, run_query_commit
         sel = ctx.loaded.setdefault(m.artifact, RidgeSelector.from_dict(_load_json(m.artifact).get("selector", _load_json(m.artifact))))

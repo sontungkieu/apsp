@@ -164,6 +164,17 @@ jobs:
      cmd: "RUN_ID=pilot1 COSTS=${COSTS_A} FROZEN=${FROZEN} bash scripts/look2.sh run", outputs: ["${APSP_STORE}/runs/pilot1/look2_status.json"]}
   - {id: p5_confirm_final, phase: P5, gpu: false, needs: [p5_val_ext], prereg: [B],
      cmd: "RUN_ID=pilot1 FROZEN=${FROZEN} bash scripts/look2.sh report", outputs: ["${APSP_STORE}/runs/pilot1/confirm_final.json"]}
+  # ---------------------------------------------------------------- P7 ablations (train/dev only; E7) ---------
+  - {id: p7_rl_variants, phase: P7, gpu: false, needs: [p4_rl_train], prereg: [B],
+     notes: "RL ablation variants (3 seeds each): nopaid, traj (paid features), per-cap policies; replay training on train_fit",
+     cmd: "for s in 0 1 2; do ${APSP_STORE}/venv-gpu/bin/python -m apsp.policies.reinforce --train --bank ${APSP_STORE}/banks/PILOT --costs ${COSTS_A} --iterations 200 --seed $s --variant nopaid --out ${APSP_STORE}/rl_ablate/nopaid_seed$s && ${APSP_STORE}/venv-gpu/bin/python -m apsp.policies.reinforce --train --bank ${APSP_STORE}/banks/PILOT --costs ${COSTS_A} --iterations 200 --seed $s --variant traj --out ${APSP_STORE}/rl_ablate/traj_seed$s && ${APSP_STORE}/venv-gpu/bin/python -m apsp.policies.reinforce --train --bank ${APSP_STORE}/banks/PILOT --costs ${COSTS_A} --iterations 200 --seed $s --alphas 0.5 --out ${APSP_STORE}/rl_ablate/a05/percap_seed$s && ${APSP_STORE}/venv-gpu/bin/python -m apsp.policies.reinforce --train --bank ${APSP_STORE}/banks/PILOT --costs ${COSTS_A} --iterations 200 --seed $s --alphas 1.0 --out ${APSP_STORE}/rl_ablate/a10/percap_seed$s || exit 1; done",
+     outputs: ["${APSP_STORE}/rl_ablate/nopaid_seed2/artifact.json", "${APSP_STORE}/rl_ablate/traj_seed2/artifact.json", "${APSP_STORE}/rl_ablate/a10/percap_seed2/artifact.json"]}
+  - {id: p7_bench_dev_ablate, phase: P7, gpu: true, needs: [p7_rl_variants], prereg: [B], est_hours: 2.8, timeout_min: 600,
+     cmd: "RUN_ID=pilot1 COSTS=${COSTS_A} RL_METHODS='rl:${APSP_STORE}/rl_ablate/nopaid_seed0/artifact.json@0.5 rl:${APSP_STORE}/rl_ablate/nopaid_seed0/artifact.json@1.0 rl:${APSP_STORE}/rl_ablate/traj_seed0/artifact.json@0.5 rl:${APSP_STORE}/rl_ablate/traj_seed0/artifact.json@1.0 rl:${APSP_STORE}/rl_ablate/a05/percap_seed0/artifact.json@0.5 rl:${APSP_STORE}/rl_ablate/a10/percap_seed0/artifact.json@1.0 rl:${APSP_STORE}/rl_ablate/nopaid_seed1/artifact.json@0.5 rl:${APSP_STORE}/rl_ablate/nopaid_seed1/artifact.json@1.0 rl:${APSP_STORE}/rl_ablate/traj_seed1/artifact.json@0.5 rl:${APSP_STORE}/rl_ablate/traj_seed1/artifact.json@1.0 rl:${APSP_STORE}/rl_ablate/a05/percap_seed1/artifact.json@0.5 rl:${APSP_STORE}/rl_ablate/a10/percap_seed1/artifact.json@1.0 rl:${APSP_STORE}/rl_ablate/nopaid_seed2/artifact.json@0.5 rl:${APSP_STORE}/rl_ablate/nopaid_seed2/artifact.json@1.0 rl:${APSP_STORE}/rl_ablate/traj_seed2/artifact.json@0.5 rl:${APSP_STORE}/rl_ablate/traj_seed2/artifact.json@1.0 rl:${APSP_STORE}/rl_ablate/a05/percap_seed2/artifact.json@0.5 rl:${APSP_STORE}/rl_ablate/a10/percap_seed2/artifact.json@1.0' RL_OUT=bench_dev_ablate bash scripts/gpu_smoke.sh 42b_bench_dev_rl",
+     outputs: ["${APSP_STORE}/runs/pilot1/bench_dev_ablate/episodes.jsonl"]}
+  - {id: p7_ablations_report, phase: P7, gpu: false, needs: [p7_bench_dev_ablate, p4_select_dev], prereg: [B],
+     cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.ablations --bank ${APSP_STORE}/banks/PILOT --costs ${COSTS_A} --frozen ${FROZEN} --runs ${APSP_STORE}/runs/pilot1/bench_dev ${APSP_STORE}/runs/pilot1/bench_dev_rl ${APSP_STORE}/runs/pilot1/bench_dev_ablate --out ${APSP_STORE}/runs/pilot1/ablations.json",
+     outputs: ["${APSP_STORE}/runs/pilot1/ablations.json"]}
   # ---------------------------------------------------------------- P6 test, P7 ablations, P8 extension ---------
   - {id: p6_eval_setup, phase: P6, gpu: false, needs: [p1_env],
      notes: "separate evaluator venvs (HPS v2.1, official GenEval + mmdet 2.x); no image generated",
@@ -190,7 +201,6 @@ jobs:
      notes: "IR / e2e / failures / HPS on the GenEval test run with the locked evaluation config (secondary, descriptive)",
      cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.quality_cost --run ${APSP_STORE}/runs/pilot1/geneval --config configs/evaluation_locked.yaml --out ${APSP_STORE}/runs/pilot1/geneval/report",
      outputs: ["${APSP_STORE}/runs/pilot1/geneval/report/quality_cost.json"]}
-  - {id: p7_ablations, phase: P7, gpu: true, needs: [p3_freeze_dev], prereg: [B], gates: [never], est_hours: null,
-     notes: "ablation list to be frozen before confirmation", cmd: "false"}
+
   - {id: p8_sdxl, phase: P8, gpu: true, needs: [p5_bench_val], gates: [never], est_hours: null,
      notes: "deferred: separate budget and calibration per backbone", cmd: "false"}

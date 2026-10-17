@@ -3,6 +3,7 @@ import json
 
 import numpy as np
 import pandas as pd
+import pytest
 
 from apsp.contracts.schema import load_bank
 from apsp.data.synthetic_bank import make_synthetic_bank, synthetic_costs
@@ -41,3 +42,25 @@ def test_rl_train_real_on_synthetic_bank(tmp_path):
     assert s["sigma_R"] == 0.4 and s["r_fail"] == -2.0 and s["ctrl_dispatch_us_measured"] >= 1 and s["caps"]
     pol = load_policy(tmp_path / "rl")
     assert pol.cph.startswith("CPH") or len(pol.cph) > 8
+
+
+@pytest.mark.parametrize("variant,alphas", [("nopaid", (0.5, 1.0)), ("traj", (1.0,))])
+def test_rl_ablation_variants(tmp_path, variant, alphas):
+    from apsp.policies.reinforce import load_policy, train_real
+    from apsp.sim.env import ReplayEngine
+    from apsp.sim.methods import RunContext, parse_method, run_method
+    from apsp.sim.replay import ReplayContext
+    bank_dir = make_synthetic_bank(tmp_path / "bank", n_prompts=40)
+    costs = tmp_path / "costs.json"
+    costs.write_text(json.dumps(synthetic_costs().to_dict()))
+    s = train_real(str(bank_dir), str(costs), {"B4_r_fail": -2.0, "B5_sigma_R": 0.4}, 0, str(tmp_path / "rl"),
+                   iterations=2, fit_split="syn_train_fit", dev_split="syn_train_dev", alphas=alphas, variant=variant)
+    assert s["variant"] == variant and set(s["caps"]) <= set(alphas)
+    assert load_policy(tmp_path / "rl").cfg.variant == variant
+    bank = load_bank(bank_dir)
+    ctx = ReplayContext.build(bank, synthetic_costs(), fit_split="syn_train_fit")
+    k = bank.instances_of(["syn_train_dev"])[0]
+    m = parse_method(f"rl:{tmp_path / 'rl' / 'artifact.json'}@{alphas[-1]}")
+    res = run_method(m, ReplayEngine(ctx.accessor, k[0]), bank_id=k[1], ctx=RunContext(ctx.base_costs, ctx.caps, ctx.norm),
+                     prompt_feat=ctx.prompt_feat(k[0]), is_replay=True)
+    assert res.spend_us <= ctx.caps.cap(alphas[-1])

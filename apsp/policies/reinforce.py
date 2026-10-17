@@ -48,7 +48,7 @@ class RLConfig:
     variant: str = "main"
 
     def obs_dim(self) -> int:
-        return MAIN_DIM if self.variant == "main" else TRAJ_DIM
+        return TRAJ_DIM if self.variant == "traj" else MAIN_DIM
 
 
 def _mlp(i: int, h: int, o: int) -> nn.Module:
@@ -274,7 +274,8 @@ def synthetic_smoke(out_dir: Optional[str] = None, iterations: int = 60, n_promp
 
 
 def train_real(bank_dir: str, costs_path: str, snap: dict, seed: int, out_dir: str, iterations: int = 200,
-               fit_split: str = "train_fit", dev_split: str = "train_dev", alphas=(0.5, 1.0)) -> dict:
+               fit_split: str = "train_fit", dev_split: str = "train_dev", alphas=(0.5, 1.0),
+               variant: str = "main") -> dict:
     """Real-bank REINFORCE (PREREG-B snapshot values): replay on train_fit, checkpoint by replay train_dev score.
 
     r_fail and sigma_R come from the snapshot; B3 per cap is the best fixed pair on train_fit; the controller dispatch
@@ -296,11 +297,12 @@ def train_real(bank_dir: str, costs_path: str, snap: dict, seed: int, out_dir: s
     base = load_method_costs(costs_path)
     ctx = ReplayContext.build(bank, base, fit_split=fit_split, r_fail=float(snap["B4_r_fail"]))
     fit, dev = bank.instances_of([fit_split]), bank.instances_of([dev_split])
-    cfg = RLConfig(iterations=iterations, seed=seed)
-    probe = ReinforcePolicy(ActorCritic(cfg.obs_dim(), cfg.hidden), cfg, mode="greedy")
+    cfg = RLConfig(iterations=iterations, seed=seed, variant=variant)
+    pc = RLConfig(seed=seed)                  # dispatch timing with the main observation (same network size class)
+    probe = ReinforcePolicy(ActorCritic(pc.obs_dim(), pc.hidden), pc, mode="greedy")
     disp = measure_dispatch(probe, ctx, fit[:40], ctx.caps.cap(1.0), base.with_overrides(method_id="M1"))
     disp_us = int(math.ceil(disp["mean_us"]))
-    mc = base.with_overrides(method_id="M1")
+    mc = base.with_overrides(method_id="M1", uses_traj=variant == "traj")     # traj features are paid
     caps = [a for a in alphas if initial_feasible(ctx.caps.cap(a), G842(), mc)]
     Yf, C = ctx.schedule_table(fit)
     b3 = {a: best_fixed(Yf, C, ctx.caps.cap(a)) for a in caps}
@@ -316,14 +318,16 @@ def train_real(bank_dir: str, costs_path: str, snap: dict, seed: int, out_dir: s
 
     def run_episode(pol, item, _r):
         k, a = item
-        return ctx.run_policy(pol, k, ctx.caps.cap(a), mc).Y, yref[(k, a)]
+        return ctx.run_policy(pol, k, ctx.caps.cap(a), mc, variant=variant).Y, yref[(k, a)]
 
     def dev_eval(pol):
-        return float(np.mean([ctx.run_policy(pol, k, ctx.caps.cap(a), mc).Y - yref[(k, a)] for k in dev for a in caps]))
+        return float(np.mean([ctx.run_policy(pol, k, ctx.caps.cap(a), mc, variant=variant).Y - yref[(k, a)]
+                              for k in dev for a in caps]))
 
     t0 = time.time()
     res = train_reinforce(run_episode, items, dev_eval, cfg)
     summary = {"label": "replay training (simulator); online confirmation separately", "seed": seed, "caps": caps,
+               "variant": variant,
                "B3": {str(a): [b3[a].j1, b3[a].j2] for a in caps}, "sigma_R": cfg.sigma_R, "r_fail": ctx.r_fail,
                "ctrl_dispatch_us_measured": disp_us, "ctrl_dispatch_charged_us": 0, "ctrl_dispatch_measure": {k: v for k, v in disp.items() if k != "raw_us"},
                "train_seconds": time.time() - t0, "best_dev_replay_minus_B3": res.best_dev, "best_iter": res.best_iter,
@@ -342,6 +346,8 @@ def main(argv=None) -> int:
     ap.add_argument("--out", default=None)
     ap.add_argument("--iterations", type=int, default=60)
     ap.add_argument("--costs", default=None, help="generator cost table (real-bank training)")
+    ap.add_argument("--variant", choices=["main", "traj", "nopaid"], default="main")
+    ap.add_argument("--alphas", type=float, nargs="+", default=[0.5, 1.0], help="caps trained jointly (budget-conditioned)")
     ap.add_argument("--seed", type=int, default=0)
     a = ap.parse_args(argv)
     if a.synthetic_smoke:
@@ -359,7 +365,8 @@ def main(argv=None) -> int:
         snap = json.loads((Path(__file__).resolve().parents[2] / m["proposal_path"]).read_text(encoding="utf-8"))
         if not (a.bank and a.costs and a.out):
             raise SystemExit("--train needs --bank, --costs and --out")
-        print(json.dumps(train_real(a.bank, a.costs, snap, a.seed, a.out, a.iterations), indent=2, default=float))
+        print(json.dumps(train_real(a.bank, a.costs, snap, a.seed, a.out, a.iterations, alphas=tuple(a.alphas),
+                                    variant=a.variant), indent=2, default=float))
         return 0
     ap.print_help()
     return 1

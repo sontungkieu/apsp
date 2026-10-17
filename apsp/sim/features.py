@@ -150,7 +150,9 @@ def _clip(x: float) -> float:
 
 
 def build_obs(view: PolicyView, norm: NormStats, variant: str = "main") -> np.ndarray:
-    if variant not in ("main", "traj"):
+    """variant: main (38), traj (42, + paid trajectory features), nopaid (38, ablation: paid-score and stability
+    blocks set to 0, so the policy cannot use purchased verifier information)."""
+    if variant not in ("main", "traj", "nopaid"):
         raise ValueError(variant)
     J = view.J
     Cr = float(view.C_ref)
@@ -199,6 +201,8 @@ def build_obs(view: PolicyView, norm: NormStats, variant: str = "main") -> np.nd
             # gap change only when both gaps are computable (v >= h+1); else 0 although tau may exist
             dz = _clip(zb - za) if len(common) >= h + 1 else 0.0
     o += [has_two, float(tau), dz]
+    if variant == "nopaid":
+        o[11:22] = [0.0] * 11
     # --- prompt (16)
     pf = view.prompt_feat
     if pf is None:
@@ -216,7 +220,7 @@ def build_obs(view: PolicyView, norm: NormStats, variant: str = "main") -> np.nd
         o += [_clip(float(np.mean(dr))) if dr else 0.0, _clip(float(np.std(dr, ddof=0))) if dr else 0.0,
               _clip(float(np.mean(gp))) if gp else 0.0, _clip(float(np.std(gp, ddof=0))) if gp else 0.0]
     obs = np.asarray(o, dtype=np.float32)
-    exp = MAIN_DIM if variant == "main" else TRAJ_DIM
+    exp = TRAJ_DIM if variant == "traj" else MAIN_DIM
     if obs.shape != (exp,):
         raise AssertionError(f"obs dim {obs.shape} != {exp}")
     if not np.isfinite(obs).all():
