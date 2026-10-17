@@ -109,7 +109,7 @@ jobs:
   - {id: p1a_m2b, phase: P1, gpu: true, needs: [p1a_m2], gates: [pool_check_calibration], est_hours: 0.1, timeout_min: 40,
      cmd: "RUN_ID=calibA bash scripts/gpu_smoke.sh 37_m2b", outputs: ["${CAL_A}/calib/m2b.json"]}
   - {id: p1a_forecast, phase: P1, gpu: false, needs: [p1a_m2b],
-     cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.forecast --m3m9 ${CAL}/calib/m3m9.json --costs ${COSTS_A} --m2b ${CAL_A}/calib/m2b.json --price ${PRICE_USD_H} --out ${CAL_A}/forecast",
+     cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.forecast --m3m9 ${CAL}/calib/m3m9.json --costs ${COSTS_A} --m2b ${CAL_A}/calib/m2b.json --price ${PRICE_USD_H:-0} --out ${CAL_A}/forecast",
      outputs: ["${CAL_A}/forecast/phase_forecast.json"]}
   # ---------------------------------------------------------------- P2 bank (PREREG-A) -------------------------
   # bank start needs only what affects data validity: frozen EPH (p1a_eph), the locked cost table (p1a_m2, used by
@@ -119,7 +119,8 @@ jobs:
      notes: "train_fit 190 + train_dev 50 prompts x 2 banks; forecast 2.15 h on 56272061; x0 latents stored (A16)",
      cmd: "RUN_ID=pilot1 COSTS=${COSTS_A} EXPECT_EPH=${FROZEN_EPH} bash scripts/gpu_smoke.sh 40_bank", outputs: ["${APSP_STORE}/banks/PILOT/manifest.json"]}
   # ---------------------------------------------------------------- P3 baselines on train/dev (PREREG-A) -------
-  - {id: p3_tune, phase: P3, gpu: false, needs: [p2_bank], prereg: [A],
+  - {id: p3_tune, phase: P3, gpu: false, needs: [p2_bank], prereg: [A], timeout_min: 900,
+     notes: "CPU replay tuning; > 60 min on the real bank (attempt 2 hit the 60 min default timeout)",
      cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.sim.tune_baselines --bank ${APSP_STORE}/banks/PILOT --costs ${COSTS_A} --out ${TUNED}",
      outputs: ["${TUNED}/methods_frozen.json"]}
   - {id: p3_bench_dev, phase: P3, gpu: true, needs: [p3_tune], prereg: [A], est_hours: 3.3, timeout_min: 900,
