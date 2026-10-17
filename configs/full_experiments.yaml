@@ -112,7 +112,10 @@ jobs:
      cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.forecast --m3m9 ${CAL}/calib/m3m9.json --costs ${COSTS_A} --m2b ${CAL_A}/calib/m2b.json --price ${PRICE_USD_H} --out ${CAL_A}/forecast",
      outputs: ["${CAL_A}/forecast/phase_forecast.json"]}
   # ---------------------------------------------------------------- P2 bank (PREREG-A) -------------------------
-  - {id: p2_bank, phase: P2, gpu: true, needs: [p1a_forecast, p1a_equivalence], prereg: [A], est_hours: 2.2, timeout_min: 900,
+  # bank start needs only what affects data validity: frozen EPH (p1a_eph), the locked cost table (p1a_m2, used by
+  # later replay), the exact equivalence check. M2b runs before it only because it precedes in plan order (exclusive
+  # GPU for latency); the forecast is a report and never gates collection.
+  - {id: p2_bank, phase: P2, gpu: true, needs: [p1a_eph, p1a_m2, p1a_equivalence], prereg: [A], est_hours: 2.2, timeout_min: 900,
      notes: "train_fit 190 + train_dev 50 prompts x 2 banks; forecast 2.15 h on 56272061; x0 latents stored (A16)",
      cmd: "RUN_ID=pilot1 COSTS=${COSTS_A} EXPECT_EPH=${FROZEN_EPH} bash scripts/gpu_smoke.sh 40_bank", outputs: ["${APSP_STORE}/banks/PILOT/manifest.json"]}
   # ---------------------------------------------------------------- P3 baselines on train/dev (PREREG-A) -------
