@@ -124,6 +124,13 @@ jobs:
      outputs: ["${TUNED}/methods_frozen.json"]}
   - {id: p3_bench_dev, phase: P3, gpu: true, needs: [p3_tune], prereg: [A], est_hours: 3.3, timeout_min: 900,
      cmd: "RUN_ID=pilot1 COSTS=${COSTS_A} bash scripts/gpu_smoke.sh 42_bench_dev", outputs: ["${APSP_STORE}/runs/pilot1/bench_dev/episodes.jsonl"]}
+  # External baseline FK-Steering (official FKD code from the pinned PSP submodule; apsp.gpu.fk_baseline): 4 configs on
+  # train_dev bank 0, selection per particle count on train_dev, frozen before val.
+  - {id: x_fk_dev, phase: P3, gpu: true, needs: [p2_bank], prereg: [A], est_hours: 0.5, timeout_min: 240,
+     cmd: "HF_HOME=${APSP_STORE}/hf CUBLAS_WORKSPACE_CONFIG=:4096:8 ${APSP_STORE}/venv-gpu/bin/python -m apsp.gpu.fk_baseline --prompt-pool ${POOL_DIR}/prompt_pool.parquet --split train_dev --banks 0 --configs k4_max k4_diff k8_max k8_diff --out ${APSP_STORE}/runs/pilot1/fk_dev",
+     outputs: ["${APSP_STORE}/runs/pilot1/fk_dev/episodes.jsonl"]}
+  - {id: x_fk_select, phase: P3, gpu: false, needs: [x_fk_dev], prereg: [A],
+     cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.gpu.fk_baseline --select ${APSP_STORE}/runs/pilot1/fk_dev --out ${APSP_STORE}/fk_frozen.json", outputs: ["${APSP_STORE}/fk_frozen.json"]}
   - {id: p3_report_dev, phase: P3, gpu: false, needs: [p3_bench_dev], prereg: [A],
      notes: "descriptive table (not_concludable until evaluation.yaml is approved); no freeze here",
      cmd: "${APSP_STORE}/venv-gpu/bin/python -m apsp.reports.quality_cost --run ${APSP_STORE}/runs/pilot1/bench_dev --out ${APSP_STORE}/runs/pilot1/bench_dev/report",
@@ -175,6 +182,10 @@ jobs:
      cmd: "RUN_ID=pilot1 COSTS=${COSTS_A} FROZEN=${FROZEN} bash scripts/look2.sh run", outputs: ["${APSP_STORE}/runs/pilot1/look2_status.json"]}
   - {id: p5_confirm_final, phase: P5, gpu: false, needs: [p5_val_ext], prereg: [B],
      cmd: "RUN_ID=pilot1 FROZEN=${FROZEN} bash scripts/look2.sh report", outputs: ["${APSP_STORE}/runs/pilot1/confirm_final.json"]}
+  - {id: x_fk_val, phase: P5, gpu: true, needs: [x_fk_select, p5_confirm_final], prereg: [B], est_hours: 0.8, timeout_min: 300,
+     notes: "external baseline on val with the train_dev-frozen FK configs (descriptive contrasts vs PSP; not a primary contrast)",
+     cmd: "HF_HOME=${APSP_STORE}/hf CUBLAS_WORKSPACE_CONFIG=:4096:8 ${APSP_STORE}/venv-gpu/bin/python -m apsp.gpu.fk_baseline --prompt-pool ${POOL_DIR}/prompt_pool.parquet --split val --frozen ${APSP_STORE}/fk_frozen.json --out ${APSP_STORE}/runs/pilot1/fk_val",
+     outputs: ["${APSP_STORE}/runs/pilot1/fk_val/episodes.jsonl"]}
   # ---------------------------------------------------------------- P7 ablations (train/dev only; E7) ---------
   - {id: p7_rl_variants, phase: P7, gpu: false, needs: [p4_rl_train], prereg: [B],
      notes: "RL ablation variants (3 seeds each): nopaid, traj (paid features), per-cap policies; replay training on train_fit",

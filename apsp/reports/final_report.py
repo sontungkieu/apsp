@@ -24,7 +24,8 @@ from apsp.stats.bootstrap import cluster_bootstrap
 SPLITS = [("calibration (descriptive)", "runs/calib1/bench_calib"), ("train_dev baselines", "runs/{r}/bench_dev"),
           ("train_dev RL", "runs/{r}/bench_dev_rl"), ("train_dev ablations", "runs/{r}/bench_dev_ablate"),
           ("train_fit anchor", "runs/{r}/anchor_online"), ("val (confirmatory)", "runs/{r}/bench_val"),
-          ("val_ext (look 2)", "runs/{r}/bench_val_ext"), ("GenEval test", "runs/{r}/geneval")]
+          ("val_ext (look 2)", "runs/{r}/bench_val_ext"), ("GenEval test", "runs/{r}/geneval"),
+          ("train_dev FK-Steering (external)", "runs/{r}/fk_dev"), ("val FK-Steering (external)", "runs/{r}/fk_val")]
 REFS = ["psp", "single", "bon:4", "bon:8"]
 
 
