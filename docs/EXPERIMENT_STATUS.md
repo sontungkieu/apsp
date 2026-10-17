@@ -1,4 +1,4 @@
-# Experiment status (updated 2026-10-16)
+# Experiment status (updated 2026-10-17)
 
 Labels: **CUDA-real** = ran on a real GPU with real models; **synthetic** = fake backend / synthetic bank or costs,
 logic only, never evidence; **not run**; **blocked** (by what).
@@ -55,7 +55,11 @@ Excluded: **56267276** (VRAM corruption, D51, docs/VRAM_FAULT_56267276.md). Earl
 | **Calibration-split fixed baselines** (D49, descriptive) | **CUDA-real**: 6 methods × 50 prompts × 2 banks = 600 episodes, 0 failures; `calibration_quality_cost.csv`. HPS not run (adapter unverified) |
 | New baselines B4b/B7/B10, RL registry, orchestrator, forecast, no-cap watchdog | **synthetic** only (tests) |
 | HPS v2.1 adapter | code + pins only; **not run** (bench_calib reports HPS as missing) |
-| Bank, tuning, online train_dev benchmark, controller, val, test | **blocked**: PREREG-A/B/C unsigned |
+| **calibA re-measure on 56272061** (2026-10-16 22:20–22:42Z, after PREREG-A A9/A10) | **CUDA-real**: frozen EPH `097d7a3c…`; M2 GCH `bffb378d…` (provisional); fresh equivalence 10/10 exact (max abs 0); M2b residual +0.19 %; forecast 31.6 GPU-h. Values and sha256 recorded in `docs/PREREG_PROPOSALS/PREREG_A_LOCKED.md`; the files themselves were not copied off the instance |
+| PREREG-A | **locked** 2026-10-17 (owner approval, `docs/PREREG_SIGNED/`) |
+| P2 bank (train_fit + train_dev) | started 22:45Z, ~89/480 prompt-bank shards by 23:07Z (15.7 s each, EPH matched, x0 latents stored); **lost**: instance deleted by the owner before completion; nothing copied off |
+| Evaluators (on 56272061) | official GenEval (`af4902f`, mmdet 2.28.2) ran correctly on a technical blank image; HPS v2.1 adapter = package `img_score` with the pinned checkpoint (max abs diff 0.0 on 3 calibration images); environments lost with the instance |
+| Tuning, online train_dev benchmark, controller, val, test | **not run** (code for the B/C snapshot pipeline, RL training, val looks, GenEval chain and ablations is in the repo, tested on synthetic data only) |
 
 ## Spend log (estimates; provider bill authoritative)
 
@@ -66,4 +70,4 @@ Excluded: **56267276** (VRAM corruption, D51, docs/VRAM_FAULT_56267276.md). Earl
 | prep0 | 56224386 | ~32 min (if stopped at ~09:21Z) | $0.778/h | ≈ $0.41 |
 | deploy + stop check | 56261825 | ≤ 15:15–16:01Z (≈ 46 min seen; start time from the console) | $0.527/h | ≈ $0.40 |
 | setup + VRAM fault diagnosis | 56267276 | ≤ 16:05Z – (user handles the instance) | $0.626/h | ≈ $0.47 to 16:50Z |
-| P1 onward | 56272061 | running from ≤ 16:48Z | $0.496/h | recorded in budget.json |
+| P1, calibA, P2 (partial) | 56272061 | ≤ 16:48Z – deleted by the owner (last contact ~23:15Z) | $0.496/h | ≈ $3.2 to 23:15Z (budget.json lost) |
