@@ -412,9 +412,14 @@ def main(argv=None, runner=shell_runner, runtime: Optional[Runtime] = None, now_
     b["sessions"].append(session)
     state.save_budget(b)
     try:
+        reload_flag = Path(env["APSP_STORE"]) / "RELOAD_PLAN" if env.get("APSP_STORE") else None
         for j in jobs:
             if a.only and j.id not in a.only:
                 continue
+            if reload_flag is not None and reload_flag.exists():   # new plan/code deployed: stop between jobs,
+                reload_flag.unlink()                                 # the supervisor relaunches with the new files
+                print("RELOAD_PLAN found: leaving the pass between jobs", flush=True)
+                break
             rec = state.get(j.id)
             if rec["status"] == "done":
                 ok, _ = outputs_ok(j, env)

@@ -13,6 +13,6 @@ while [[ ! -f "${APSP_STORE}/PROJECT_COMPLETE" ]]; do
     echo "$(date -u +%FT%TZ) relaunch run_project (HEAD $(git rev-parse --short HEAD))"
     bash scripts/launch_project.sh 2>&1 | tail -2
   fi
-  sleep "${SUPERVISE_POLL_S:-300}"
+  sleep "${SUPERVISE_POLL_S:-30}"
 done
 echo "$(date -u +%FT%TZ) PROJECT_COMPLETE present; supervisor exits (instance left running)"
