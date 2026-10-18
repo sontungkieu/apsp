@@ -1,0 +1,76 @@
+# Pinned model and scorer revisions for the B200 collector (env/b200/scripts/run_shard.py).
+# Revisions = HF commit SHAs resolved 2026-10-18 from the HF API (SD1.5, ImageReward, BERT tokenizer and the
+# laion CLIP base are the same commits as the v1 study: configs/pilot.yaml, configs/evaluators.yaml).
+# Sampling defaults below are the model-card / pipeline defaults, used ONLY for the smoke shard. They are NOT a
+# research decision: the study config (steps, guidance, resolution, checkpoints, dtype) must be set by research.
+generators:
+  sd15:
+    repo: stable-diffusion-v1-5/stable-diffusion-v1-5
+    revision: 451f4fe16113bff5a5d2269ed5ad43b0592e9a14
+    pipeline: StableDiffusionPipeline
+    scheduler: DDIMScheduler        # as in v1 (DDIM, eta 0)
+    dtype: fp16
+    height: 512
+    width: 512
+    steps: 64
+    guidance: 7.5
+    gated: false
+  sdxl:
+    repo: stabilityai/stable-diffusion-xl-base-1.0
+    revision: 462165984030d82259a11f4367a4eed129e94a7b
+    pipeline: StableDiffusionXLPipeline
+    scheduler: default              # EulerDiscreteScheduler from the repo
+    dtype: fp16                     # VAE has force_upcast=True: decoded in fp32
+    height: 1024
+    width: 1024
+    steps: 50
+    guidance: 5.0
+    gated: false
+  sd35m:
+    repo: stabilityai/stable-diffusion-3.5-medium
+    revision: b940f670f0eda2d07fbb75229e779da1ad11eb80
+    pipeline: StableDiffusion3Pipeline
+    scheduler: default              # FlowMatchEulerDiscreteScheduler
+    dtype: bf16
+    height: 1024
+    width: 1024
+    steps: 40
+    guidance: 4.5
+    gated: true                     # accept the licence on HF and log in on the node (own token, never committed)
+  flux_dev:
+    repo: black-forest-labs/FLUX.1-dev
+    revision: 3de623fc3c33e44ffbe2bad470d0f45bccf2eb21
+    pipeline: FluxPipeline
+    scheduler: default              # FlowMatchEulerDiscreteScheduler
+    dtype: bf16
+    height: 1024
+    width: 1024
+    steps: 50
+    guidance: 3.5                   # distilled guidance (single forward per step)
+    max_sequence_length: 512
+    gated: true
+  # tiny random-weight pipelines: only to test the code path on CPU (no meaningful images)
+  tiny_sd15: {repo: hf-internal-testing/tiny-stable-diffusion-pipe, revision: 3ee6c9f225f088ad5d35b624b6514b091e6a4849,
+              pipeline: StableDiffusionPipeline, scheduler: DDIMScheduler, dtype: fp32, height: 64, width: 64, steps: 8, guidance: 7.5, gated: false}
+  tiny_sdxl: {repo: hf-internal-testing/tiny-stable-diffusion-xl-pipe, revision: fa06b5c3d6d45fabd978486616c6dae068519e85,
+              pipeline: StableDiffusionXLPipeline, scheduler: default, dtype: fp32, height: 64, width: 64, steps: 8, guidance: 5.0, gated: false}
+  tiny_sd3: {repo: hf-internal-testing/tiny-sd3-pipe, revision: 309fbef85960712c84ff0793d3594951235fff9b,
+             pipeline: StableDiffusion3Pipeline, scheduler: default, dtype: fp32, height: 64, width: 64, steps: 8, guidance: 4.5, gated: false}
+  tiny_flux: {repo: hf-internal-testing/tiny-flux-pipe, revision: a98bc4ec6a80c47c477ed22d7e81c79872d9c723,
+              pipeline: FluxPipeline, scheduler: default, dtype: fp32, height: 64, width: 64, steps: 8, guidance: 3.5, gated: false,
+              max_sequence_length: 48}
+
+scorers:
+  imagereward:                      # through apsp.gpu.scoring.ImageRewardScorer (tokenizer pin + missing-key check)
+    revision: 5736be03b2652728fb87788c9797b0570450ab72
+    tokenizer_revision: 86b5e0934494bd15c9632b12f734a8a67f723594
+  pickscore:                        # official usage: CLIP-H processor + PickScore_v1 model, logit_scale * cos
+    model_repo: yuvalkirstain/PickScore_v1
+    model_revision: a4e4367c6dfa7288a00c550414478f865b875800
+    processor_repo: laion/CLIP-ViT-H-14-laion2B-s32B-b79K
+    processor_revision: 1c2b8495b28150b8a4922ee1c8edee224c284c0c
+
+prompt_encoder:                     # common prompt embedding of the bank (float16[N, 768]) = v1 apsp.data.prompts
+  repo: stable-diffusion-v1-5/stable-diffusion-v1-5
+  revision: 451f4fe16113bff5a5d2269ed5ad43b0592e9a14
+  output: text_encoder pooler_output
