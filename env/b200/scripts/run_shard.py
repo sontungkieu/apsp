@@ -11,8 +11,10 @@ Outputs (one directory per shard, resumable per prompt-bank):
   seeds.parquet     one row per (prompt, bank, seed): seed, init hash, final IR / PickScore, validity, PNG path + sha256
   previews.parquet  one row per (prompt, bank, seed, checkpoint): step, timestep, sigma, IR, PickScore, validity
   timings.parquet   seconds per prompt-bank (generation, decode, scoring)
-  latents/{uid}_b{bank}_x0.npy     float16[K, J, C, h, w]   (x0 at the J checkpoints, unpacked for FLUX)
-  latents/{uid}_b{bank}_final.npy  float16[K, C, h, w]
+  latents/{uid}_b{bank}.safetensors  "x0" [K, J, C, h, w] (x0 at the J checkpoints, unpacked for FLUX) and
+                                     "final" [K, C, h, w], in the storage dtype (--latent-dtype: the model dtype by
+                                     default, bf16 kept as bf16; or fp32). The decoded images and their scores are
+                                     computed from exactly these stored tensors, so a re-decode reproduces them.
   images/{uid}_b{bank}_s{seed}.png (final), and _j{j}.png previews with --save-preview-png
   manifest.json     config, model/scorer provenance, environment, GPU, git commit, file sha256
 
@@ -149,6 +151,8 @@ def main(argv=None) -> int:
     ap.add_argument("--out", required=True)
     ap.add_argument("--no-ir", action="store_true")
     ap.add_argument("--no-pickscore", action="store_true")
+    ap.add_argument("--latent-dtype", choices=["model", "fp32"], default="model",
+                    help="dtype of the stored x0/final latents (decode and scores use the stored tensor)")
     ap.add_argument("--no-prompt-emb", action="store_true")
     ap.add_argument("--save-preview-png", action="store_true")
     a = ap.parse_args(argv)
@@ -164,6 +168,8 @@ def main(argv=None) -> int:
     H, W = a.height or spec["height"], a.width or spec["width"]
     dtype_name = a.dtype or spec["dtype"]
     dtype = {"fp16": torch.float16, "bf16": torch.bfloat16, "fp32": torch.float32}[dtype_name]
+    store_dtype = dtype if a.latent_dtype == "model" else torch.float32
+    from safetensors.torch import save_file
     ckpts = sorted({int(x) for x in a.checkpoints.split(",")}) if a.checkpoints else \
         sorted(set(range(max(1, steps // 8), steps + 1, max(1, steps // 8))) | {steps})
     if not all(1 <= c <= steps for c in ckpts):
@@ -272,12 +278,17 @@ def main(argv=None) -> int:
             sync(); t_gen = time.time() - t0
             if sorted(tap.x0) != ckpts:
                 raise RuntimeError(f"captured steps {sorted(tap.x0)} != {ckpts} (scheduler ran {tap.n} steps)")
-            x0 = torch.stack([unpack(tap.x0[k]) for k in ckpts], 1)          # [K, J, C, h, w]
-            fin = unpack(final.float())
+            # stored tensors = decoded tensors (no silent cast: bf16 stays bf16 in safetensors)
+            x0 = torch.stack([unpack(tap.x0[k]) for k in ckpts], 1).to(store_dtype).contiguous()   # [K, J, C, h, w]
+            fin = unpack(final).to(store_dtype).contiguous()                                      # [K, C, h, w]
             lat_ok_x0 = torch.isfinite(x0).flatten(2).all(2).cpu()           # [K, J]
             lat_ok_fin = torch.isfinite(fin).flatten(1).all(1).cpu().tolist()
-            np.save(out / "latents" / f"{uid}_b{b}_x0.npy", x0.cpu().numpy().astype(np.float16))
-            np.save(out / "latents" / f"{uid}_b{b}_final.npy", fin.cpu().numpy().astype(np.float16))
+            lat_file = out / "latents" / f"{uid}_b{b}.safetensors"
+            save_file({"x0": x0.cpu(), "final": fin.cpu()}, str(lat_file.with_suffix(".tmp")),
+                      metadata={"layout": "x0[K,J,C,h,w] final[K,C,h,w]", "checkpoints": json.dumps(ckpts),
+                                "dtype": str(store_dtype).replace("torch.", ""), "model": a.model,
+                                "prompt_uid": uid, "bank_id": str(b), "seeds": json.dumps(seeds)})
+            os.replace(lat_file.with_suffix(".tmp"), lat_file)
             t_dec = t_sc = 0.0
             prev_rows, seed_rows = [], []
             for j, k in enumerate(ckpts):
@@ -288,14 +299,14 @@ def main(argv=None) -> int:
                         ims[s].save(out / "images" / f"{uid}_b{b}_s{s}_j{j}.png")
                     prev_rows.append({"model": a.model, "prompt_uid": uid, "bank_id": b, "seed_idx": s, "j": j, "step": k,
                                       "timestep": tap.meta[k]["timestep"], "sigma": tap.meta[k]["sigma"],
-                                      "ir": r_ir[s], "pickscore": r_ps[s], "latent_ok": bool(lat_ok_x0[s, j]), "img_ok": bool(iok[s])})
+                                      "ir": r_ir[s], "pickscore_raw": r_ps[s], "latent_ok": bool(lat_ok_x0[s, j]), "img_ok": bool(iok[s])})
             t0 = time.time(); ims, iok = decode(fin); sync(); t_dec += time.time() - t0
             t0 = time.time(); r_ir, r_ps = scores(text, ims, iok); sync(); t_sc += time.time() - t0
             for s in range(a.k):
                 fn = out / "images" / f"{uid}_b{b}_s{s}.png"
                 ims[s].save(fn)
                 seed_rows.append({"model": a.model, "prompt_uid": uid, "bank_id": b, "seed_idx": s, "seed": seeds[s],
-                                  "init_sha256": init_sha[s], "ir": r_ir[s], "pickscore": r_ps[s], "latent_ok": bool(lat_ok_fin[s]),
+                                  "init_sha256": init_sha[s], "ir": r_ir[s], "pickscore_raw": r_ps[s], "latent_ok": bool(lat_ok_fin[s]),
                                   "img_ok": bool(iok[s]), "png": f"images/{fn.name}", "png_sha256": sha256_file(fn)})
             tmp = part.with_suffix(".tmp")
             tmp.write_text(json.dumps({"seeds": seed_rows, "previews": prev_rows,
@@ -323,7 +334,8 @@ def main(argv=None) -> int:
     files = {str(p.relative_to(out)).replace(os.sep, "/"): sha256_file(p)
              for p in sorted(out.rglob("*")) if p.is_file() and p.name != "manifest.json" and "parts" not in p.parts}
     manifest = {"schema": "apsp.b200_shard/v1", "model": a.model, "spec": spec, "steps": steps, "guidance": guidance,
-                "height": H, "width": W, "dtype": dtype_name, "vae_dtype": str(vae_dtype).replace("torch.", ""),
+                "height": H, "width": W, "dtype": dtype_name, "latent_dtype": str(store_dtype).replace("torch.", ""),
+                "latent_format": "safetensors", "pickscore_column": "pickscore_raw = logit_scale * cos(text, image), before softmax", "vae_dtype": str(vae_dtype).replace("torch.", ""),
                 "checkpoints": ckpts, "k": a.k, "banks": a.banks, "seed_scheme": SEED_SCHEME, "latent_shape": [C, h, w],
                 "scheduler": type(pipe.scheduler).__name__, "shard_index": a.shard_index, "num_shards": a.num_shards,
                 "prompts_file": str(a.prompts), "split": a.split, "n_prompts": len(prompts), "n_prompt_banks": len(parts),
