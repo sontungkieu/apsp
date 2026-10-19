@@ -33,7 +33,7 @@ image = (
 )
 source_image = image.add_local_dir(str(ROOT), "/opt/apsp", copy=False,
     ignore=modal.FilePatternMatcher(".git", ".venv", "data", "runs", "outputs", "remote_artifacts", "__pycache__", ".pytest_cache", "*.pyc"))
-restore_image = (modal.Image.debian_slim(python_version="3.11")
+restore_image = (modal.Image.from_registry("ubuntu:22.04", add_python="3.11")
     .apt_install("libgl1", "libglib2.0-0", "libgomp1", "git")
     .add_local_dir(str(ROOT), "/opt/apsp", copy=False,
         ignore=modal.FilePatternMatcher(".git", ".venv", "data", "runs", "outputs", "remote_artifacts", "__pycache__", ".pytest_cache", "*.pyc")))
@@ -160,6 +160,7 @@ def package():
 @app.function(image=restore_image, gpu="B200", cpu=4, memory=65536, timeout=1200,
               volumes={"/persist": volume}, max_containers=1, scaledown_window=2)
 def restore():
+    import platform
     subprocess.run(["/usr/local/bin/python", "/opt/apsp/env/lite/ensure_runtime.py",
                     "--archive", "/persist/export/runtime.tar.gz", "--manifest", "/persist/export/manifest.json"],
                    check=True, timeout=240)
@@ -168,7 +169,28 @@ def restore():
         run(["-m", "apsp.lite.qualify", "--out", "/persist/restored-qualification"], timeout=900)
     finally:
         volume.commit()
-    return Path("/persist/restored-qualification/summary.json").read_text()
+    summary = json.loads(Path("/persist/restored-qualification/summary.json").read_text())
+    summary["restore_host"] = {"platform": platform.platform(), "libc": platform.libc_ver(),
+                               "archive_sha256": json.loads(Path('/persist/export/manifest.json').read_text())["archive_sha256"]}
+    Path("/persist/restored-qualification/restore-receipt.json").write_text(json.dumps(summary, indent=2))
+    volume.commit()
+    return json.dumps(summary)
+
+
+@app.function(image=restore_image, cpu=2, memory=8192, timeout=600,
+              volumes={"/persist": volume}, max_containers=1, scaledown_window=2)
+def restore_cpu():
+    import platform
+    subprocess.run(["/usr/local/bin/python", "/opt/apsp/env/lite/ensure_runtime.py", "--cpu-only",
+                    "--archive", "/persist/export/runtime.tar.gz", "--manifest", "/persist/export/manifest.json"],
+                   check=True, timeout=480)
+    run(["-c", "from apsp.lite.compat import imagereward_import_bridge; imagereward_import_bridge(); import torch,torchvision,ImageReward,clip,peft,pyarrow,pandas,scipy; print('PORTABLE_CPU_IMPORTS_PASS')"])
+    result = {"pass": True, "stage": "portable_cpu_restore_imports", "gpu_qualification": False,
+              "libc": platform.libc_ver(), "platform": platform.platform(),
+              "archive_sha256": json.loads(Path('/persist/export/manifest.json').read_text())["archive_sha256"]}
+    Path('/persist/restore_cpu.json').write_text(json.dumps(result, indent=2))
+    volume.commit()
+    return json.dumps(result)
 
 
 @app.local_entrypoint()

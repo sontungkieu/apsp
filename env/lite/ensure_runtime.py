@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import inspect
 import json
 import os
 import posixpath
@@ -51,6 +52,7 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--archive", required=True)
     ap.add_argument("--manifest", required=True)
+    ap.add_argument("--cpu-only", action="store_true", help="install/import only; explicitly not GPU qualification")
     a = ap.parse_args(argv)
     archive, manifest = Path(a.archive).resolve(), json.loads(Path(a.manifest).read_text())
     h = hashlib.sha256()
@@ -71,8 +73,12 @@ def main(argv=None):
                 members = tf.getmembers()
                 validate_members(members)
                 # Members and all link destinations have been constrained above.
-                # Custom member/link validation above also covers older system Pythons.
-                tf.extractall(stage, members=members)
+                # Validate links ourselves because portable venv links intentionally
+                # point at their final absolute /opt prefixes, not the staging root.
+                if "filter" in inspect.signature(tf.extractall).parameters:
+                    tf.extractall(stage, members=members, filter="fully_trusted")
+                else:
+                    tf.extractall(stage, members=members)
             for name, prefix in zip(PREFIXES, prefixes):
                 staged = stage / name
                 (staged / ".apsp-runtime-sha256").write_text(expected + "\n")
@@ -80,9 +86,12 @@ def main(argv=None):
             # Keep any failed staging directory for diagnosis; successful stage is empty.
             (stage / "opt").rmdir()
             stage.rmdir()
-        subprocess.run(["/opt/apsp-runtime/bin/python", "-c",
-            "import torch,diffusers,transformers,peft; print(torch.__version__,torch.version.cuda); assert torch.cuda.is_available(); assert torch.cuda.get_device_capability(0)==(10,0); assert bool(torch.isfinite(torch.ones(1,device='cuda')+1).all())"], check=True)
-    print("APSP_RUNTIME_RESTORED; run node-specific model/scorer qualification next")
+        code = "import torch,diffusers,transformers,peft; print(torch.__version__,torch.version.cuda)"
+        if not a.cpu_only:
+            code += "; assert torch.cuda.is_available(); assert torch.cuda.get_device_capability(0)==(10,0); assert bool(torch.isfinite(torch.ones(1,device='cuda')+1).all())"
+        subprocess.run(["/opt/apsp-runtime/bin/python", "-c", code], check=True)
+    print("APSP_RUNTIME_CPU_RESTORE_ONLY; GPU_NOT_QUALIFIED" if a.cpu_only else
+          "APSP_RUNTIME_RESTORED; run node-specific model/scorer qualification next")
 
 
 if __name__ == "__main__":
