@@ -66,8 +66,9 @@ download_range() (
   for ATTEMPT in $(seq 1 8); do
     [ "$HAVE" -lt "$NEED" ] || { echo "RANGE_OK=$I bytes=$HAVE"; exit 0; }
     START=$((S+HAVE)); LEFT=$((NEED-HAVE)); TMP="$FILE.attempt.$BASHPID.$ATTEMPT"
+    LIMIT=$LEFT; [ "$LIMIT" -ge 1048576 ] || LIMIT=1048576
     # Deliberately no --retry and no curl >>. Append only a bounded 206 response.
-    if HTTP=$(curl --silent --fail --location --connect-timeout 20 --max-filesize "$LEFT" \
+    if HTTP=$(curl --silent --fail --location --connect-timeout 20 --max-filesize "$LIMIT" \
       --proxy "$PROXY" --noproxy '' "${AUTH[@]}" -H "Range: bytes=$START-$E" \
       "$URL" -o "$TMP" -w '%{http_code}' 2>/dev/null); then RC=0; else RC=$?; fi
     GOT=0; [ ! -f "$TMP" ] || GOT=$(stat -c%s "$TMP")
