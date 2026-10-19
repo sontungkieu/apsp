@@ -128,7 +128,7 @@ class HashWriter:
 
 def verify(archive):
     seen, meta = {}, None
-    with tarfile.open(archive, 'r|') as tf:
+    with tarfile.open(archive, 'r|', bufsize=8 << 20) as tf:
         for m in tf:
             safe_name(m.name)
             if not m.isfile() or m.name in seen:
@@ -207,7 +207,7 @@ def restore(archive, target, expected_sha):
     meta = verify(archive)
     stage = target.with_name(target.name+f'.staging-{os.getpid()}-{time.time_ns()}')
     stage.mkdir(parents=True, exist_ok=False)
-    with tarfile.open(archive, 'r|') as tf:
+    with tarfile.open(archive, 'r|', bufsize=8 << 20) as tf:
         for m in tf:
             rel = safe_name(m.name)
             if not m.isfile(): raise ValueError('regular files only')
