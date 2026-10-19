@@ -159,9 +159,11 @@ def pack(entries, archive, metadata):
     partial = archive.with_name(archive.name+'.partial')
     if partial.exists(): raise FileExistsError('partial from earlier attempt requires inspection')
     manifest = {**metadata, 'schema': 'apsp.lite.companion/v1', 'files': {}}
-    with partial.open('xb') as output:
+    # Modal Volume is a network filesystem: batch writes rather than emitting
+    # tarfile's default 10 KiB stream blocks as individual filesystem writes.
+    with partial.open('xb', buffering=8 << 20) as output:
         writer = HashWriter(output)
-        with tarfile.open(fileobj=writer, mode='w|', format=tarfile.PAX_FORMAT) as tf:
+        with tarfile.open(fileobj=writer, mode='w|', bufsize=8 << 20, copybufsize=8 << 20, format=tarfile.PAX_FORMAT) as tf:
             for i, (name, e) in enumerate(sorted(entries.items())):
                 safe_name(name)
                 info = tarfile.TarInfo(name); info.size = e['bytes']; info.mode = 0o644

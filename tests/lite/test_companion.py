@@ -74,3 +74,25 @@ def test_companion_source_hash_mismatch_is_not_published(tmp_path):
     with pytest.raises(ValueError, match='qualified source checksum mismatch'):
         c.pack(entries, target, {'source_commit':'a'*40})
     assert not target.exists() and target.with_name('bad.tar.partial').exists()
+
+
+def test_modal_companion_functions_exist_on_remote_import(monkeypatch):
+    # Remote imports have no local outputs/input directory. Decorated functions
+    # must still be defined so Modal can hydrate the requested function by name.
+    import sys
+    from types import SimpleNamespace
+    class Image:
+        @classmethod
+        def debian_slim(cls, **kwargs): return cls()
+        def add_local_file(self, *args, **kwargs): return self
+    class App:
+        def __init__(self, name): pass
+        def function(self, **kwargs): return lambda fn: fn
+    modal = SimpleNamespace(is_local=lambda:False, Image=Image, App=App,
+        Volume=SimpleNamespace(from_name=lambda name:object()))
+    monkeypatch.setitem(sys.modules, 'modal', modal)
+    path = Path(__file__).resolve().parents[2]/'env/lite/modal_companion.py'
+    spec = importlib.util.spec_from_file_location('remote_companion', path)
+    remote = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(remote)
+    assert callable(remote.package) and callable(remote.inspect) and callable(remote.check_restored)

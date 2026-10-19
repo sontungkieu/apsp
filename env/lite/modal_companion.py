@@ -34,6 +34,20 @@ def inspect():
     return json.dumps(report, indent=2)
 
 
+@app.function(image=image, cpu=1, memory=1024, timeout=60, volumes={'/persist': volume}, max_containers=1, scaledown_window=2)
+def preserve_incomplete():
+    # Used only after the exact task app has stopped. Preserve evidence; no delete.
+    partial = Path('/persist/export/apsp-lite-companion-v1.tar.partial')
+    saved = Path('/persist/export/companion-pack-9f73118-incomplete.tar.partial')
+    if partial.is_file():
+        if saved.exists(): raise FileExistsError('earlier incomplete evidence already exists')
+        size = partial.stat().st_size
+        partial.rename(saved)
+        Path('/persist/export/companion-incomplete-note.json').write_text(json.dumps({'bytes':size,'path':str(saved),'reason':'prior app stopped; rerun uses bounded 8 MiB buffered Volume writes'})+'\n')
+        volume.commit()
+        print('INCOMPLETE_PRESERVED='+str(size), flush=True)
+
+
 INPUT = ROOT/'outputs/apsp-lite-companion-input'
 if modal.is_local() and INPUT.exists():
     pack_image = (image
