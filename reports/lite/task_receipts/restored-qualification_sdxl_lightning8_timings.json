@@ -1,0 +1,13 @@
+{
+  "artifact_dump_s": 2.05782978000002,
+  "batch_k": 8,
+  "decode_chunk": 1,
+  "decode_s": 8.06943407999995,
+  "denoiser_calls": 8,
+  "deployment_cost_profile": false,
+  "generation_s": 0.893990204000005,
+  "imagereward_s": 1.1196525699999142,
+  "note": "collector timings include both scorers; do not substitute for active-verifier deployment ledger",
+  "pickscore_s": 1.7791563689998782,
+  "prompt_encoder_setup_and_encode_s": 0.005798935000001393
+}

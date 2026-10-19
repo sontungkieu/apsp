@@ -1,0 +1,33 @@
+{
+  "profile": "billionaireproject8",
+  "task_budget_usd": "7.00",
+  "observed_task_cost_usd": "1.56326821",
+  "observed_workspace_cost_usd": "1.77478443",
+  "observed_at_utc": "2026-10-19T17:01:59Z",
+  "by_app_usd": {
+    "apsp-lite-assets-20261019": "0.17898688",
+    "apsp-lite-assets-20261019-r2": "0.03551915",
+    "apsp-lite-b200-20261019": "0.00800615",
+    "apsp-lite-b200-20261019-r2": "0.31478150",
+    "apsp-lite-b200-20261019-r3": "0.51202010",
+    "apsp-lite-cpu-20261019": "0.00082108",
+    "apsp-lite-cpu-20261019-r2": "0.00002394",
+    "apsp-lite-cpu-20261019-r3": "0.00666828",
+    "apsp-lite-cpu-20261019-r4": "0.00123670",
+    "apsp-lite-cpu-math-20261019": "0.00086563",
+    "apsp-lite-cpu-math-20261019-r2": "0.00123663",
+    "apsp-lite-cpu-math-20261019-r3": "0.00111295",
+    "apsp-lite-export-20261019": "0.01565218",
+    "apsp-lite-png-diagnostic-20261019": "0.00056264",
+    "apsp-lite-prompts-20261019": "0.00091742",
+    "apsp-lite-prompts-20261019-r2": "0.00089752",
+    "apsp-lite-prompts-20261019-r3": "0.00272075",
+    "apsp-lite-resolve-lock": "0.00006973",
+    "apsp-lite-restore-20261019": "0.47235790",
+    "apsp-lite-restore-cpu-20261019": "0.00881108"
+  },
+  "scope": "All billing rows with description prefix apsp-lite-; excludes previous unrelated jobs.",
+  "limitation": "Observed API usage snapshot; billing can lag. Not final invoice or confirmed credit balance.",
+  "all_task_apps_stopped": true,
+  "retained_storage": "Private apsp-lite-runtime-v1 Volume retained; future storage charges depend on total workspace usage/allowance."
+}

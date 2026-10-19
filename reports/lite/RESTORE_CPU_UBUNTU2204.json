@@ -1,0 +1,11 @@
+{
+  "pass": true,
+  "stage": "portable_cpu_restore_imports",
+  "gpu_qualification": false,
+  "libc": [
+    "glibc",
+    "2.35"
+  ],
+  "platform": "Linux-4.19.0-gvisor-x86_64-with-glibc2.35",
+  "archive_sha256": "d944669e3211621416e5e017fdc010ea04d8726a89ec35cea2eb30d686bfda84"
+}

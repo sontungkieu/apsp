@@ -1,0 +1,59 @@
+{
+  "scope": "Extrapolation of one eight-seed calibration task/profile, measured in build and restored containers. Not a 20-task/profile throughput forecast or deployment cost profile.",
+  "rate_source": "https://modal.com/pricing",
+  "rate_verified_date": "2026-10-20 Asia/Saigon",
+  "b200_usd_per_second": 0.001736,
+  "samples": {
+    "hyper_flux8": {
+      "observations": 2,
+      "prompts": 1,
+      "candidates_per_task": 8,
+      "generation_seconds_min_max": [
+        8.865799379999999,
+        9.318645323000013
+      ],
+      "tracked_collector_seconds_min_max": [
+        20.19131446199998,
+        24.181255458999942
+      ]
+    },
+    "sdxl_base50": {
+      "observations": 2,
+      "prompts": 1,
+      "candidates_per_task": 8,
+      "generation_seconds_min_max": [
+        10.553682444000003,
+        10.63363934199998
+      ],
+      "tracked_collector_seconds_min_max": [
+        33.1252233270001,
+        37.358624795999816
+      ]
+    },
+    "sdxl_lightning8": {
+      "observations": 2,
+      "prompts": 1,
+      "candidates_per_task": 8,
+      "generation_seconds_min_max": [
+        0.893990204000005,
+        0.9094711999999845
+      ],
+      "tracked_collector_seconds_min_max": [
+        13.92586193799977,
+        16.41548045999997
+      ]
+    }
+  },
+  "full_tasks_per_profile": 4600,
+  "full_generation_only_extrapolated_gpu_usd": 162.21526222679685,
+  "full_tracked_collector_extrapolated_gpu_usd": 536.97090725993,
+  "first_250_train_prompt_wave_generation_only_extrapolated_gpu_usd": 17.632093720304006,
+  "excluded": [
+    "model/scorer load and warmup",
+    "untracked parquet/fsync/backup work",
+    "CPU/RAM/storage/egress",
+    "retry/headroom",
+    "text-dependent variation"
+  ],
+  "conclusion": "The full bank and even the first complete 250-train-prompt wave cannot be authorized within the current remaining 7 USD task cap based on these samples. No full collection launched."
+}

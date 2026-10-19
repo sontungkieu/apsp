@@ -1,0 +1,147 @@
+{
+  "release": "apsp-lite-runtime-and-data-preparation-v1",
+  "status": "runtime_qualified_data_collection_pending",
+  "created_at_utc": "2026-10-19T17:03:40.793794+00:00",
+  "base_commit": "396b3132eeb35bf7c98e0e4b1a851bf88268cc1b",
+  "code_checkpoint": "63a61e2ce72d51f0bb84ba65cc694ba398ee1c83",
+  "branch": "feat/apsp-lite-data-v1",
+  "git_remote": "local handover git bundle; no GitHub push",
+  "qualified_core_source_sha256": "7346430ea5f5a1bcfdd65d517c537dd82dd553dabce9ac125276d178ccdf6023",
+  "lock_sha256": "e404558d31cc6befaa79aa693b99650eee3d269db3d8aec00517af1845aff793",
+  "runtime": {
+    "profile": "billionaireproject8",
+    "volume": "apsp-lite-runtime-v1",
+    "archive": "/export/runtime.tar.gz",
+    "manifest": "/export/manifest.json",
+    "archive_bytes": 4571656042,
+    "archive_sha256": "d944669e3211621416e5e017fdc010ea04d8726a89ec35cea2eb30d686bfda84",
+    "contains": [
+      "Python standalone",
+      "locked dependency environment"
+    ],
+    "excludes": [
+      "source",
+      "model/scorer weights",
+      "credentials"
+    ],
+    "portable_restore": "Ubuntu22.04/glibc2.35 on Modal B200; company node not verified"
+  },
+  "data": {
+    "actual_collected_train_dev_candidates": 0,
+    "counts": {
+      "calibration": 50,
+      "dev": 300,
+      "test_id": 300,
+      "test_shift": 200,
+      "train": 2000
+    },
+    "expected_candidate_records": 110400,
+    "expected_preview_records": 1177600,
+    "expected_score_values": 2576000,
+    "group_overlap": 0,
+    "manual_language_qa": "pending",
+    "pass": true,
+    "prompt_manifest_sha256": "e60c551a3f3e4ef4c0dfec5a276a5eeb6bd8d904935b94c9f52686f2b0cc230f",
+    "supplemental_exclusion_index_sha256": "640b906dc5b5a2620d2cd4805b0866c7ab1b93ba14caef53c5047f065cc2d301",
+    "task_count": 13800,
+    "task_sha256": "f4306c9ff8548a9babfc7784108fdf4825907726f1440d957590cdd709d67773",
+    "train_structured_categories": {
+      "count_binding": 120,
+      "material_lighting_style": 120,
+      "multiple_constraints": 120,
+      "relations": 120,
+      "subject_attributes": 120
+    },
+    "train_template_families": 100,
+    "uid_count": 2850
+  },
+  "qualification": {
+    "profiles": [
+      "hyper_flux8",
+      "sdxl_base50",
+      "sdxl_lightning8"
+    ],
+    "prompts_per_profile": 1,
+    "candidates_per_profile": 8,
+    "local_regression_passed": 102,
+    "within_container_final_redecode_max_pixel_diff": 0,
+    "cross_container_png_identical": {
+      "hyper_flux8": "8/8",
+      "sdxl_lightning8": "8/8",
+      "sdxl_base50": "0/8"
+    },
+    "cross_container_sdxl50_cause": "undetermined",
+    "full_50_prompt_replay_online": "pending"
+  },
+  "budget": {
+    "profile": "billionaireproject8",
+    "task_budget_usd": "7.00",
+    "observed_task_cost_usd": "1.56326821",
+    "observed_workspace_cost_usd": "1.77478443",
+    "observed_at_utc": "2026-10-19T17:01:59Z",
+    "by_app_usd": {
+      "apsp-lite-assets-20261019": "0.17898688",
+      "apsp-lite-assets-20261019-r2": "0.03551915",
+      "apsp-lite-b200-20261019": "0.00800615",
+      "apsp-lite-b200-20261019-r2": "0.31478150",
+      "apsp-lite-b200-20261019-r3": "0.51202010",
+      "apsp-lite-cpu-20261019": "0.00082108",
+      "apsp-lite-cpu-20261019-r2": "0.00002394",
+      "apsp-lite-cpu-20261019-r3": "0.00666828",
+      "apsp-lite-cpu-20261019-r4": "0.00123670",
+      "apsp-lite-cpu-math-20261019": "0.00086563",
+      "apsp-lite-cpu-math-20261019-r2": "0.00123663",
+      "apsp-lite-cpu-math-20261019-r3": "0.00111295",
+      "apsp-lite-export-20261019": "0.01565218",
+      "apsp-lite-png-diagnostic-20261019": "0.00056264",
+      "apsp-lite-prompts-20261019": "0.00091742",
+      "apsp-lite-prompts-20261019-r2": "0.00089752",
+      "apsp-lite-prompts-20261019-r3": "0.00272075",
+      "apsp-lite-resolve-lock": "0.00006973",
+      "apsp-lite-restore-20261019": "0.47235790",
+      "apsp-lite-restore-cpu-20261019": "0.00881108"
+    },
+    "scope": "All billing rows with description prefix apsp-lite-; excludes previous unrelated jobs.",
+    "limitation": "Observed API usage snapshot; billing can lag. Not final invoice or confirmed credit balance.",
+    "all_task_apps_stopped": true,
+    "retained_storage": "Private apsp-lite-runtime-v1 Volume retained; future storage charges depend on total workspace usage/allowance."
+  },
+  "pending": [
+    "manual language/content QA and tokenizer truncation audit",
+    "v1 exclusion coverage for 220 missing texts",
+    "20-task/profile cost/storage forecast",
+    "active-verifier deployment cost primitives",
+    "50-prompt replay-online/native-batching drift qualification",
+    "automatic QA-gated wave promotion",
+    "full 13800-task collection",
+    "independent backup and cross-machine data restore",
+    "complete trainer feature integration",
+    "held-out Hyper-SD15 contract",
+    "company-node qualification"
+  ],
+  "receipts_sha256": {
+    "reports/lite/ASSETS_MANIFEST.json": "f262830720998e4f74cf59ba0a0ada1e636024687f3132c0e90837858a4bc504",
+    "reports/lite/BUDGET_RECEIPT.json": "ee34d1012a34c89b22e3f30684890a6ee69347d8f567883865afd8a7b9fb7dba",
+    "reports/lite/COLLECTION_COST_SCREEN.json": "1a605889630f4b8f91589c8bde158ebbe0824a1a853a14585caae3eaacba5680",
+    "reports/lite/CPU_IMPORT_AND_MATH.json": "6999c3e494cb5fcbc332008fc5a23c47894c5726eb4d86507979f00e316acef9",
+    "reports/lite/CROSS_CONTAINER_PIXEL_DRIFT.json": "5e16577274184e43219a86d22f4a86cc8c4f257bdf7d53218118c5b389494a9c",
+    "reports/lite/CROSS_CONTAINER_PNG_PARITY.json": "257b82582babd51765d4f6516785c79acb9e5fd09017b15b0dfa731b2e6526e1",
+    "reports/lite/PROMPT_MANIFEST_AUDIT.json": "24392d896ef384bee77783020019a9d9b613022445859330a87ffe9ebd7fff6b",
+    "reports/lite/QUALIFICATION_B200.json": "12592f0309c6253d1f8808a89ed58f2f62127d4ea7b83faf7c9ad266ca4e43f1",
+    "reports/lite/RESTORE_B200_UBUNTU2204.json": "9d6b5045fc45bb528030c6c9a306c34da3cf5ef52757e7d68cca5d8efef41784",
+    "reports/lite/RESTORE_CPU_UBUNTU2204.json": "a1882464c284f8ba11609e847448309a8dcc95343f942396fc81a2493dc4b5e2",
+    "reports/lite/RUNTIME_MANIFEST.json": "84a7bf1e02ba61a615010f52603fef46144214f9962ef4a9aafb0bbd2b38a333",
+    "reports/lite/task_receipts/qualification_hyper_flux8.json": "21f7b3f107bf183cac912d93b66c8a7afde875559507d225b6bb5b9732a79db1",
+    "reports/lite/task_receipts/qualification_hyper_flux8_timings.json": "05887e1509003b0c4db778c1c950132b4b5a7f924bc1cb0f43dee655f278ddec",
+    "reports/lite/task_receipts/qualification_sdxl_base50.json": "89f9e2e0d0d401140b3c09251472093f0fb41583913bac644f667b9f489863a0",
+    "reports/lite/task_receipts/qualification_sdxl_base50_timings.json": "ab56b58569f5eb28fcec3bec3f76a5582f4930ec8d421f3eeffb2639897f5cdd",
+    "reports/lite/task_receipts/qualification_sdxl_lightning8.json": "e00619862c40f1a80130cfdfa02899c493a9f34e50dd4f8cd83fa3b90307b245",
+    "reports/lite/task_receipts/qualification_sdxl_lightning8_timings.json": "8eb254867d25fa18099775fe883464b4f567c4d7557a87a234e5edd74038d28e",
+    "reports/lite/task_receipts/restored-qualification_hyper_flux8.json": "27e1e583ac7aa6ece42d50975366199e94d09df06051611b926e16ecf2a8ab6b",
+    "reports/lite/task_receipts/restored-qualification_hyper_flux8_timings.json": "8595ee3bc2e1420b6fb8a9849b8a8d01c1669b74a95d4422d52c42c8ffc335be",
+    "reports/lite/task_receipts/restored-qualification_sdxl_base50.json": "2cb539eed99e5b388a2d57dec866152c17873bf3ace8ba8c307fad98572fb816",
+    "reports/lite/task_receipts/restored-qualification_sdxl_base50_timings.json": "4306341e6f9e1a0bfd8def2f1da6d51c541191790e53d4d0a8cbdf72b7591857",
+    "reports/lite/task_receipts/restored-qualification_sdxl_lightning8.json": "25e6cebd497f44e71b5bfd5a443c3ec3b0acfacbcaf7f9fb424ef6019e1fc2ba",
+    "reports/lite/task_receipts/restored-qualification_sdxl_lightning8_timings.json": "defbc2c3e17b376ca534d9dfe0c0ec16e9fb14100fee0058dedd116a6340b318"
+  }
+}

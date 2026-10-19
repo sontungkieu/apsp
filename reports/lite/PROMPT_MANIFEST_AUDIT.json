@@ -1,0 +1,29 @@
+{
+  "actual_collected_train_dev_candidates": 0,
+  "counts": {
+    "calibration": 50,
+    "dev": 300,
+    "test_id": 300,
+    "test_shift": 200,
+    "train": 2000
+  },
+  "expected_candidate_records": 110400,
+  "expected_preview_records": 1177600,
+  "expected_score_values": 2576000,
+  "group_overlap": 0,
+  "manual_language_qa": "pending",
+  "pass": true,
+  "prompt_manifest_sha256": "e60c551a3f3e4ef4c0dfec5a276a5eeb6bd8d904935b94c9f52686f2b0cc230f",
+  "supplemental_exclusion_index_sha256": "640b906dc5b5a2620d2cd4805b0866c7ab1b93ba14caef53c5047f065cc2d301",
+  "task_count": 13800,
+  "task_sha256": "f4306c9ff8548a9babfc7784108fdf4825907726f1440d957590cdd709d67773",
+  "train_structured_categories": {
+    "count_binding": 120,
+    "material_lighting_style": 120,
+    "multiple_constraints": 120,
+    "relations": 120,
+    "subject_attributes": 120
+  },
+  "train_template_families": 100,
+  "uid_count": 2850
+}

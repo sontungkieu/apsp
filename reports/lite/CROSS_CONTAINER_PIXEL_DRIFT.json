@@ -1,0 +1,167 @@
+{
+  "scope": "one qualification prompt, build Debian versus restored Ubuntu; diagnostic only",
+  "profiles": {
+    "hyper_flux8": {
+      "images": [
+        {
+          "seed_idx": 0,
+          "max_channel_difference_0_255": 0,
+          "mean_channel_difference_0_255": 0.0,
+          "identical_pixels_fraction": 1.0
+        },
+        {
+          "seed_idx": 1,
+          "max_channel_difference_0_255": 0,
+          "mean_channel_difference_0_255": 0.0,
+          "identical_pixels_fraction": 1.0
+        },
+        {
+          "seed_idx": 2,
+          "max_channel_difference_0_255": 0,
+          "mean_channel_difference_0_255": 0.0,
+          "identical_pixels_fraction": 1.0
+        },
+        {
+          "seed_idx": 3,
+          "max_channel_difference_0_255": 0,
+          "mean_channel_difference_0_255": 0.0,
+          "identical_pixels_fraction": 1.0
+        },
+        {
+          "seed_idx": 4,
+          "max_channel_difference_0_255": 0,
+          "mean_channel_difference_0_255": 0.0,
+          "identical_pixels_fraction": 1.0
+        },
+        {
+          "seed_idx": 5,
+          "max_channel_difference_0_255": 0,
+          "mean_channel_difference_0_255": 0.0,
+          "identical_pixels_fraction": 1.0
+        },
+        {
+          "seed_idx": 6,
+          "max_channel_difference_0_255": 0,
+          "mean_channel_difference_0_255": 0.0,
+          "identical_pixels_fraction": 1.0
+        },
+        {
+          "seed_idx": 7,
+          "max_channel_difference_0_255": 0,
+          "mean_channel_difference_0_255": 0.0,
+          "identical_pixels_fraction": 1.0
+        }
+      ],
+      "max_ir_absolute_delta": 0.0,
+      "max_pickscore_absolute_delta": 0.0
+    },
+    "sdxl_base50": {
+      "images": [
+        {
+          "seed_idx": 0,
+          "max_channel_difference_0_255": 100,
+          "mean_channel_difference_0_255": 0.1621087392171224,
+          "identical_pixels_fraction": 0.7103128433227539
+        },
+        {
+          "seed_idx": 1,
+          "max_channel_difference_0_255": 51,
+          "mean_channel_difference_0_255": 0.16854985555013022,
+          "identical_pixels_fraction": 0.6662158966064453
+        },
+        {
+          "seed_idx": 2,
+          "max_channel_difference_0_255": 40,
+          "mean_channel_difference_0_255": 0.18677584330240884,
+          "identical_pixels_fraction": 0.6526355743408203
+        },
+        {
+          "seed_idx": 3,
+          "max_channel_difference_0_255": 28,
+          "mean_channel_difference_0_255": 0.2115631103515625,
+          "identical_pixels_fraction": 0.6563701629638672
+        },
+        {
+          "seed_idx": 4,
+          "max_channel_difference_0_255": 49,
+          "mean_channel_difference_0_255": 0.11685911814371745,
+          "identical_pixels_fraction": 0.749786376953125
+        },
+        {
+          "seed_idx": 5,
+          "max_channel_difference_0_255": 66,
+          "mean_channel_difference_0_255": 0.15695730845133463,
+          "identical_pixels_fraction": 0.7163114547729492
+        },
+        {
+          "seed_idx": 6,
+          "max_channel_difference_0_255": 74,
+          "mean_channel_difference_0_255": 0.17649364471435547,
+          "identical_pixels_fraction": 0.6401195526123047
+        },
+        {
+          "seed_idx": 7,
+          "max_channel_difference_0_255": 54,
+          "mean_channel_difference_0_255": 0.15316232045491537,
+          "identical_pixels_fraction": 0.6968021392822266
+        }
+      ],
+      "max_ir_absolute_delta": 0.04556381702423096,
+      "max_pickscore_absolute_delta": 0.04733085632324219
+    },
+    "sdxl_lightning8": {
+      "images": [
+        {
+          "seed_idx": 0,
+          "max_channel_difference_0_255": 0,
+          "mean_channel_difference_0_255": 0.0,
+          "identical_pixels_fraction": 1.0
+        },
+        {
+          "seed_idx": 1,
+          "max_channel_difference_0_255": 0,
+          "mean_channel_difference_0_255": 0.0,
+          "identical_pixels_fraction": 1.0
+        },
+        {
+          "seed_idx": 2,
+          "max_channel_difference_0_255": 0,
+          "mean_channel_difference_0_255": 0.0,
+          "identical_pixels_fraction": 1.0
+        },
+        {
+          "seed_idx": 3,
+          "max_channel_difference_0_255": 0,
+          "mean_channel_difference_0_255": 0.0,
+          "identical_pixels_fraction": 1.0
+        },
+        {
+          "seed_idx": 4,
+          "max_channel_difference_0_255": 0,
+          "mean_channel_difference_0_255": 0.0,
+          "identical_pixels_fraction": 1.0
+        },
+        {
+          "seed_idx": 5,
+          "max_channel_difference_0_255": 0,
+          "mean_channel_difference_0_255": 0.0,
+          "identical_pixels_fraction": 1.0
+        },
+        {
+          "seed_idx": 6,
+          "max_channel_difference_0_255": 0,
+          "mean_channel_difference_0_255": 0.0,
+          "identical_pixels_fraction": 1.0
+        },
+        {
+          "seed_idx": 7,
+          "max_channel_difference_0_255": 0,
+          "mean_channel_difference_0_255": 0.0,
+          "identical_pixels_fraction": 1.0
+        }
+      ],
+      "max_ir_absolute_delta": 0.0,
+      "max_pickscore_absolute_delta": 0.0
+    }
+  }
+}

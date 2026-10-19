@@ -1,0 +1,19 @@
+{
+  "scope": "same authored qualification prompt, bank0, eight seeds per profile; build image versus restored Ubuntu22.04",
+  "profiles": {
+    "hyper_flux8": {
+      "images": 8,
+      "identical_png_sha256": 8
+    },
+    "sdxl_base50": {
+      "images": 8,
+      "identical_png_sha256": 0
+    },
+    "sdxl_lightning8": {
+      "images": 8,
+      "identical_png_sha256": 8
+    }
+  },
+  "images": 24,
+  "identical_png_sha256": 16
+}

@@ -28,6 +28,7 @@ uvx --offline --from modal modal run --profile PROFILE env/lite/modal_runtime.py
 uvx --offline --from modal modal run --profile PROFILE env/lite/modal_runtime.py::prepare_assets
 uvx --offline --from modal modal run --profile PROFILE env/lite/modal_runtime.py::qualify
 uvx --offline --from modal modal run --profile PROFILE env/lite/modal_runtime.py::package
+uvx --offline --from modal modal run --profile PROFILE env/lite/modal_runtime.py::restore
 ```
 
 `--offline` ở đây chỉ cấm uvx tải CLI trên máy điều khiển; asset download chạy trên
@@ -52,9 +53,41 @@ không do runtime này quản lý. Cần ghi `/opt`, Python >=3.10,
 Linux x86_64, driver tương thích cu128 và B200. Library ABI của node vẫn cần gate thực.
 Không coi restore trên Modal là xác nhận node công ty.
 
+Archive đã được thử trên Ubuntu22.04/glibc2.35 riêng. System libraries trong
+restore image: `libgl1`, `libglib2.0-0`, `libgomp1`; node đích phải có các library
+tương ứng. Không copy đè libc/libstdc++ của host. Có thể cài/import trước khi có GPU
+bằng `--cpu-only`; kết quả đó được ghi rõ là CPU restore, không phải GPU qualification.
+
+Lấy archive trực tiếp tới node đã được cấp quyền, bằng Modal CLI/profile có sẵn:
+
+```bash
+mkdir -p /shared/apsp-lite/payload
+modal volume get apsp-lite-runtime-v1 /export/runtime.tar.gz \
+  /shared/apsp-lite/payload/runtime.tar.gz --profile billionaireproject8
+modal volume get apsp-lite-runtime-v1 /export/manifest.json \
+  /shared/apsp-lite/payload/manifest.json --profile billionaireproject8
+```
+
+Chỉ là lệnh bàn giao, chưa chạy trên node công ty. Nếu dùng directory download,
+tạo destination directory trước rồi kiểm hash từng file; không chỉ tin thông báo CLI.
+
+Qualification cuối đã chạy một prompt riêng × tám seed cho mỗi profile, cùng hai
+scorer; restore archive trên container Ubuntu22.04/B200 cũng đạt. Saved final latent
+re-decode trong từng run có max pixel diff=0. So sánh **giữa** build container và
+restore container: Lightning/FLUX có 8/8 PNG giống SHA, SDXL50 có 0/8. SDXL50 có
+max mean channel difference=0.2115631103515625 trên thang 0–255, max IR delta=
+0.04556381702423096 và max raw PickScore delta=0.04733085632324219. Chưa xác định
+nguyên nhân; không coi pass functional restore là bitwise parity. Cần freeze
+host/runtime thực tế và nghiệm thu drift/native batching trước mass collection.
+Xem `reports/lite/CROSS_CONTAINER_PIXEL_DRIFT.json` và `LITE_DATA_REPORT.md`.
+
 ## Prompt input và manifests
 
-CLI nhận JSONL text-only có provenance. Một row:
+Đã có text preparation candidate tại Volume:
+`/text/lite-v1-20261019/manifests/` và local `data/lite-v1/prepared/manifests/`.
+Xem dataset card/hash audit; manual/language QA còn pending.
+
+CLI cũng nhận JSONL text-only có provenance. Một row:
 
 ```json
 {"text_raw":"A ceramic cup on a wooden table.","source":"diffusiondb","source_row_id":"123","source_revision":"PINNED_REVISION_OR_SOURCE_HASH","parent_group":"source-parent-123"}
@@ -78,12 +111,12 @@ Parti input toàn bộ được dùng làm exclusion trước split ID/train/dev
 200 Parti rows vào test_shift. UID SHA256 trên NFC/whitespace-normalized text;
 exact aliases giữ mọi parent/image/family group. Detector lexical Jaccard 3-gram
 >=0.85; không có tuyên bố semantic decontamination. Thiếu v1 manifest phải ghi rõ.
-Nested train250/1000/2000 có quota nguồn 50/20/30 phần trăm. Domain/độ dài và cân
-bằng năm nhóm structured vẫn cần QA corpus thật trước khi khóa release.
+Nested train250/1000/2000 có quota nguồn 50/20/30 phần trăm. Structured có nhãn
+primary_category được chia đều năm nhóm; domain/độ dài/naturalness còn cần QA.
 
-Kỳ vọng khi đủ input: train2000, dev300, calibration50, test_id300, test_shift200;
-13800 train/dev tasks, 110400 candidate records, 1177600 preview rows. Đây là contract,
-không phải dữ liệu đã thu. Full pool chưa khóa thì báo Lite manifest độc lập.
+Manifests thực có train2000, dev300, calibration50, test_id300, test_shift200 và
+13.800 train/dev tasks. 110.400 candidate records/1.177.600 preview rows là kỳ vọng,
+chưa phải dữ liệu đã thu. Full chưa khóa nên Lite manifest độc lập.
 
 ## Worker và resume
 
@@ -142,4 +175,12 @@ vào trainer v1. Không train PPO/REINFORCE hoặc mở test trong data job.
 
 Chưa đủ cho DONE dữ liệu: corpus/source/QA thật, measured cost primitives, 50-prompt
 replay-online drift study, full collection, independent backup, held-out Hyper-SD15
-contract, node-specific verification và final release report cần hoàn tất riêng.
+contract và node-specific verification cần hoàn tất riêng. Báo cáo preparation
+hiện tại có tại `LITE_DATA_REPORT.md`; release manifest không đánh dấu dataset DONE.
+
+Lượt build/qualification dùng profile `billionaireproject8`, usage snapshot ghi nhận
+1.56326821 USD so với cap 7 USD. Mọi app của lượt này đã stopped; Volume được giữ
+private. Snapshot billing có thể trễ, không phải số dư credit xác nhận hay invoice
+cuối. Không tự chạy full bank: ngoại suy một prompt từ timings đã đo cho riêng
+generation đã khoảng 162 USD cho full bank, chưa decode/scoring/CPU/RAM/storage.
+Đây chỉ là budget screen, không thay forecast 20 task/profile hoặc cam kết chi phí.

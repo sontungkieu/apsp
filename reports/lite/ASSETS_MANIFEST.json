@@ -1,0 +1,223 @@
+{
+  "hyper_flux8": {
+    "assets": [
+      {
+        "files_sha256": {
+          ".gitattributes": "748878225682b19c0d6b285019440f8881aa1bf89d66941660f12d6e938184db",
+          "ae.safetensors": "afc8e28272cd15db3919bacdb6918ce9c1ed22e96cb12c4d5ed0fba823529e38",
+          "flux1-dev.safetensors": "4610115bb0c89560703c892c59ac2742fa821e60ef5871b33493ba544683abd7",
+          "model_index.json": "24946df21ff25e210486b5f6b14208983a90c9c73f8d48cfa724c0e4e03f7201",
+          "scheduler/scheduler_config.json": "63b6d2fa93579e383a308009bfd5ae12e61f8950017dd749302f8d54bb3520b6",
+          "text_encoder/config.json": "d79d5c8c6ce85112a923d621a5412886ddbbb0636210fc0f72f450582e675542",
+          "text_encoder/model.safetensors": "893d67a23f4693ed42cdab4cbad7fe3e727cf59609c40da28a46b5470f9ed082",
+          "text_encoder_2/config.json": "9001e5a8ae0571a362f806b87b6105dd1a15c33dca237b606d2561164109beeb",
+          "text_encoder_2/model-00001-of-00002.safetensors": "ec87bffd1923e8b2774a6d240c922a41f6143081d52cf83b8fe39e9d838c893e",
+          "text_encoder_2/model-00002-of-00002.safetensors": "a5640855b301fcdbceddfa90ae8066cd9414aff020552a201a255ecf2059da00",
+          "text_encoder_2/model.safetensors.index.json": "3bacec0f0cf392399d4a385908f67dd73df99c9e9cfee669f148858ba9fbdb0a",
+          "tokenizer/merges.txt": "9fd691f7c8039210e0fced15865466c65820d09b63988b0174bfe25de299051a",
+          "tokenizer/special_tokens_map.json": "2cdb3b8331a60c92fc1e55a13e9fd61fd2293c5a51275fdcccd62b780052530e",
+          "tokenizer/tokenizer_config.json": "6bdcee9ccce2a16ca2b4c0c5ed00b42c50ea225f4472a8c4c1e963a2902c2881",
+          "tokenizer/vocab.json": "e089ad92ba36837a0d31433e555c8f45fe601ab5c221d4f607ded32d9f7a4349",
+          "tokenizer_2/special_tokens_map.json": "7a1985a994c41886db38c719d2a3d2f40606663cc19d7c5d6a85d349320e06d2",
+          "tokenizer_2/spiece.model": "d60acb128cf7b7f2536e8f38a5b18a05535c9e14c7a355904270e15b0945ea86",
+          "tokenizer_2/tokenizer.json": "f5dfec163765e18e270537fe896c49f5fad74db1525641d9b255a3008b999596",
+          "tokenizer_2/tokenizer_config.json": "1a3d2db64215ed77854dd4208aac5f8361c1b5471cabd19c0ef1472d1a895eb0",
+          "transformer/config.json": "4f601e115ed85ab891646f03d17dca39d61278eca4b618e8c642cad71495fee8",
+          "transformer/diffusion_pytorch_model-00001-of-00003.safetensors": "d86a3038eacaa720682cb9b1da3c49fecf8a3ded605af4def6061eaa18903eb8",
+          "transformer/diffusion_pytorch_model-00002-of-00003.safetensors": "5e830704a83aa938dfaf23da308100a1c44b83fa084283abf1d163ea727e5f7a",
+          "transformer/diffusion_pytorch_model-00003-of-00003.safetensors": "0d9c7c663217d1c3d44a6deed4e1cf1ac09fbc2c4137c47de1e3d74c959833de",
+          "transformer/diffusion_pytorch_model.safetensors.index.json": "780ee2abafdd8abcb64d97be0154f1481f51e3cce1899fbad98723e4fb6c15e0",
+          "vae/config.json": "ad6f0acb584ceb3d136d1e32b684dec65db24bffe9223df2bac0b45539d4e6b5",
+          "vae/diffusion_pytorch_model.safetensors": "f5b59a26851551b67ae1fe58d32e76486e1e812def4696a4bea97f16604d40a3"
+        },
+        "repo": "black-forest-labs/FLUX.1-dev",
+        "revision": "3de623fc3c33e44ffbe2bad470d0f45bccf2eb21"
+      },
+      {
+        "files_sha256": {
+          "Hyper-FLUX.1-dev-8steps-lora.safetensors": "e0ab0fdf569cd01a382f19bd87681f628879dea7ad51fe5a3799b6c18c7b2d03"
+        },
+        "repo": "ByteDance/Hyper-SD",
+        "revision": "bc08d970a87c74c71209491d64e3525845698863"
+      }
+    ],
+    "pass": true
+  },
+  "imagereward": {
+    "assets": [
+      {
+        "files_sha256": {
+          "ImageReward.pt": "d71dc8d4912bc633c06ab8ef1ef6a81e8199d4369f14b47b29baf1d19de561f6"
+        },
+        "repo": "THUDM/ImageReward",
+        "revision": "5736be03b2652728fb87788c9797b0570450ab72"
+      },
+      {
+        "files_sha256": {
+          "med_config.json": "d8b5029cc3c0124313d17009d043f0701bbe497f3721fa4ceb818720fe665326"
+        },
+        "repo": "THUDM/ImageReward",
+        "revision": "5736be03b2652728fb87788c9797b0570450ab72"
+      },
+      {
+        "files_sha256": {
+          "config.json": "7160e1553ad2ca51d8c1cb066be533db31826e12d173824c1bb0cb1a4f187d20",
+          "tokenizer_config.json": "a025160ef0431f1a392f6f050c1310f4c5d9fb6f275932dbccba73c4d214bf10",
+          "vocab.txt": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3"
+        },
+        "repo": "google-bert/bert-base-uncased",
+        "revision": "86b5e0934494bd15c9632b12f734a8a67f723594"
+      }
+    ],
+    "pass": true
+  },
+  "pickscore": {
+    "assets": [
+      {
+        "files_sha256": {
+          ".gitattributes": "db7c0371f46f0840b8f25794c1e3321c9b5820a8cb6ba9694a46fc64b8fae5a6",
+          "config.json": "bfa2a8243d3f82ad7c4746a0b62817e895f9f225926e6caecfc9dbb9171647ce",
+          "merges.txt": "9fd691f7c8039210e0fced15865466c65820d09b63988b0174bfe25de299051a",
+          "model.safetensors": "ef31ef6fc5ff4d9bb90dd232df4e145887ba62c5a03aa2841415f8c25f18d52e",
+          "preprocessor_config.json": "6652117bf1702428f09a2eabb0fe985f7582b46ef22f9cac789034a86da128f3",
+          "pytorch_model.bin": "3f0cf1c6e533f478534404cb3ca6938103becbfe4312c6affc077c274a757972",
+          "special_tokens_map.json": "c4864a9376a8401918425bed71fc14fc0e81f9b59ec45c1cf96cccb2df508eac",
+          "tokenizer.json": "f7f3b7af117d467b58374797691a6438d3e6b9e9cef800dfd5dced7f697a90cd",
+          "tokenizer_config.json": "60ba2912bc6344c94bc16bbdec27fa1209409167b6f2fdf3cfe9e65462ea3967",
+          "vocab.json": "5047b556ce86ccaf6aa22b3ffccfc52d391ea4accdab9c2f2407da5b742d4363"
+        },
+        "repo": "yuvalkirstain/PickScore_v1",
+        "revision": "a4e4367c6dfa7288a00c550414478f865b875800"
+      },
+      {
+        "files_sha256": {
+          "config.json": "50150597fccadc90f3198d1c2caf2c41d88a40908c38fb428ea56c249b501d85",
+          "merges.txt": "f1cd414c2d113a28b296afc0fd66ae854c0e0c34d5de373a2f5b7f62e0c02344",
+          "open_clip_config.json": "42736e39d52321d5cb6a6c21250669f942411f4732a7eb9011f83de7d781c1c5",
+          "preprocessor_config.json": "910e70b3956ac9879ebc90b22fb3bc8a75b6a0677814500101a4c072bd7857bd",
+          "special_tokens_map.json": "f8c0d6c39aee3f8431078ef6646567b0aba7f2246e9c54b8b99d55c22b707cbf",
+          "tokenizer.json": "b556ac8c99757ffb677208af34bc8c6721572114111a6e0aaf5fa69ff0b8d842",
+          "tokenizer_config.json": "e19f34ef773563fb695f96cfcae1e4c7b112ab6ad532f6962061df5242d924f0",
+          "vocab.json": "5047b556ce86ccaf6aa22b3ffccfc52d391ea4accdab9c2f2407da5b742d4363"
+        },
+        "repo": "laion/CLIP-ViT-H-14-laion2B-s32B-b79K",
+        "revision": "1c2b8495b28150b8a4922ee1c8edee224c284c0c"
+      }
+    ],
+    "pass": true
+  },
+  "prompt_encoder": {
+    "assets": [
+      {
+        "files_sha256": {
+          "model_index.json": "e2f6f22e274374010aec30c79eb2d6e53fff4a36ac0225523a92cb2d41a83347",
+          "text_encoder/config.json": "845df614cb9327ae7bbea027316246fae917827407da6df13572e41b5f93b4cc",
+          "text_encoder/model.fp16.safetensors": "77795e2023adcf39bc29a884661950380bd093cf0750a966d473d1718dc9ef4e",
+          "text_encoder/model.safetensors": "d008943c017f0092921106440254dbbe00b6a285f7883ec8ba160c3faad88334",
+          "tokenizer/merges.txt": "9fd691f7c8039210e0fced15865466c65820d09b63988b0174bfe25de299051a",
+          "tokenizer/special_tokens_map.json": "c4864a9376a8401918425bed71fc14fc0e81f9b59ec45c1cf96cccb2df508eac",
+          "tokenizer/tokenizer_config.json": "00439066fcba73de57644cf41e4e3b9f2dbb09d7f3fc2005898ba52399045882",
+          "tokenizer/vocab.json": "e089ad92ba36837a0d31433e555c8f45fe601ab5c221d4f607ded32d9f7a4349"
+        },
+        "repo": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+        "revision": "451f4fe16113bff5a5d2269ed5ad43b0592e9a14"
+      }
+    ],
+    "pass": true
+  },
+  "sdxl_base50": {
+    "assets": [
+      {
+        "files_sha256": {
+          ".gitattributes": "ef770cfcc4f91641d93abd1119da54bb7af0708aee11fd90ce5575b2b908fba7",
+          "model_index.json": "6d7b93508390ab91ac5bfbe4aeb4dc2d83f7bb1b05fb069d714b5b0c75f70d44",
+          "scheduler/scheduler_config.json": "af3e45a949aff8b8341ab8b811429ec03fee857a700a1d9477363e4fff9666e2",
+          "sd_xl_base_1.0.safetensors": "31e35c80fc4829d14f90153f4c74cd59c90b779f6afe05a74cd6120b893f7e5b",
+          "sd_xl_base_1.0_0.9vae.safetensors": "e6bb9ea85bbf7bf6478a7c6d18b71246f22e95d41bcdd80ed40aa212c33cfeff",
+          "sd_xl_offset_example-lora_1.0.safetensors": "4852686128f953d0277d0793e2f0335352f96a919c9c16a09787d77f55cbdf6f",
+          "text_encoder/config.json": "39b8b2e4b1949e36969caa425b6c81c68bace99198dd9078ce05d16ad401fe7f",
+          "text_encoder/model.safetensors": "5c3d6454dd2d23414b56aa1b5858a72487a656937847b6fea8d0606d7a42cdbc",
+          "text_encoder/openvino_model.xml": "ab5cf7327374d8c984f4e963564a329f92c9dad08dac9eee9b8dca86b912f1c9",
+          "text_encoder_2/config.json": "a892d1c3a69a7e9247a24de2bc1d5891e3109a54696e53be20093af671072c34",
+          "text_encoder_2/model.onnx_data": "3da7ac65349fbd092e836e3eeca2c22811317bc804fd70af157b4550f2d4bcb5",
+          "text_encoder_2/model.safetensors": "3a6032f63d37ae02bbc74ccd6a27440578cd71701f96532229d0154f55a8d3ff",
+          "text_encoder_2/openvino_model.xml": "38f0a4ff68dd918b24908a264140c2ad0e057eca82616f75c17cbf4a099ad6ad",
+          "tokenizer/merges.txt": "9fd691f7c8039210e0fced15865466c65820d09b63988b0174bfe25de299051a",
+          "tokenizer/special_tokens_map.json": "c4864a9376a8401918425bed71fc14fc0e81f9b59ec45c1cf96cccb2df508eac",
+          "tokenizer/tokenizer_config.json": "19d7b034cb0cc3ce9766c2231373ab8aa8991fc72e2c8f76558bfaae3de0d563",
+          "tokenizer/vocab.json": "e089ad92ba36837a0d31433e555c8f45fe601ab5c221d4f607ded32d9f7a4349",
+          "tokenizer_2/merges.txt": "9fd691f7c8039210e0fced15865466c65820d09b63988b0174bfe25de299051a",
+          "tokenizer_2/special_tokens_map.json": "f118ab3a983206e4f32583448de6bd6aae4ee21869135cef1f5848a753cdaab6",
+          "tokenizer_2/tokenizer_config.json": "c9d23941f76a41cbd50eda9290f57be7828f0a7a677939e9ef181f7e12bd1bdf",
+          "tokenizer_2/vocab.json": "e089ad92ba36837a0d31433e555c8f45fe601ab5c221d4f607ded32d9f7a4349",
+          "unet/config.json": "30ebc70750223e59006f7f2b4e1e6c102570aa19a9c4ae3e1fbe7591332dbae6",
+          "unet/diffusion_pytorch_model.safetensors": "357650fbfb3c7b4d94c1f5fd7664da819ad1ff5a839430484b4ec422d03f710a",
+          "unet/model.onnx_data": "7905b71f0044c5ea8fea8ca0451bd73cad53492ad50f964c49c3ff9250afa350",
+          "unet/openvino_model.xml": "18955f96dffdba5612c4b554451f4ccc947c93e46df010173791654af4d0d7f6",
+          "vae/config.json": "0b331c8ac22ded5f9997a144a575c1d113d6169aff262c353f39015bd24a6264",
+          "vae/diffusion_pytorch_model.safetensors": "1598f3d24932bcfe6634e8b618ea1e30ab1d57f5aad13a6d2de446d2199f2341",
+          "vae_1_0/config.json": "89a914a415bc3211fe15306c5b1d89774d928d6cc6c91dc8e86208710829355c",
+          "vae_1_0/diffusion_pytorch_model.safetensors": "27ed3b02e09638568e99d4398c67bc654dde04e6c0db61fb2d21dba630e7058a",
+          "vae_decoder/config.json": "89a914a415bc3211fe15306c5b1d89774d928d6cc6c91dc8e86208710829355c",
+          "vae_decoder/openvino_model.xml": "dd61f43e981282b77ecaecf5fc5c842d504932bae78ac99ec581cee50978b423",
+          "vae_encoder/config.json": "89a914a415bc3211fe15306c5b1d89774d928d6cc6c91dc8e86208710829355c",
+          "vae_encoder/openvino_model.xml": "a3ec36b6f3f74d0cb2b005b7c0a1e5426c5ef1e7163b33e463ea57fa049c5996"
+        },
+        "repo": "stabilityai/stable-diffusion-xl-base-1.0",
+        "revision": "462165984030d82259a11f4367a4eed129e94a7b"
+      }
+    ],
+    "pass": true
+  },
+  "sdxl_lightning8": {
+    "assets": [
+      {
+        "files_sha256": {
+          ".gitattributes": "ef770cfcc4f91641d93abd1119da54bb7af0708aee11fd90ce5575b2b908fba7",
+          "model_index.json": "6d7b93508390ab91ac5bfbe4aeb4dc2d83f7bb1b05fb069d714b5b0c75f70d44",
+          "scheduler/scheduler_config.json": "af3e45a949aff8b8341ab8b811429ec03fee857a700a1d9477363e4fff9666e2",
+          "sd_xl_base_1.0.safetensors": "31e35c80fc4829d14f90153f4c74cd59c90b779f6afe05a74cd6120b893f7e5b",
+          "sd_xl_base_1.0_0.9vae.safetensors": "e6bb9ea85bbf7bf6478a7c6d18b71246f22e95d41bcdd80ed40aa212c33cfeff",
+          "sd_xl_offset_example-lora_1.0.safetensors": "4852686128f953d0277d0793e2f0335352f96a919c9c16a09787d77f55cbdf6f",
+          "text_encoder/config.json": "39b8b2e4b1949e36969caa425b6c81c68bace99198dd9078ce05d16ad401fe7f",
+          "text_encoder/model.safetensors": "5c3d6454dd2d23414b56aa1b5858a72487a656937847b6fea8d0606d7a42cdbc",
+          "text_encoder/openvino_model.xml": "ab5cf7327374d8c984f4e963564a329f92c9dad08dac9eee9b8dca86b912f1c9",
+          "text_encoder_2/config.json": "a892d1c3a69a7e9247a24de2bc1d5891e3109a54696e53be20093af671072c34",
+          "text_encoder_2/model.onnx_data": "3da7ac65349fbd092e836e3eeca2c22811317bc804fd70af157b4550f2d4bcb5",
+          "text_encoder_2/model.safetensors": "3a6032f63d37ae02bbc74ccd6a27440578cd71701f96532229d0154f55a8d3ff",
+          "text_encoder_2/openvino_model.xml": "38f0a4ff68dd918b24908a264140c2ad0e057eca82616f75c17cbf4a099ad6ad",
+          "tokenizer/merges.txt": "9fd691f7c8039210e0fced15865466c65820d09b63988b0174bfe25de299051a",
+          "tokenizer/special_tokens_map.json": "c4864a9376a8401918425bed71fc14fc0e81f9b59ec45c1cf96cccb2df508eac",
+          "tokenizer/tokenizer_config.json": "19d7b034cb0cc3ce9766c2231373ab8aa8991fc72e2c8f76558bfaae3de0d563",
+          "tokenizer/vocab.json": "e089ad92ba36837a0d31433e555c8f45fe601ab5c221d4f607ded32d9f7a4349",
+          "tokenizer_2/merges.txt": "9fd691f7c8039210e0fced15865466c65820d09b63988b0174bfe25de299051a",
+          "tokenizer_2/special_tokens_map.json": "f118ab3a983206e4f32583448de6bd6aae4ee21869135cef1f5848a753cdaab6",
+          "tokenizer_2/tokenizer_config.json": "c9d23941f76a41cbd50eda9290f57be7828f0a7a677939e9ef181f7e12bd1bdf",
+          "tokenizer_2/vocab.json": "e089ad92ba36837a0d31433e555c8f45fe601ab5c221d4f607ded32d9f7a4349",
+          "unet/config.json": "30ebc70750223e59006f7f2b4e1e6c102570aa19a9c4ae3e1fbe7591332dbae6",
+          "unet/diffusion_pytorch_model.safetensors": "357650fbfb3c7b4d94c1f5fd7664da819ad1ff5a839430484b4ec422d03f710a",
+          "unet/model.onnx_data": "7905b71f0044c5ea8fea8ca0451bd73cad53492ad50f964c49c3ff9250afa350",
+          "unet/openvino_model.xml": "18955f96dffdba5612c4b554451f4ccc947c93e46df010173791654af4d0d7f6",
+          "vae/config.json": "0b331c8ac22ded5f9997a144a575c1d113d6169aff262c353f39015bd24a6264",
+          "vae/diffusion_pytorch_model.safetensors": "1598f3d24932bcfe6634e8b618ea1e30ab1d57f5aad13a6d2de446d2199f2341",
+          "vae_1_0/config.json": "89a914a415bc3211fe15306c5b1d89774d928d6cc6c91dc8e86208710829355c",
+          "vae_1_0/diffusion_pytorch_model.safetensors": "27ed3b02e09638568e99d4398c67bc654dde04e6c0db61fb2d21dba630e7058a",
+          "vae_decoder/config.json": "89a914a415bc3211fe15306c5b1d89774d928d6cc6c91dc8e86208710829355c",
+          "vae_decoder/openvino_model.xml": "dd61f43e981282b77ecaecf5fc5c842d504932bae78ac99ec581cee50978b423",
+          "vae_encoder/config.json": "89a914a415bc3211fe15306c5b1d89774d928d6cc6c91dc8e86208710829355c",
+          "vae_encoder/openvino_model.xml": "a3ec36b6f3f74d0cb2b005b7c0a1e5426c5ef1e7163b33e463ea57fa049c5996"
+        },
+        "repo": "stabilityai/stable-diffusion-xl-base-1.0",
+        "revision": "462165984030d82259a11f4367a4eed129e94a7b"
+      },
+      {
+        "files_sha256": {
+          "sdxl_lightning_8step_unet.safetensors": "471d8260fda0b17b8906feb24573ce64933d4b6b99ba7a1fa43ca051b994e869"
+        },
+        "repo": "ByteDance/SDXL-Lightning",
+        "revision": "c9a24f48e1c025556787b0c58dd67a091ece2e44"
+      }
+    ],
+    "pass": true
+  }
+}
