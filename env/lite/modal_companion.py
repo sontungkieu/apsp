@@ -49,7 +49,7 @@ def preserve_incomplete():
         print('INCOMPLETE_PRESERVED='+str(size), flush=True)
 
 
-@app.function(image=image, cpu=2, memory=4096, timeout=3600, volumes={'/persist': volume}, max_containers=1, scaledown_window=2)
+@app.function(image=image, cpu=8, memory=8192, timeout=1800, volumes={'/persist': volume}, max_containers=1, scaledown_window=2)
 def split_two_parts():
     sys.path.insert(0,'/opt/tools')
     import companion_parts
@@ -59,6 +59,15 @@ def split_two_parts():
         result=companion_parts.make_parts('/persist/export/apsp-lite-companion-v1.tar',receipt['archive_sha256'],'/persist/export/apsp-lite-companion-v1.tar.gz')
     finally: volume.commit()
     return json.dumps(result)
+
+
+@app.function(image=image, cpu=1, memory=1024, timeout=60, volumes={'/persist': volume}, max_containers=1, scaledown_window=2)
+def preserve_serial_compression():
+    old=Path('/persist/export/apsp-lite-companion-v1.tar.gz.compressing')
+    saved=Path('/persist/export/companion-serial-compressing-incomplete.partial')
+    if old.exists():
+        if saved.exists(): raise FileExistsError('serial compression evidence already exists')
+        old.rename(saved); volume.commit()
 
 
 INPUT = ROOT/'outputs/apsp-lite-companion-input'

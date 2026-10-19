@@ -8,10 +8,13 @@ import hashlib
 import io
 import json
 import os
+from collections import deque
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 BLOCK = 8 << 20
 CAP = 30_000_000_000
+COMPRESSION_BLOCK=32<<20
 
 
 class HashWriter:
@@ -39,7 +42,7 @@ class PartsReader:
         if self.current is not None: self.current.close()
 
 
-def make_parts(archive, expected_tar_sha256, prefix, cap=CAP):
+def make_parts(archive, expected_tar_sha256, prefix, cap=CAP, compression_workers=8):
     archive, prefix = Path(archive), Path(prefix)
     final = [Path(str(prefix)+f'.part{i:02}') for i in (1,2)]
     pending = [Path(str(p)+'.partial') for p in final]
@@ -49,12 +52,23 @@ def make_parts(archive, expected_tar_sha256, prefix, cap=CAP):
     print('COMPANION_GZIP_BEGIN', flush=True)
     with archive.open('rb',buffering=BLOCK) as src, compressed.open('xb',buffering=BLOCK) as dst:
         writer=HashWriter(dst)
-        with gzip.GzipFile(filename='',mode='wb',compresslevel=1,mtime=0,fileobj=writer) as gz:
-            done=0
-            while chunk:=src.read(BLOCK):
-                gz.write(chunk); done+=len(chunk)
-                if done//(4<<30)!=(done-len(chunk))//(4<<30):
+        # Independent ordered gzip members are standard gzip and permit bounded
+        # parallel compression. Do not use Executor.map on the full 61 GB input:
+        # Python3.11 eagerly submits that iterator and would retain it in memory.
+        with ThreadPoolExecutor(max_workers=compression_workers) as pool:
+            pending_jobs=deque(); done=0
+            def submit():
+                chunk=src.read(COMPRESSION_BLOCK)
+                if chunk: pending_jobs.append((pool.submit(gzip.compress,chunk,compresslevel=1,mtime=0),len(chunk)))
+                return bool(chunk)
+            for _ in range(compression_workers*2):
+                if not submit(): break
+            while pending_jobs:
+                job,n=pending_jobs.popleft()
+                writer.write(job.result()); done+=n
+                if done//(4<<30)!=(done-n)//(4<<30):
                     print('COMPANION_GZIP_INPUT_BYTES='+str(done),flush=True)
+                submit()
         dst.flush(); os.fsync(dst.fileno())
         gzip_sha=writer.hash.hexdigest()
     total=compressed.stat().st_size
@@ -82,7 +96,7 @@ def make_parts(archive, expected_tar_sha256, prefix, cap=CAP):
         raise ValueError('two-part lossless roundtrip differs from qualified companion tar')
     for src,dst in zip(pending,final): src.rename(dst)
     compressed.unlink()  # only this function's verified staging gzip, not the source tar
-    receipt={'pass':True,'format':'concatenate part01+part02 to recover one gzip stream','compression':'gzip level1 lossless','parts':parts,'part_count':2,'max_part_bytes':cap,'compressed_bytes':total,'gzip_sha256':gzip_sha,'original_tar_sha256':expected_tar_sha256,'original_tar_bytes':decoded_bytes,'verification':'Both parts were streamed through gzip CRC validation and decoded SHA256 equals original verified tar.','join_command':f'cat {final[0].name} {final[1].name} | gzip -dc > apsp-lite-companion-v1.tar'}
+    receipt={'pass':True,'format':'concatenate part01+part02 to recover one multi-member gzip stream','compression':'gzip level1 lossless, ordered independent members','compression_workers':compression_workers,'parts':parts,'part_count':2,'max_part_bytes':cap,'compressed_bytes':total,'gzip_sha256':gzip_sha,'original_tar_sha256':expected_tar_sha256,'original_tar_bytes':decoded_bytes,'verification':'Both parts were streamed through gzip CRC validation and decoded SHA256 equals original verified tar.','join_command':f'cat {final[0].name} {final[1].name} | gzip -dc > apsp-lite-companion-v1.tar'}
     Path(str(prefix)+'.parts.json').write_text(json.dumps(receipt,indent=2)+'\n')
     Path(str(prefix)+'.SHA256SUMS').write_text(''.join(f"{p['sha256']}  {p['file']}\n" for p in parts))
     print('COMPANION_PARTS_JSON='+json.dumps(receipt),flush=True)

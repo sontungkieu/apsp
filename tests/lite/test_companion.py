@@ -102,9 +102,10 @@ def test_two_parts_preserve_original_tar_and_obey_cap(tmp_path):
     import gzip
     spec=importlib.util.spec_from_file_location('companion_parts',Path(__file__).resolve().parents[2]/'env/lite/companion_parts.py')
     parts=importlib.util.module_from_spec(spec); spec.loader.exec_module(parts)
+    parts.COMPRESSION_BLOCK=1024
     source=tmp_path/'source.tar'; source.write_bytes(b'weights '*1234)
     prefix=tmp_path/'companion.tar.gz'
-    receipt=parts.make_parts(source,c.digest(source),prefix,cap=1000)
+    receipt=parts.make_parts(source,c.digest(source),prefix,cap=1000,compression_workers=2)
     assert receipt['part_count']==2 and all(p['bytes']<=1000 for p in receipt['parts'])
     data=b''.join((tmp_path/p['file']).read_bytes() for p in receipt['parts'])
     assert gzip.decompress(data)==source.read_bytes()
