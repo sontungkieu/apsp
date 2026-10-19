@@ -193,6 +193,37 @@ def restore_cpu():
     return json.dumps(result)
 
 
+@app.function(image=source_image, cpu=2, memory=4096, timeout=180,
+              volumes={"/persist": volume}, max_containers=1, scaledown_window=2)
+def compare_png():
+    code = """import json,pathlib,numpy as np,pandas as pd
+from PIL import Image
+from apsp.lite.contracts import canonical_hash
+base=pathlib.Path('/persist')
+q=json.loads((base/'qualification/summary.json').read_text())
+r=json.loads((base/'restored-qualification/summary.json').read_text())
+result={}
+for profile in q['profiles']:
+    dirs=[]
+    for prefix,summary in [('qualification',q),('restored-qualification',r)]:
+        task=canonical_hash([summary['qualification_prompt_uid'],profile,0])
+        dirs.append(base/prefix/'attempts'/summary['profiles'][profile]['runtime_identity_hash'][:16]/'bank/tasks'/task)
+    per_image=[]
+    for seed in range(8):
+        ims=[np.asarray(Image.open(d/'images'/f's{seed}.png').convert('RGB'),dtype=np.int16) for d in dirs]
+        diff=np.abs(ims[0]-ims[1])
+        per_image.append({'seed_idx':seed,'max_channel_difference_0_255':int(diff.max()),'mean_channel_difference_0_255':float(diff.mean()),'identical_pixels_fraction':float((diff==0).all(-1).mean())})
+    frames=[pd.read_parquet(d/'seeds.parquet').sort_values('seed_idx') for d in dirs]
+    result[profile]={'images':per_image,'max_ir_absolute_delta':float(np.abs(frames[0].ir.to_numpy()-frames[1].ir.to_numpy()).max()),'max_pickscore_absolute_delta':float(np.abs(frames[0].pickscore_raw.to_numpy()-frames[1].pickscore_raw.to_numpy()).max())}
+path=base/'cross_container_pixels.json'
+path.write_text(json.dumps({'scope':'one qualification prompt, build Debian versus restored Ubuntu; diagnostic only','profiles':result},indent=2))
+print('PNG_COMPARE_DONE')
+"""
+    run(["-c", code], timeout=120)
+    volume.commit()
+    return Path('/persist/cross_container_pixels.json').read_text()
+
+
 @app.local_entrypoint()
 def prepare_assets():
     # Use only the known HF_TOKEN field of the established project-local credential source.
