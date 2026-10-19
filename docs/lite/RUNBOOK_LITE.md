@@ -4,6 +4,10 @@ Namespace riêng từ bundle `396b3132eeb35bf7c98e0e4b1a851bf88268cc1b`.
 Giữ nguyên `env/b200`, seed/grammar v1 và mọi dữ liệu Full. Plan nguồn:
 [PLAN_CODEX_CONTROLLER_DATA_LITE_V1.md](PLAN_CODEX_CONTROLLER_DATA_LITE_V1.md).
 
+Model/scorer/tokenizer/text/source được gom riêng ngoài dependency runtime theo
+[COMPANION_BUNDLE.md](COMPANION_BUNDLE.md), cùng private Modal Volume. Chưa thu full
+bank thì archive companion chỉ chứa text/task/raw metadata hiện có.
+
 ## Runtime
 
 Dựng runtime mới từ lock B200 của bundle, thêm PEFT 0.17.1. Không dùng TTS làm
