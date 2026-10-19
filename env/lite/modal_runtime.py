@@ -96,7 +96,7 @@ def assets():
     return Path("/persist/assets.json").read_text()
 
 
-@app.function(image=source_image, gpu="B200", cpu=4, memory=98304, timeout=1500,
+@app.function(image=source_image, gpu="B200", cpu=4, memory=65536, timeout=1500,
               volumes={"/persist": volume}, max_containers=1, scaledown_window=2)
 def qualify():
     # Assets are staged on CPU first; GPU does not pay to download model weights.

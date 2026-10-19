@@ -122,7 +122,8 @@ def main(argv=None):
     download(f"https://raw.githubusercontent.com/djghosh13/geneval/{GENEVAL_REV}/prompts/evaluation_metadata.jsonl", geneval)
     excludes = [json.loads(l)["prompt"] for l in geneval.read_text().splitlines() if l.strip()]
     v1_path = Path(__file__).resolve().parents[2] / "reports/prompt_pool/prompt_pool_review.csv"
-    v1 = list(pd.read_csv(v1_path).text) if v1_path.exists() else []
+    v1_table = pd.read_csv(v1_path, keep_default_na=False) if v1_path.exists() else None
+    v1 = [t for t in v1_table.text if isinstance(t, str) and normalize(t)] if v1_table is not None else []
     excludes.extend(v1)
     # Reserve the separately authored GPU qualification prompt too.
     excludes.append("A red ceramic mug on a wooden table beside a blue book, natural window light.")
@@ -139,7 +140,8 @@ def main(argv=None):
     hashes = {p.name: file_hash(p) for p in release.glob("*.jsonl")}
     report.update(schema="apsp.lite.prompts/v1", files_sha256=hashes, manifest_hash=canonical_hash(hashes),
         corpus_qa="pending_manual_and_language_review", exclusion_coverage=coverage,
-        v1_available_prompts=len(v1), v1_coverage="bundle_review_csv_only_other_v1_manifests_unknown",
+        v1_available_prompts=len(v1), v1_missing_text_rows=0 if v1_table is None else len(v1_table) - len(v1),
+        v1_coverage="bundle_review_csv_only_other_v1_manifests_unknown",
         source_hashes={"diffusiondb": file_hash(meta), "coco2017_official_annotations": coco_sha, "parti_tsv": parti_sha, "geneval": file_hash(geneval)},
         source_revisions={"diffusiondb": DIFF_REV, "parti": parti_rev, "geneval": GENEVAL_REV})
     atomic_json(release / "manifest.json", report)
