@@ -33,6 +33,10 @@ image = (
 )
 source_image = image.add_local_dir(str(ROOT), "/opt/apsp", copy=False,
     ignore=modal.FilePatternMatcher(".git", ".venv", "data", "runs", "outputs", "remote_artifacts", "__pycache__", ".pytest_cache", "*.pyc"))
+restore_image = (modal.Image.debian_slim(python_version="3.11")
+    .apt_install("libgl1", "libglib2.0-0", "libgomp1", "git")
+    .add_local_dir(str(ROOT), "/opt/apsp", copy=False,
+        ignore=modal.FilePatternMatcher(".git", ".venv", "data", "runs", "outputs", "remote_artifacts", "__pycache__", ".pytest_cache", "*.pyc")))
 
 
 def run(args, timeout=1200):
@@ -127,6 +131,14 @@ def package():
     summary = json.loads(Path("/persist/qualification/summary.json").read_text())
     if not cpu_receipt.get("pass") or not summary.get("pass"):
         raise RuntimeError("portable export requires CPU and all B200 qualification gates")
+    lock_sha = hashlib.sha256(Path("/opt/apsp/env/lite/uv.lock").read_bytes()).hexdigest()
+    source_files = {p.relative_to(Path('/opt/apsp')).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+                    for p in sorted(Path('/opt/apsp/apsp').rglob('*.py'))}
+    source_sha = hashlib.sha256(json.dumps(source_files, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode()).hexdigest()
+    if cpu_receipt["lock_sha256"] != lock_sha or summary["cuda"]["runtime"]["lock_sha256"] != lock_sha:
+        raise RuntimeError("qualification lock does not match package")
+    if summary["cuda"]["runtime"]["source_hash"] != source_sha:
+        raise RuntimeError("qualification source overlay does not match package")
     dest = Path("/persist/export")
     dest.mkdir(exist_ok=True)
     archive = dest / "runtime.tar.gz"
@@ -143,6 +155,20 @@ def package():
     (dest / "manifest.json").write_text(json.dumps(manifest, indent=2))
     volume.commit()
     return json.dumps(manifest)
+
+
+@app.function(image=restore_image, gpu="B200", cpu=4, memory=65536, timeout=1200,
+              volumes={"/persist": volume}, max_containers=1, scaledown_window=2)
+def restore():
+    subprocess.run(["/usr/local/bin/python", "/opt/apsp/env/lite/ensure_runtime.py",
+                    "--archive", "/persist/export/runtime.tar.gz", "--manifest", "/persist/export/manifest.json"],
+                   check=True, timeout=240)
+    os.environ["HF_HUB_OFFLINE"] = "1"
+    try:
+        run(["-m", "apsp.lite.qualify", "--out", "/persist/restored-qualification"], timeout=900)
+    finally:
+        volume.commit()
+    return Path("/persist/restored-qualification/summary.json").read_text()
 
 
 @app.local_entrypoint()

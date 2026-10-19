@@ -82,7 +82,7 @@ class LiteRuntime:
         self.pipe = getattr(diffusers, kind).from_pretrained(profile["repo"], **kw)
         if adapter and adapter["kind"] == "lora":
             path = hf_hub_download(adapter["repo"], adapter["filename"], revision=adapter["revision"])
-            self.pipe.load_lora_weights(path)
+            self.pipe.load_lora_weights(str(Path(path).parent), weight_name=Path(path).name, local_files_only=True)
             self.pipe.fuse_lora(lora_scale=adapter["fuse_scale"])
             self.adapter_provenance = {**adapter, "sha256": file_hash(path)}
         if profile["scheduler"] != "native":
