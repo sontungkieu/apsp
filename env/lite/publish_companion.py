@@ -106,7 +106,7 @@ Dependency runtime packages retain the license files distributed in their instal
     readme=f'''---
 license: other
 license_name: component-specific-upstream-licenses
-license_link: NOTICE
+license_link: https://huggingface.co/datasets/{REPO}/blob/main/NOTICE
 pretty_name: APSP Lite B200 runtime and companion assets
 ---
 # APSP Lite B200 cu128
