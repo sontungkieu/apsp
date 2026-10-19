@@ -1,5 +1,11 @@
 # Adaptive PSP (DMRL)
 
+Source được quản lý tại [sontungkieu/apsp](https://github.com/sontungkieu/apsp),
+branch `main`. Server tải cùng source commit qua Git bundle trên
+[HF public distribution](https://huggingface.co/datasets/codemaivanngu/apsp-lite-b200-cu128).
+Xem [publish/update workflow](docs/lite/SOURCE_DISTRIBUTION.md); model/data/runtime
+giữ riêng, không rebuild theo mỗi thay đổi source.
+
 APSP Lite data/runtime amendment (2026-10-19): see [runbook](docs/lite/RUNBOOK_LITE.md)
 and [runtime decision](docs/lite/RUNTIME_DECISION.md). Lite uses a separate `env/lite`
 lock, 8/8/16 checkpoints and three pinned execution profiles. The sections below

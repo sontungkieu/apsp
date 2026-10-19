@@ -4,6 +4,11 @@ Ngày bàn giao: 20/10/2026 (Asia/Saigon). **Hoàn tất runtime riêng, collect
 và text/task preparation; chưa hoàn tất dataset L0–L6 của plan.** Chưa train
 controller, chưa chạy ảnh/chấm điểm test500, chưa chạy trên node công ty.
 
+Source management hiện hành: GitHub `sontungkieu/apsp`, branch `main`, và HF source
+bundle theo [SOURCE_DISTRIBUTION.md](SOURCE_DISTRIBUTION.md). Các trạng thái branch
+`feat/apsp-lite-data-v1`/chưa push dưới đây là snapshot bàn giao trước khi chuyển
+sang workflow này; source commit trong companion giữ nguyên để truy provenance.
+
 ## Quyết định runtime
 
 Dựng environment riêng từ dependency lock B200 của bundle396b313; không nâng đè

@@ -1,5 +1,10 @@
 # APSP Lite — hai instance,12 luồng mỗi part, rồi ghép
 
+Source trong companion là bootstrap snapshot. Sau restore, dùng
+[SOURCE_DISTRIBUTION.md](SOURCE_DISTRIBUTION.md) để lấy GitHub `main` mới qua HF
+bundle và đặt `APSP_SOURCE`/`PYTHONPATH` về checkout đó. Runtime/parts bên dưới
+giữ nguyên revision, không tải lại model chỉ vì source đổi.
+
 HF public: https://huggingface.co/datasets/codemaivanngu/apsp-lite-b200-cu128/tree/a13a190c0d29ed44a8ebff6b9c78d9e51f65e820
 Revision ghim: `a13a190c0d29ed44a8ebff6b9c78d9e51f65e820`. Không thay bằng `main`.
 
