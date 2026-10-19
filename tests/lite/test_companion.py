@@ -95,4 +95,18 @@ def test_modal_companion_functions_exist_on_remote_import(monkeypatch):
     spec = importlib.util.spec_from_file_location('remote_companion', path)
     remote = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(remote)
-    assert callable(remote.package) and callable(remote.inspect) and callable(remote.check_restored)
+    assert callable(remote.package) and callable(remote.inspect) and callable(remote.check_restored) and callable(remote.split_two_parts)
+
+
+def test_two_parts_preserve_original_tar_and_obey_cap(tmp_path):
+    import gzip
+    spec=importlib.util.spec_from_file_location('companion_parts',Path(__file__).resolve().parents[2]/'env/lite/companion_parts.py')
+    parts=importlib.util.module_from_spec(spec); spec.loader.exec_module(parts)
+    source=tmp_path/'source.tar'; source.write_bytes(b'weights '*1234)
+    prefix=tmp_path/'companion.tar.gz'
+    receipt=parts.make_parts(source,c.digest(source),prefix,cap=1000)
+    assert receipt['part_count']==2 and all(p['bytes']<=1000 for p in receipt['parts'])
+    data=b''.join((tmp_path/p['file']).read_bytes() for p in receipt['parts'])
+    assert gzip.decompress(data)==source.read_bytes()
+    assert hashlib.sha256(data).hexdigest()==receipt['gzip_sha256']
+    with pytest.raises(FileExistsError): parts.make_parts(source,c.digest(source),prefix,cap=1000)

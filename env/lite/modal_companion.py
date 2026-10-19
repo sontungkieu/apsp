@@ -10,6 +10,7 @@ app = modal.App('apsp-lite-companion-v1')
 volume = modal.Volume.from_name('apsp-lite-runtime-v1')
 image = (modal.Image.debian_slim(python_version='3.11')
     .add_local_file(str(ROOT/'env/lite/companion.py'), '/opt/tools/companion.py')
+    .add_local_file(str(ROOT/'env/lite/companion_parts.py'), '/opt/tools/companion_parts.py')
     .add_local_file(str(ROOT/'env/lite/profiles.json'), '/opt/tools/profiles.json'))
 
 
@@ -46,6 +47,18 @@ def preserve_incomplete():
         Path('/persist/export/companion-incomplete-note.json').write_text(json.dumps({'bytes':size,'path':str(saved),'reason':'prior app stopped; rerun uses bounded 8 MiB buffered Volume writes'})+'\n')
         volume.commit()
         print('INCOMPLETE_PRESERVED='+str(size), flush=True)
+
+
+@app.function(image=image, cpu=2, memory=4096, timeout=3600, volumes={'/persist': volume}, max_containers=1, scaledown_window=2)
+def split_two_parts():
+    sys.path.insert(0,'/opt/tools')
+    import companion_parts
+    receipt=json.loads(Path('/persist/export/apsp-lite-companion-v1.receipt.json').read_text())
+    if not receipt['pass']: raise ValueError('verified companion tar required')
+    try:
+        result=companion_parts.make_parts('/persist/export/apsp-lite-companion-v1.tar',receipt['archive_sha256'],'/persist/export/apsp-lite-companion-v1.tar.gz')
+    finally: volume.commit()
+    return json.dumps(result)
 
 
 INPUT = ROOT/'outputs/apsp-lite-companion-input'
