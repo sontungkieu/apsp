@@ -1,0 +1,41 @@
+{
+  "schema": "apsp.lite.profiles/v1",
+  "profiles": {
+    "sdxl_lightning8": {
+      "repo": "stabilityai/stable-diffusion-xl-base-1.0",
+      "revision": "462165984030d82259a11f4367a4eed129e94a7b",
+      "pipeline": "StableDiffusionXLPipeline",
+      "scheduler": "EulerDiscreteScheduler", "timestep_spacing": "trailing",
+      "dtype": "float16", "height": 1024, "width": 1024,
+      "steps": 8, "checkpoints": 8, "guidance": 0.0, "cfg_branches_available": false,
+      "adapter": {"kind": "unet", "repo": "ByteDance/SDXL-Lightning",
+        "revision": "c9a24f48e1c025556787b0c58dd67a091ece2e44",
+        "filename": "sdxl_lightning_8step_unet.safetensors"}
+    },
+    "hyper_flux8": {
+      "repo": "black-forest-labs/FLUX.1-dev",
+      "revision": "3de623fc3c33e44ffbe2bad470d0f45bccf2eb21",
+      "pipeline": "FluxPipeline", "scheduler": "native",
+      "dtype": "bfloat16", "height": 1024, "width": 1024,
+      "steps": 8, "checkpoints": 8, "guidance": 3.5, "max_sequence_length": 512,
+      "cfg_branches_available": false, "gated": true,
+      "adapter": {"kind": "lora", "repo": "ByteDance/Hyper-SD",
+        "revision": "bc08d970a87c74c71209491d64e3525845698863",
+        "filename": "Hyper-FLUX.1-dev-8steps-lora.safetensors", "fuse_scale": 0.125}
+    },
+    "sdxl_base50": {
+      "repo": "stabilityai/stable-diffusion-xl-base-1.0",
+      "revision": "462165984030d82259a11f4367a4eed129e94a7b",
+      "pipeline": "StableDiffusionXLPipeline", "scheduler": "EulerDiscreteScheduler",
+      "dtype": "float16", "height": 1024, "width": 1024,
+      "steps": 50, "checkpoints": 16, "guidance": 5.0, "cfg_branches_available": true
+    }
+  },
+  "heldout": {"hyper_sd15_8": {"status": "blocked_until_checkpoint_scheduler_contract_frozen", "collection_enabled": false}},
+  "scorers": {
+    "imagereward": {"revision": "5736be03b2652728fb87788c9797b0570450ab72", "tokenizer_revision": "86b5e0934494bd15c9632b12f734a8a67f723594"},
+    "pickscore": {"model_repo": "yuvalkirstain/PickScore_v1", "model_revision": "a4e4367c6dfa7288a00c550414478f865b875800", "processor_repo": "laion/CLIP-ViT-H-14-laion2B-s32B-b79K", "processor_revision": "1c2b8495b28150b8a4922ee1c8edee224c284c0c"}
+  },
+  "prompt_encoder": {"repo": "stable-diffusion-v1-5/stable-diffusion-v1-5", "revision": "451f4fe16113bff5a5d2269ed5ad43b0592e9a14", "output": "text_encoder pooler_output", "width": 768},
+  "qualification": "pending_real_b200_all_profiles_and_scorers"
+}

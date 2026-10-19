@@ -1,5 +1,11 @@
 # Adaptive PSP (DMRL)
 
+APSP Lite data/runtime amendment (2026-10-19): see [runbook](docs/lite/RUNBOOK_LITE.md)
+and [runtime decision](docs/lite/RUNTIME_DECISION.md). Lite uses a separate `env/lite`
+lock, 8/8/16 checkpoints and three pinned execution profiles. The sections below
+describe the original v1 workflow; Lite qualification and collection status are
+reported separately and do not change the v1 scientific contract.
+
 Budgeted control of **CONTINUE / VERIFY / PRUNE** on top of Progressive Seed Pruning (PSP) for SD1.5 with
 deterministic DDIM. The scientific sources of truth are at the repo root:
 

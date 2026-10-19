@@ -1,0 +1,88 @@
+# uv project for the B200 inference / collector environment (Adaptive PSP, env v2).
+# Scope: SD1.5, SDXL, SD3.5 Medium, FLUX.1-dev generation with x0 at checkpoints, VAE decode, ImageReward,
+# PickScore, the common prompt encoder (SD1.5 CLIP text pooler) and bank writing (parquet / npy / PNG).
+# Not in scope: RL controller training, GenEval, HPS. The v1 environment (env/requirements-gpu-linux.txt,
+# env/setup_gpu_linux.sh, torch 2.4.0+cu121) is unchanged and still the reference of the SD1.5 study on RTX 4090.
+#
+#   cd env/b200 && uv sync --locked          # see README_B200_INFERENCE.md
+[project]
+name = "apsp-lite-inference"
+version = "0.1.0"
+description = "Adaptive PSP inference/collector environment for NVIDIA B200 (Blackwell, sm_100)"
+requires-python = "==3.11.*"
+dependencies = [
+    # this repo (apsp.gpu.scoring: ImageReward with pinned BERT tokenizer + missing-key check; seed scheme)
+    "adaptive-psp",
+    # Blackwell needs CUDA >= 12.8 builds; cu128 wheels run on drivers >= 570
+    "torch==2.9.1",
+    "torchvision==0.24.1",
+    # generators: SD1.5 / SDXL / SD3.5 Medium / FLUX.1-dev
+    "diffusers==0.39.0",
+    "peft==0.17.1",
+    # ImageReward's BLIP (med.py) imports transformers.file_utils and modeling_utils helpers of the 4.x API
+    "transformers==4.57.6",
+    "tokenizers",
+    "accelerate>=1.10",
+    "huggingface-hub",
+    "safetensors",
+    "sentencepiece",          # T5 tokenizer (SD3.5, FLUX)
+    "protobuf>=4,<6",
+    # ImageReward v1.0 and its own dependencies (metadata declared below; pinned commits in [tool.uv.sources])
+    "image-reward",
+    "clip",
+    "timm",
+    "fairscale",
+    "datasets>=4",            # imported by ImageReward/__init__ (ReFL); without a floor uv backtracks to 2.14
+    "ftfy",
+    "regex",
+    # bank writing. apsp (contracts/schema, collect_bank) was run with numpy 1.26 / pandas 2.2 / pillow 11.1:
+    # stay on the same major lines (numpy 2.x is required by nothing here but is supported by torch 2.9)
+    "numpy>=1.26,<2.3",
+    "pandas>=2.2,<3",
+    "pyarrow>=18",
+    "pillow>=11.1,<12",
+    "pyyaml",
+    "psutil",
+    "tqdm",
+]
+
+[tool.uv]
+package = false
+# B200 nodes: Linux x86_64 only (GB200/aarch64 not covered by this lock)
+environments = ["sys_platform == 'linux' and platform_machine == 'x86_64'"]
+# CLIP and ImageReward build with setup.py files that import pkg_resources (removed from recent setuptools);
+# 69.5.1 is the version the v1 environment and the PSP base use.
+build-constraint-dependencies = ["setuptools==69.5.1"]
+
+# Static metadata = the packages' own install_requires at the pinned commits, except that ImageReward's floating
+# "clip @ https://github.com/openai/CLIP/archive/refs/heads/main.zip" is replaced by the pinned CLIP commit below.
+[[tool.uv.dependency-metadata]]
+name = "clip"
+version = "1.0"
+requires-dist = ["ftfy", "packaging", "regex", "tqdm", "torch", "torchvision"]
+
+[[tool.uv.dependency-metadata]]
+name = "image-reward"
+version = "1.5"
+requires-dist = [
+    "clip",
+    "timm>=0.6.13",
+    "transformers>=4.27.4",
+    "fairscale>=0.4.13",
+    "huggingface-hub>=0.13.4",
+    "diffusers>=0.16.0",
+    "accelerate>=0.16.0",
+    "datasets>=2.11.0",
+]
+
+[tool.uv.sources]
+adaptive-psp = { path = "../..", editable = true }
+torch = { index = "pytorch-cu128" }
+torchvision = { index = "pytorch-cu128" }
+clip = { git = "https://github.com/openai/CLIP.git", rev = "dcba3cb2e2827b402d2701e7e1c7d9fed8a20ef1" }
+image-reward = { git = "https://github.com/THUDM/ImageReward.git", rev = "2ca71bac4ed86b922fe53ddaec3109fe94d45fd3" }
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true

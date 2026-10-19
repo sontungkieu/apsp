@@ -50,6 +50,7 @@ hf_cache/
 *.webp
 /runs/
 /outputs/
+/remote_artifacts/
 wandb/
 smoke_out/
 
