@@ -1,5 +1,10 @@
 # Companion bundle ngoài runtime
 
+**Đường tải node hiện hành:** [DSH_DOWNLOAD_WORKFLOW.md](DSH_DOWNLOAD_WORKFLOW.md).
+Hai part gzip lossless dưới30GB/part, mỗi instance dùng12 curl range workers qua
+proxy/HF. Phần Modal CLI bên dưới chỉ là truy xuất Volume của operator, không phải
+đường tải dùng cho node công ty.
+
 Một archive riêng `apsp-lite-companion-v1.tar` chứa source/Git bundle, pinned model
 weights/adapters, tokenizer/config, hai scorer, common prompt encoder, text/task
 manifests và raw metadata/caption annotations đã dùng để chuẩn bị prompt. Dependency

@@ -174,5 +174,11 @@ See `NOTICE`, `UPSTREAM_COMPONENTS.json` and `LICENSES/` before use. FLUX.1-dev 
 if __name__=='__main__':
     try:main()
     except Exception as exc:
-        stage('failed',error_type=type(exc).__name__)
+        import traceback
+        message=str(exc)
+        token=os.environ.get('HF_TOKEN')
+        if token:message=message.replace(token,'<REDACTED>')
+        message=re.sub(r'https?://\S+','<URL_REDACTED>',message)
+        message=re.sub(r'hf_[A-Za-z0-9]+','<HF_TOKEN_REDACTED>',message)
+        stage('failed',error_type=type(exc).__name__,safe_message=message[:1000],frames=[{'file':Path(f.filename).name,'function':f.name,'line':f.lineno} for f in traceback.extract_tb(exc.__traceback__)])
         raise SystemExit(1)
