@@ -1,0 +1,153 @@
+{
+  "profile": "billionaireproject8",
+  "collected_at_utc": "2026-10-19T18:25:10.292957+00:00",
+  "task_cap_usd": "7.00",
+  "observed_cumulative_apsp_lite_cost_usd": "3.61354253",
+  "observed_companion_cost_usd": "2.05027432",
+  "by_app_usd": {
+    "apsp-lite-companion-hf-helper-fix-20261020": "0.00009721",
+    "apsp-lite-companion-hf-publish-20261020-r2": "0.00269559",
+    "apsp-lite-companion-hf-publish-20261020-r3": "0.00259089",
+    "apsp-lite-companion-hf-publish-20261020-r4": "0.00239377",
+    "apsp-lite-companion-hf-publish-20261020-r5": "1.90331107",
+    "apsp-lite-companion-inventory-20261020": "0.00007031",
+    "apsp-lite-companion-pack-20261020-r2": "0.00365731",
+    "apsp-lite-companion-pack-20261020-r3": "0.01095418",
+    "apsp-lite-companion-preserve-20261020": "0.00003073",
+    "apsp-lite-companion-restore-20261020": "0.01602666",
+    "apsp-lite-companion-split-20261020": "0.01364468",
+    "apsp-lite-companion-split-20261020-r2": "0.09480192"
+  },
+  "all_companion_apps_stopped": true,
+  "apps": [
+    {
+      "app_id": "ap-EFnxyUZJGR1k6wGQGHaU12",
+      "description": "apsp-lite-companion-hf-helper-fix-20261020-r2",
+      "state": "stopped",
+      "tasks": "0",
+      "created_at": "2026-10-20 01:23:47+07:00",
+      "stopped_at": "2026-10-20 01:24:07+07:00"
+    },
+    {
+      "app_id": "ap-g7D5bG476S7SPoHMhx6mBx",
+      "description": "apsp-lite-companion-hf-helper-fix-20261020",
+      "state": "stopped",
+      "tasks": "0",
+      "created_at": "2026-10-20 01:20:24+07:00",
+      "stopped_at": "2026-10-20 01:20:41+07:00"
+    },
+    {
+      "app_id": "ap-tQTLHyiIqY8b8rwCdUtZPy",
+      "description": "apsp-lite-companion-hf-publish-20261020-r5",
+      "state": "stopped",
+      "tasks": "0",
+      "created_at": "2026-10-20 01:14:09+07:00",
+      "stopped_at": "2026-10-20 01:16:34+07:00"
+    },
+    {
+      "app_id": "ap-9TN1l4ZwMR8Oic30bixBvl",
+      "description": "apsp-lite-companion-hf-publish-20261020-r4",
+      "state": "stopped",
+      "tasks": "0",
+      "created_at": "2026-10-20 01:12:32+07:00",
+      "stopped_at": "2026-10-20 01:13:41+07:00"
+    },
+    {
+      "app_id": "ap-Frj7QlSJ6mPRRGefNzI8ow",
+      "description": "apsp-lite-companion-hf-publish-20261020-r3",
+      "state": "stopped",
+      "tasks": "0",
+      "created_at": "2026-10-20 01:10:48+07:00",
+      "stopped_at": "2026-10-20 01:12:04+07:00"
+    },
+    {
+      "app_id": "ap-x0gNS0HTJREx2wKAsORjGw",
+      "description": "apsp-lite-companion-hf-publish-20261020-r2",
+      "state": "stopped",
+      "tasks": "0",
+      "created_at": "2026-10-20 01:08:08+07:00",
+      "stopped_at": "2026-10-20 01:09:25+07:00"
+    },
+    {
+      "app_id": "ap-w2mPSwhx61xS38jHFs3oTu",
+      "description": "apsp-lite-companion-hf-publish-20261020",
+      "state": "stopped",
+      "tasks": "0",
+      "created_at": "2026-10-20 01:07:19+07:00",
+      "stopped_at": "2026-10-20 01:07:24+07:00"
+    },
+    {
+      "app_id": "ap-DrEAr0MyU03nEvF7PcGtJw",
+      "description": "apsp-lite-companion-split-20261020-r2",
+      "state": "stopped",
+      "tasks": "0",
+      "created_at": "2026-10-20 00:49:55+07:00",
+      "stopped_at": "2026-10-20 01:02:57+07:00"
+    },
+    {
+      "app_id": "ap-L59bAtim19bxU955xQaGIq",
+      "description": "apsp-lite-companion-preserve-gzip-20261020",
+      "state": "stopped",
+      "tasks": "0",
+      "created_at": "2026-10-20 00:49:13+07:00",
+      "stopped_at": "2026-10-20 00:49:28+07:00"
+    },
+    {
+      "app_id": "ap-KdYp71W99FoetBcTSa8hTm",
+      "description": "apsp-lite-companion-split-20261020",
+      "state": "stopped",
+      "tasks": "0",
+      "created_at": "2026-10-20 00:42:15+07:00",
+      "stopped_at": "2026-10-20 00:49:19+07:00"
+    },
+    {
+      "app_id": "ap-7eff9yuHDB5MuAQKBTxI3b",
+      "description": "apsp-lite-companion-restore-20261020",
+      "state": "stopped",
+      "tasks": "0",
+      "created_at": "2026-10-20 00:42:15+07:00",
+      "stopped_at": "2026-10-20 00:48:41+07:00"
+    },
+    {
+      "app_id": "ap-qlpsgBQBSk8YoypZwaFNCF",
+      "description": "apsp-lite-companion-pack-20261020-r3",
+      "state": "stopped",
+      "tasks": "0",
+      "created_at": "2026-10-20 00:36:01+07:00",
+      "stopped_at": "2026-10-20 00:41:33+07:00"
+    },
+    {
+      "app_id": "ap-q9CCAhJpyEK3rmeq6qIaAn",
+      "description": "apsp-lite-companion-preserve-20261020",
+      "state": "stopped",
+      "tasks": "0",
+      "created_at": "2026-10-20 00:35:26+07:00",
+      "stopped_at": "2026-10-20 00:35:45+07:00"
+    },
+    {
+      "app_id": "ap-yIN3yKGhU9heJW3KNby1Mp",
+      "description": "apsp-lite-companion-pack-20261020-r2",
+      "state": "stopped",
+      "tasks": "0",
+      "created_at": "2026-10-20 00:33:25+07:00",
+      "stopped_at": "2026-10-20 00:35:36+07:00"
+    },
+    {
+      "app_id": "ap-EN1sABK5mPu74SBUWs6PAr",
+      "description": "apsp-lite-companion-pack-20261020",
+      "state": "stopped",
+      "tasks": "0",
+      "created_at": "2026-10-20 00:32:09+07:00",
+      "stopped_at": "2026-10-20 00:33:22+07:00"
+    },
+    {
+      "app_id": "ap-aIe7hsTG4Z3CDgRK7VNhRl",
+      "description": "apsp-lite-companion-inventory-20261020",
+      "state": "stopped",
+      "tasks": "0",
+      "created_at": "2026-10-20 00:27:53+07:00",
+      "stopped_at": "2026-10-20 00:28:01+07:00"
+    }
+  ],
+  "limitation": "API usage snapshot may lag; not final invoice or confirmed credit balance. Private Volume retained."
+}

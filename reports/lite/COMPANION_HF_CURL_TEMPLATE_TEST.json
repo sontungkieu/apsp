@@ -1,0 +1,12 @@
+{
+  "pass": true,
+  "protocol": "DSH curl explicit proxy + HTTP Range, 12 background workers, exact last chunk, resume from existing13 bytes, whole-part SHA256",
+  "fixture_bytes": 10291,
+  "maximum_concurrent_requests_observed": 12,
+  "range_ignored_server_rejected": true,
+  "existing_verified_file_reused": true,
+  "scope": "Bounded localhost proxy fixture using existing WSL bash/curl; not company-node or bandwidth benchmark.",
+  "redirect_body_larger_than_range": true,
+  "linux_regression": "python3 tests/lite/test_hf_curl_template.py: 1 passed",
+  "short_resume_redirect_guard": true
+}

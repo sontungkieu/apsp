@@ -1,0 +1,24 @@
+{
+  "lite_pytest": {
+    "passed": 17,
+    "skipped": 1
+  },
+  "linux_real_curl_fixture": {
+    "passed": 1,
+    "maximum_concurrent_requests": 12
+  },
+  "guide_blocks_bash_syntax_passed": 4,
+  "whole_repo_pytest": {
+    "passed": 207,
+    "skipped": 13,
+    "failed": 7,
+    "seconds": 129.89,
+    "failure_causes": [
+      "3 RL tests: local torch absent",
+      "1 B4B grid test: expected PSP submodule revision differs from standalone checkout",
+      "1 Vast watchdog test: Windows atomic replace PermissionError",
+      "2 cgroup shell tests: Windows/Linux path fixture mismatch suspected; not qualified"
+    ]
+  },
+  "scope": "No local heavy dependency installation; whole-repo failures outside changed companion/downloader paths remain unresolved."
+}

@@ -1,0 +1,7 @@
+{
+  "pass": true,
+  "scope": "All commits reachable from embedded source.bundle c7d5130, credential-pattern audit; no matched values printed",
+  "commits_scanned": 63,
+  "matched_file_labels": [],
+  "archive_private_ip_review": "Regex hits in NVIDIA cuRAND version10.x are package versions, not network addresses."
+}

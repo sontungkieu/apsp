@@ -1,0 +1,52 @@
+{
+  "stage": "helper_update_verified",
+  "pass": true,
+  "repo": "codemaivanngu/apsp-lite-b200-cu128",
+  "repo_type": "dataset",
+  "revision": "a13a190c0d29ed44a8ebff6b9c78d9e51f65e820",
+  "public": true,
+  "verified_files": 31,
+  "anonymous_small_files_sha256_verified": 28,
+  "anonymous_range_probes": [
+    {
+      "file": "SHA256SUMS",
+      "status": 206,
+      "range_supported": true
+    },
+    {
+      "file": "apsp-lite-companion-v1.tar.gz.part01",
+      "status": 206,
+      "range_supported": true
+    },
+    {
+      "file": "apsp-lite-companion-v1.tar.gz.part02",
+      "status": 206,
+      "range_supported": true
+    },
+    {
+      "file": "runtime.tar.gz",
+      "status": 206,
+      "range_supported": true
+    }
+  ],
+  "sha256sums_sha256": "2e318c09e27057f724d7cdf9fbdd3af003b1a1bfa1e51f344de8a4ca870f6961",
+  "download_helper_sha256": "f2f398f3a7c6aba955350e2e71e9479d2c576d052a0f98d96f854e00a0504df1",
+  "parts_manifest_sha256": "6cf333969b6aaaf515eca59642d49f75550c5c14cbc5b4d88a7822de76cb729d",
+  "companion_source_commit": "c7d51304f4d91e75d839cdade1a13584ab88dd02",
+  "parts": [
+    {
+      "file": "apsp-lite-companion-v1.tar.gz.part01",
+      "bytes": 22992424293,
+      "sha256": "18722c698015991b4fc95d9c57fe6edcc41e2db10d8185383dea0a57aa17bada"
+    },
+    {
+      "file": "apsp-lite-companion-v1.tar.gz.part02",
+      "bytes": 22992424292,
+      "sha256": "a7b463d4c0781aad3ee8e65ac8f97c034aef0e8ea6b8ae91ed9bf9931911eafb"
+    }
+  ],
+  "runtime_sha256": "d944669e3211621416e5e017fdc010ea04d8726a89ec35cea2eb30d686bfda84",
+  "verification": "Read-back byte sizes/LFS SHA256, anonymous public repo access, all small-file SHA256 and real one-byte Range downloads. Company proxy/node still not exercised.",
+  "payload_parent_revision": "0d506b19a2c3e1c251783625b656426a6b9d0da9",
+  "helper_update": "1 MiB bounded probe permits HF302 bodies; still requires final206 and exactly1 byte. Three changed files anonymously SHA256 verified; large payload files inherited unchanged."
+}

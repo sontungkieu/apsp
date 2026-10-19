@@ -1,0 +1,47 @@
+{
+  "scope": "Clean c7d5130 source archive embedded in companion; values never printed",
+  "hits": [
+    {
+      "file": "env/b200/uv.lock",
+      "kind": "private_ip",
+      "count": 2,
+      "context": [
+        {
+          "line": 590,
+          "context_with_ip_masked": "version = \"<IP_PATTERN>\""
+        },
+        {
+          "line": 593,
+          "context_with_ip_masked": "    { url = \"https://files.pythonhosted.org/packages/fb/aa/6584b56dc84ebe9cf93226a5cde4d99080c8e90ab40f0c27bda7a0f29aa1/nvidia_curand_cu12-<IP_PATTERN>-py3-none-manylinux_2_27_x86_64.whl\", hash = \"sha256:b32331d4f4df5d6eefa0554c565b626c7216f87a06a4f56fab27c3b68a830ec9\", size = 63619976, upload-time = \"2025-03-07T01:46:23.323Z\" },"
+        }
+      ]
+    },
+    {
+      "file": "env/lite/uv.lock",
+      "kind": "private_ip",
+      "count": 2,
+      "context": [
+        {
+          "line": 592,
+          "context_with_ip_masked": "version = \"<IP_PATTERN>\""
+        },
+        {
+          "line": 595,
+          "context_with_ip_masked": "    { url = \"https://files.pythonhosted.org/packages/fb/aa/6584b56dc84ebe9cf93226a5cde4d99080c8e90ab40f0c27bda7a0f29aa1/nvidia_curand_cu12-<IP_PATTERN>-py3-none-manylinux_2_27_x86_64.whl\", hash = \"sha256:b32331d4f4df5d6eefa0554c565b626c7216f87a06a4f56fab27c3b68a830ec9\", size = 63619976, upload-time = \"2025-03-07T01:46:23.323Z\" },"
+        }
+      ]
+    },
+    {
+      "file": "env/resolved-linux-py310.txt",
+      "kind": "private_ip",
+      "count": 1,
+      "context": [
+        {
+          "line": 162,
+          "context_with_ip_masked": "nvidia-curand-cu12==<IP_PATTERN>"
+        }
+      ]
+    }
+  ],
+  "credential_like_pass": true
+}

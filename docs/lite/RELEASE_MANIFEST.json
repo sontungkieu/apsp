@@ -76,9 +76,9 @@
   "budget": {
     "profile": "billionaireproject8",
     "task_budget_usd": "7.00",
-    "observed_task_cost_usd": "1.56326821",
+    "observed_task_cost_usd": "3.61354253",
     "observed_workspace_cost_usd": "1.77478443",
-    "observed_at_utc": "2026-10-19T17:01:59Z",
+    "observed_at_utc": "2026-10-19T18:25:10.292957+00:00",
     "by_app_usd": {
       "apsp-lite-assets-20261019": "0.17898688",
       "apsp-lite-assets-20261019-r2": "0.03551915",
@@ -104,7 +104,41 @@
     "scope": "All billing rows with description prefix apsp-lite-; excludes previous unrelated jobs.",
     "limitation": "Observed API usage snapshot; billing can lag. Not final invoice or confirmed credit balance.",
     "all_task_apps_stopped": true,
-    "retained_storage": "Private apsp-lite-runtime-v1 Volume retained; future storage charges depend on total workspace usage/allowance."
+    "retained_storage": "Private apsp-lite-runtime-v1 Volume retained; future storage charges depend on total workspace usage/allowance.",
+    "previous_runtime_only_snapshot": {
+      "profile": "billionaireproject8",
+      "task_budget_usd": "7.00",
+      "observed_task_cost_usd": "1.56326821",
+      "observed_workspace_cost_usd": "1.77478443",
+      "observed_at_utc": "2026-10-19T17:01:59Z",
+      "by_app_usd": {
+        "apsp-lite-assets-20261019": "0.17898688",
+        "apsp-lite-assets-20261019-r2": "0.03551915",
+        "apsp-lite-b200-20261019": "0.00800615",
+        "apsp-lite-b200-20261019-r2": "0.31478150",
+        "apsp-lite-b200-20261019-r3": "0.51202010",
+        "apsp-lite-cpu-20261019": "0.00082108",
+        "apsp-lite-cpu-20261019-r2": "0.00002394",
+        "apsp-lite-cpu-20261019-r3": "0.00666828",
+        "apsp-lite-cpu-20261019-r4": "0.00123670",
+        "apsp-lite-cpu-math-20261019": "0.00086563",
+        "apsp-lite-cpu-math-20261019-r2": "0.00123663",
+        "apsp-lite-cpu-math-20261019-r3": "0.00111295",
+        "apsp-lite-export-20261019": "0.01565218",
+        "apsp-lite-png-diagnostic-20261019": "0.00056264",
+        "apsp-lite-prompts-20261019": "0.00091742",
+        "apsp-lite-prompts-20261019-r2": "0.00089752",
+        "apsp-lite-prompts-20261019-r3": "0.00272075",
+        "apsp-lite-resolve-lock": "0.00006973",
+        "apsp-lite-restore-20261019": "0.47235790",
+        "apsp-lite-restore-cpu-20261019": "0.00881108"
+      },
+      "scope": "All billing rows with description prefix apsp-lite-; excludes previous unrelated jobs.",
+      "limitation": "Observed API usage snapshot; billing can lag. Not final invoice or confirmed credit balance.",
+      "all_task_apps_stopped": true,
+      "retained_storage": "Private apsp-lite-runtime-v1 Volume retained; future storage charges depend on total workspace usage/allowance."
+    },
+    "companion_receipt": "reports/lite/COMPANION_BUDGET.json"
   },
   "pending": [
     "manual language/content QA and tokenizer truncation audit",
@@ -142,6 +176,39 @@
     "reports/lite/task_receipts/restored-qualification_sdxl_base50.json": "2cb539eed99e5b388a2d57dec866152c17873bf3ace8ba8c307fad98572fb816",
     "reports/lite/task_receipts/restored-qualification_sdxl_base50_timings.json": "4306341e6f9e1a0bfd8def2f1da6d51c541191790e53d4d0a8cbdf72b7591857",
     "reports/lite/task_receipts/restored-qualification_sdxl_lightning8.json": "25e6cebd497f44e71b5bfd5a443c3ec3b0acfacbcaf7f9fb424ef6019e1fc2ba",
-    "reports/lite/task_receipts/restored-qualification_sdxl_lightning8_timings.json": "defbc2c3e17b376ca534d9dfe0c0ec16e9fb14100fee0058dedd116a6340b318"
+    "reports/lite/task_receipts/restored-qualification_sdxl_lightning8_timings.json": "defbc2c3e17b376ca534d9dfe0c0ec16e9fb14100fee0058dedd116a6340b318",
+    "reports/lite/COMPANION_ARCHIVE.sha256": "bf889fab512dc42eeb3db18126bbf7ee545fb0c78b65c3c30efeea09e8fa41d7",
+    "reports/lite/COMPANION_ARCHIVE_RECEIPT.json": "14283640e6ae270f9f3c044d3664fed0ca4ddefde12aaa2b9bf35773ba095661",
+    "reports/lite/COMPANION_BUDGET.json": "7d4f28ff15e5b11c5f6e2c97e6d5322414f7eb2195059567e9b6983a1b3a2351",
+    "reports/lite/COMPANION_CONTENT_MANIFEST.json": "8e4cb92465fdd20027d4b325f26bf321c72e87b6f06f3f32585e99e8cfb1d971",
+    "reports/lite/COMPANION_DOWNLOADER_SMOKE.json": "a6628259000880410637dcdfa7a2c38e999d9a33ccda9092e4fb940202d8b1ee",
+    "reports/lite/COMPANION_HF_CURL_TEMPLATE_TEST.json": "29b2f1ebc94b7f7f5412b0ecec458c8ecd8f25acf8b1315f9df8cfcdd5ec0fe3",
+    "reports/lite/COMPANION_HF_FINAL_PROBES.json": "0ec141285f1a080ff292f91bee5421ac6c37584940dcb1060b10bc9c25618c13",
+    "reports/lite/COMPANION_HF_PUBLICATION.json": "2d369a95a6dbb717ad862d031235009988274c6e20d61883a3d2ec3e6fc85e52",
+    "reports/lite/COMPANION_OFFLINE_RESTORE.json": "2e43b8d6598d1e4be9f6a41d8e5d4b75bc8694b653a2a4e88823d057ec931d5c",
+    "reports/lite/COMPANION_PARTS.json": "6cf333969b6aaaf515eca59642d49f75550c5c14cbc5b4d88a7822de76cb729d",
+    "reports/lite/COMPANION_PARTS.SHA256SUMS": "7e4aa2c4e448a78b3af757ca10fdcf511f311514842e21238877b1287f7355d4",
+    "reports/lite/COMPANION_PUBLIC_HISTORY_AUDIT.json": "4243a13129583d0baf87e0a154d7a17dc3be8336f2adfb7058c5c7c164463b51",
+    "reports/lite/COMPANION_PUBLIC_SOURCE_AUDIT.json": "1f3ac6b3479cf9a70d7bfb4b3596e4e02a9eeaadc34b8a415c1c23efcf6d7896",
+    "reports/lite/COMPANION_LOCAL_VERIFICATION.json": "b92c9d40f9507829759dcc5610cb79c8e34857eaa917ab9c8b2a98b1a936a53a"
+  },
+  "companion": {
+    "public_repo": "codemaivanngu/apsp-lite-b200-cu128",
+    "revision": "a13a190c0d29ed44a8ebff6b9c78d9e51f65e820",
+    "source_commit": "c7d51304f4d91e75d839cdade1a13584ab88dd02",
+    "parts": [
+      {
+        "file": "apsp-lite-companion-v1.tar.gz.part01",
+        "bytes": 22992424293,
+        "sha256": "18722c698015991b4fc95d9c57fe6edcc41e2db10d8185383dea0a57aa17bada"
+      },
+      {
+        "file": "apsp-lite-companion-v1.tar.gz.part02",
+        "bytes": 22992424292,
+        "sha256": "a7b463d4c0781aad3ee8e65ac8f97c034aef0e8ea6b8ae91ed9bf9931911eafb"
+      }
+    ],
+    "offline_cpu_restore": "passed; not GPU rerun",
+    "node_commands": "docs/lite/NODE_DOWNLOAD_COMMANDS.md"
   }
 }

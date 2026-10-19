@@ -114,3 +114,29 @@ Branch `feat/apsp-lite-data-v1`; commits local đã ký. Origin là git bundle l
 chưa có GitHub backup/push cho triển khai này. Gói bàn giao nhẹ trong `outputs/`
 chứa source archive, git bundle, docs/receipts và text/task manifests; runtime lớn
 giữ tại Modal, tải trực tiếp tới node được cấp quyền theo runbook.
+
+## Companion và HF public — cập nhật bàn giao
+
+Đã gói pinned models/scorers/tokenizers, source và dữ liệu text/task hiện có thành
+hai part gzip lossless, mỗi part khoảng22.99GB; dependency runtime4.57GB riêng.
+Archive đọc lại toàn bộ hash, roundtrip hai part và offline CPU restore PASS.
+Không có full generated train/dev bank; các giới hạn SDXL50/QA ở trên vẫn giữ.
+
+Repo public: https://huggingface.co/datasets/codemaivanngu/apsp-lite-b200-cu128/tree/a13a190c0d29ed44a8ebff6b9c78d9e51f65e820
+
+Lệnh hai instance12+12 kết nối và ghép: [NODE_DOWNLOAD_COMMANDS.md](NODE_DOWNLOAD_COMMANDS.md).
+Đã kiểm curl fixture redirect/resume/Range với12 request thực đồng thời; helper
+public và anonymous Range kiểm trực tiếp. Chưa chạy trên proxy/node công ty.
+
+Usage API cập nhật 2026-10-19T18:25:10.292957+00:00: **3.61354253 USD**
+cho toàn task, gồm publication, dưới cap7USD; có thể trễ so với invoice.
+Các app companion đã stopped. HF là bản public; Git branch hiện vẫn local,
+chưa push GitHub. Source trong companion cố định tại `c7d51304f4d91e75d839cdade1a13584ab88dd02`;
+helper tải mới có revision riêng nêu trên.
+
+Kiểm tra cập nhật: Lite17 pass/1 skip trên Windows; curl fixture Linux1 pass,
+4 block bash syntax PASS. Toàn repo207 pass/13 skip/7 fail:3 thiếu Torch local,
+1 pin submodule khác checkout standalone,1 PermissionError Windows trong watchdog,
+2 cgroup shell tests có dấu hiệu lệch đường dẫn Windows/Linux. Không cài dependency
+nặng hoặc sửa các module ngoài companion chỉ để làm xanh toàn suite. Chi tiết
+trong `reports/lite/COMPANION_LOCAL_VERIFICATION.json`.

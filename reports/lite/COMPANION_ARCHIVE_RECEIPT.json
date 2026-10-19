@@ -1,0 +1,13 @@
+{
+  "pass": true,
+  "archive": "/persist/export/apsp-lite-companion-v1.tar",
+  "archive_bytes": 61109442560,
+  "archive_sha256": "d11d1ecf591ae59e6e63d80d767e74c3659ded51ec93792139aa34eb667b3b96",
+  "files": 88,
+  "payload_bytes": 61109277941,
+  "source_commit": "c7d51304f4d91e75d839cdade1a13584ab88dd02",
+  "runtime_archive_sha256": "d944669e3211621416e5e017fdc010ea04d8726a89ec35cea2eb30d686bfda84",
+  "verification": "full sequential tar readback and every file SHA256",
+  "models_offline_load": "pending_separate_cpu_check",
+  "full_bank_collected": false
+}

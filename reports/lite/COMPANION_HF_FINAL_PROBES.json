@@ -1,0 +1,18 @@
+{
+  "pass": true,
+  "revision": "a13a190c0d29ed44a8ebff6b9c78d9e51f65e820",
+  "helper_sha256_verified": true,
+  "range_probes": [
+    {
+      "file": "apsp-lite-companion-v1.tar.gz.part01",
+      "http_status": 206,
+      "bytes": 1
+    },
+    {
+      "file": "apsp-lite-companion-v1.tar.gz.part02",
+      "http_status": 206,
+      "bytes": 1
+    }
+  ],
+  "scope": "Anonymous direct controller HTTPS reads; not company proxy/node qualification."
+}

@@ -41,7 +41,8 @@ join node. Dự trù khoảng250GB nếu giữ đồng thời ranges, parts, tar
 Người dùng đã cho phép tạo HF repo hợp lý và public toàn bộ. Đích:
 `codemaivanngu/apsp-lite-b200-cu128`, loại dataset. Upload chạy trực tiếp từ Modal
 CPU, token project-local qua ephemeral Secret như TTS, kiểm whoami trước write;
-đọc ngược size/LFS SHA rồi mới public và kiểm anonymous Range/metadata. LICENSES
+repo public trước upload theo quyền đã cấp (tránh quota private storage); đọc ngược
+size/LFS SHA và kiểm anonymous Range/metadata. LICENSES
 và NOTICE đi kèm; không đổi quyền upstream bằng cách gắn license chung.
 
 Chỉ dùng revision/hashes trong publication receipt đã PASS. Block node đầy đủ sẽ

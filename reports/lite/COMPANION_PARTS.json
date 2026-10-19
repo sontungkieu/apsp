@@ -1,0 +1,26 @@
+{
+  "pass": true,
+  "format": "concatenate part01+part02 to recover one multi-member gzip stream",
+  "compression": "gzip level1 lossless, ordered independent members",
+  "compression_workers": 8,
+  "parts": [
+    {
+      "file": "apsp-lite-companion-v1.tar.gz.part01",
+      "bytes": 22992424293,
+      "sha256": "18722c698015991b4fc95d9c57fe6edcc41e2db10d8185383dea0a57aa17bada"
+    },
+    {
+      "file": "apsp-lite-companion-v1.tar.gz.part02",
+      "bytes": 22992424292,
+      "sha256": "a7b463d4c0781aad3ee8e65ac8f97c034aef0e8ea6b8ae91ed9bf9931911eafb"
+    }
+  ],
+  "part_count": 2,
+  "max_part_bytes": 30000000000,
+  "compressed_bytes": 45984848585,
+  "gzip_sha256": "9856fc7e020c9f77b9c7c9e3deffad2187ca1c212231fd65fe4e86becf2ada96",
+  "original_tar_sha256": "d11d1ecf591ae59e6e63d80d767e74c3659ded51ec93792139aa34eb667b3b96",
+  "original_tar_bytes": 61109442560,
+  "verification": "Both parts were streamed through gzip CRC validation and decoded SHA256 equals original verified tar.",
+  "join_command": "cat apsp-lite-companion-v1.tar.gz.part01 apsp-lite-companion-v1.tar.gz.part02 | gzip -dc > apsp-lite-companion-v1.tar"
+}

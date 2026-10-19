@@ -1,0 +1,10 @@
+{
+  "pass": true,
+  "status": "downloaded_and_sha256_verified",
+  "file": "live-receipt-download.json",
+  "bytes": 563,
+  "workers": 12,
+  "resumed_blocks": 0,
+  "blocks": 1,
+  "scope": "Authenticated live Modal block API and SHA256 for a small receipt; 12 HTTP worker concurrency tested independently with bounded localhost fixture. No large part downloaded locally."
+}

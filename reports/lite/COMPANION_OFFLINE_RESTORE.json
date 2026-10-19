@@ -1,0 +1,53 @@
+{
+  "restore": {
+    "status": "restored",
+    "target": "/persist/companion-restored-v1",
+    "files_verified": 87,
+    "source_commit": "c7d51304f4d91e75d839cdade1a13584ab88dd02"
+  },
+  "offline": {
+    "pass": true,
+    "stage": "companion_cpu_offline_loader_readiness",
+    "network": "blocked_by_socket_patch_and_hf_offline",
+    "cache_root": "/__modal/volumes/vo-zb9uoW40ncVSTMi0Gj8eAZ/companion-restored-v1/hf",
+    "source_commit": "c7d51304f4d91e75d839cdade1a13584ab88dd02",
+    "qualified_core_source_sha256": "7346430ea5f5a1bcfdd65d517c537dd82dd553dabce9ac125276d178ccdf6023",
+    "profiles": {
+      "sdxl_lightning8": {
+        "config": true,
+        "tokenizers": [
+          "tokenizer",
+          "tokenizer_2"
+        ],
+        "adapter": true
+      },
+      "hyper_flux8": {
+        "config": true,
+        "tokenizers": [
+          "tokenizer",
+          "tokenizer_2"
+        ],
+        "adapter": true
+      },
+      "sdxl_base50": {
+        "config": true,
+        "tokenizers": [
+          "tokenizer",
+          "tokenizer_2"
+        ],
+        "adapter": false
+      }
+    },
+    "scorers": "config_processor_pinned_paths_resolved",
+    "safetensors_files": 16,
+    "safetensors_tensor_keys": 8454,
+    "shard_indices": 2,
+    "common_encoder_forward_shape": [
+      1,
+      768
+    ],
+    "tasks": 13800,
+    "full_generator_scorer_gpu_rerun": false,
+    "sdxl50_cross_container_parity": "not_claimed"
+  }
+}

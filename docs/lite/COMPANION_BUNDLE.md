@@ -26,7 +26,8 @@ giữ `.partial` làm bằng chứng và không công bố archive hoàn tất.
 
 ## Restore trên Linux node được cấp quyền
 
-Tải trực tiếp từ Modal đến node, không qua máy cá nhân:
+Đường tải hiện hành là [NODE_DOWNLOAD_COMMANDS.md](NODE_DOWNLOAD_COMMANDS.md).
+Lệnh Modal dưới đây chỉ dành cho operator truy xuất Volume nếu cần:
 
 ```bash
 mkdir -p /shared/apsp-lite/payload
@@ -70,5 +71,6 @@ collection/backup limitations trong LITE_DATA_REPORT.md vẫn có hiệu lực.
 Text có2850 UID và13800 task, không phải110400 generated candidates. Raw inputs
 gồm DiffusionDB metadata, COCO caption annotations, Parti TSV và GenEval exclusion
 texts. Full dataset chưa thu; manual language/content/truncation QA vẫn pending.
-Giữ private; attribution/revision/hash đi kèm, FLUX gated license không bị loại bỏ
-do đóng gói offline. Không có credential trong companion; không public/upload Hub.
+Đã public theo chỉ định người dùng tại HF dataset `codemaivanngu/apsp-lite-b200-cu128`.
+Attribution/revision/hash và bản license/NOTICE upstream đi kèm; không thay license
+bằng cách đóng gói offline. Không có credential trong companion.
