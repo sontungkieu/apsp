@@ -32,11 +32,11 @@ image = (
                   "uv pip check --python /opt/apsp-runtime/bin/python")
 )
 source_image = image.add_local_dir(str(ROOT), "/opt/apsp", copy=False,
-    ignore=modal.FilePatternMatcher(".git", ".venv", "data", "runs", "outputs", "remote_artifacts", "__pycache__", ".pytest_cache", "*.pyc"))
+    ignore=modal.FilePatternMatcher(".git", ".venv", "data", "runs", "outputs", "remote_artifacts", "__pycache__", ".pytest_cache", "*.pyc", "**/__pycache__/**", "**/*.pyc"))
 restore_image = (modal.Image.from_registry("ubuntu:22.04", add_python="3.11")
     .apt_install("libgl1", "libglib2.0-0", "libgomp1", "git")
     .add_local_dir(str(ROOT), "/opt/apsp", copy=False,
-        ignore=modal.FilePatternMatcher(".git", ".venv", "data", "runs", "outputs", "remote_artifacts", "__pycache__", ".pytest_cache", "*.pyc")))
+        ignore=modal.FilePatternMatcher(".git", ".venv", "data", "runs", "outputs", "remote_artifacts", "__pycache__", ".pytest_cache", "*.pyc", "**/__pycache__/**", "**/*.pyc")))
 
 
 def run(args, timeout=1200):
