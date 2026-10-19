@@ -54,12 +54,13 @@ def main(argv=None):
             stage = "scorer_load"
             runtime.load_scorers()
             stage = "collector"
-            dest = collect_task(runtime, task, out / "bank", fp)
+            attempt_root = out / "attempts" / canonical_hash(runtime_identity(fp))[:16]
+            dest = collect_task(runtime, task, attempt_root / "bank", fp)
             stage = "validator_redecode"
             validation = validate_task(dest, runtime)
             stage = "backup_restore"
-            backup_task(dest, out / "backup" / task["task_id"])
-            restored = validate_task(out / "backup" / task["task_id"])
+            backup_task(dest, attempt_root / "backup" / task["task_id"])
+            restored = validate_task(attempt_root / "backup" / task["task_id"])
             receipt = {"pass": validation["all_valid"] and restored["schema_valid"], "profile": name,
                        "profile_hash": task["profile_hash"], "runtime_identity_hash": canonical_hash(runtime_identity(fp)),
                        "validation": validation, "restore": restored, "runtime": fp}

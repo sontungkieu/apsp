@@ -150,3 +150,24 @@ def test_task_cli_writes_freeze_hash(tmp_path):
     manifest = json.loads(output.with_suffix(".manifest.json").read_text())
     assert manifest["n_tasks"] == 6
     assert manifest["n_candidates"] == 48
+
+
+def test_portable_archive_paths_and_symlinks():
+    import importlib.util
+    import tarfile
+    from pathlib import Path
+    path = Path(__file__).resolve().parents[2] / "env/lite/ensure_runtime.py"
+    spec = importlib.util.spec_from_file_location("ensure_apsp_lite", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    link = tarfile.TarInfo("opt/apsp-runtime/bin/python")
+    link.type = tarfile.SYMTYPE
+    link.linkname = "/opt/apsp-python/cpython-3.11-linux-x86_64-gnu/bin/python3.11"
+    module.validate_members([link])
+    with pytest.raises(ValueError): module.validate_members([tarfile.TarInfo("../../etc/passwd")])
+    with pytest.raises(ValueError): module.validate_members([tarfile.TarInfo("opt/other/file")])
+    link.linkname = "/etc/passwd"
+    with pytest.raises(ValueError): module.validate_members([link])
+    link.name = "opt/apsp-runtime/lib"
+    link.linkname = "/opt/apsp-python/lib"
+    with pytest.raises(ValueError): module.validate_members([link, tarfile.TarInfo("opt/apsp-runtime/lib/evil")])
