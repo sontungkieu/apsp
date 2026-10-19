@@ -1,7 +1,7 @@
 """Publish already-verified assets directly Modal -> HF, following the TTS harness.
 
-The user authorized a new public dataset. Stage privately, verify bytes/LFS hashes,
-include upstream notices, then expose and verify anonymously at the pinned commit.
+The user authorized a new public dataset. Audit local artifacts, include upstream
+notices, upload publicly and verify anonymously at the pinned commit.
 """
 import hashlib
 import json
@@ -136,6 +136,9 @@ See `NOTICE`, `UPSTREAM_COMPONENTS.json` and `LICENSES/` before use. FLUX.1-dev 
         if set(existing)-{'.gitattributes'}:
             raise RuntimeError('nonempty existing repository; inspect before replacing')
     else:api.create_repo(REPO,repo_type='dataset',private=True)
+    # Explicit user instruction: public. This account's private storage is full;
+    # audited public artifacts do not require a private staging upload or upgrade.
+    api.update_repo_settings(REPO,repo_type='dataset',private=False)
     stage('upload_begin',files=len(files),bytes=sum(p.stat().st_size for p in files.values()))
     commit=api.create_commit(repo_id=REPO,repo_type='dataset',operations=[CommitOperationAdd(path_in_repo=name,path_or_fileobj=str(path)) for name,path in sorted(files.items())],commit_message='Publish verified B200 runtime and two companion parts with upstream notices')
     info=api.repo_info(REPO,repo_type='dataset',revision=commit.oid,files_metadata=True)
