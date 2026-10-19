@@ -38,7 +38,7 @@ def group_rows(rows, exclusions=(), near_threshold=0.85):
     # Connected components of lexical 3-gram Jaccard + declared parent groups.
     # Reports this detector's scope; does not claim semantic decontamination.
     prepared, by_uid = [], {}
-    for row in rows:
+    for row in sorted(rows, key=canonical_hash):
         for key in ("text_raw", "source", "source_row_id", "source_revision", "parent_group"):
             if not row.get(key):
                 raise ValueError(f"missing prompt provenance field {key}")
@@ -113,17 +113,39 @@ def build(rows, exclusions=()):
     for split, targets in QUOTAS.items():
         for source, count in targets.items():
             pool = sorted(groups, key=lambda g: canonical_hash(["lite-split-v1", source, g]))
+            if source == "parti":
+                # Balanced category round-robin is frozen before seeing any image/reward.
+                buckets = defaultdict(list)
+                for g in pool:
+                    candidates = [r for r in groups[g] if r["source"] == source]
+                    if candidates:
+                        buckets[candidates[0].get("category", "unlabelled")].append(g)
+                pool = []
+                while any(buckets.values()):
+                    for category in sorted(buckets):
+                        if buckets[category]: pool.append(buckets[category].pop(0))
             selected = []
-            for g in pool:
-                if g in taken:
-                    continue
-                candidates = [r for r in groups[g] if r["source"] == source]
-                if not candidates:
-                    continue
-                taken.add(g)
-                selected.extend(candidates[:count - len(selected)])
-                if len(selected) == count:
-                    break
+            categories = sorted({r.get("primary_category") for gr in groups.values() for r in gr
+                                 if r["source"] == source and r.get("primary_category")}) if source == "structured" else []
+            if categories and (len(categories) != 5 or count % 5):
+                raise ValueError("structured Lite requires five equally allocated primary categories")
+            for category in categories or [None]:
+                target = count // 5 if categories else count
+                chosen = []
+                for g in pool:
+                    if g in taken:
+                        continue
+                    candidates = [r for r in groups[g] if r["source"] == source and
+                                  (category is None or r.get("primary_category") == category)]
+                    if not candidates:
+                        continue
+                    taken.add(g)
+                    chosen.extend(candidates[:target - len(chosen)])
+                    if len(chosen) == target:
+                        break
+                if len(chosen) != target:
+                    raise ValueError(f"insufficient {source}/{category} for {split}: {len(chosen)}/{target}")
+                selected.extend(chosen)
             if len(selected) != count:
                 raise ValueError(f"insufficient disjoint {source} groups for {split}: {len(selected)}/{count}")
             assigned.extend({**r, "split": split} for r in selected)

@@ -108,6 +108,16 @@ def qualify():
     return Path("/persist/qualification/summary.json").read_text()
 
 
+@app.function(image=source_image, cpu=2, memory=16384, timeout=900, volumes={"/persist": volume},
+              max_containers=1, scaledown_window=2)
+def prepare_prompts():
+    try:
+        run(["-m", "apsp.lite.prepare_text", "--out", "/persist/text/lite-v1-20261019"], timeout=800)
+    finally:
+        volume.commit()
+    return Path("/persist/text/lite-v1-20261019/manifests/manifest.json").read_text()
+
+
 @app.function(image=source_image, cpu=2, memory=8192, timeout=900, volumes={"/persist": volume},
               max_containers=1, scaledown_window=2)
 def package():
