@@ -50,7 +50,7 @@ echo "PART=$PART FILE=$F WANT=$WANT N=$N HF_REPO=$HF_REPO REV=$REV"
 echo 'proxy: co bien (khong in gia tri)'
 # A server that ignores Range must fail before any multi-GB request.
 PROBE="$RANGES/probe.$BASHPID"
-if HTTP=$(curl --silent --fail --location --connect-timeout 20 --max-filesize 1 \
+if HTTP=$(curl --silent --fail --location --connect-timeout 20 --max-filesize 1048576 \
   --proxy "$PROXY" --noproxy '' "${AUTH[@]}" -H 'Range: bytes=0-0' \
   "$URL" -o "$PROBE" -w '%{http_code}' 2>/dev/null); then RC=0; else RC=$?; fi
 [ "$RC" = 0 ] && [ "$HTTP" = 206 ] && [ "$(stat -c%s "$PROBE")" = 1 ] || { echo "TU_CHOI: Range probe HTTP=$HTTP curl_rc=$RC"; exit 2; }

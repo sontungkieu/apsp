@@ -36,3 +36,24 @@ def publish():
     if not token:raise RuntimeError('HF_TOKEN field missing')
     result=upload.with_options(secrets=[modal.Secret.from_dict({'HF_TOKEN':token})]).remote()
     print(result)
+
+
+@app.function(image=image,cpu=1,memory=2048,timeout=300,retries=0,volumes={'/persist':volume},max_containers=1,scaledown_window=2)
+def update_download():
+    env={**os.environ,'HF_HOME':'/persist/hf-publication-cache','HF_HUB_DISABLE_PROGRESS_BARS':'1'}
+    child=subprocess.run(['/opt/apsp-runtime/bin/python','/opt/apsp/env/lite/update_hf_download.py'],env=env,capture_output=True,text=True)
+    for line in child.stdout.splitlines():
+        if line.startswith('HF_PUBLIC_STAGE='):print(line,flush=True)
+    volume.commit()
+    if child.returncode:raise RuntimeError('small helper update failed; no large upload attempted')
+
+
+@app.local_entrypoint()
+def fix_download():
+    source=Path('/home/tung/Collaborative-MORL/.secrets/talapas_secrets.env')
+    token=None
+    for line in source.read_text().splitlines():
+        key,sep,value=line.removeprefix('export ').partition('=')
+        if sep and key.strip()=='HF_TOKEN':token=shlex.split(value)[0];break
+    if not token:raise RuntimeError('HF_TOKEN field missing')
+    update_download.with_options(secrets=[modal.Secret.from_dict({'HF_TOKEN':token})]).remote()
