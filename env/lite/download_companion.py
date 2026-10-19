@@ -81,7 +81,10 @@ def download_blocks(blocks, size, expected_sha256, dest, workers=12):
         def fetch(i, url, length):
             for attempt in range(3):
                 try:
-                    with urllib.request.urlopen(url,timeout=120) as response:
+                    request=urllib.request.Request(url,headers={
+                        'Accept':'*/*','Accept-Encoding':'identity',
+                        'User-Agent':'apsp-lite-companion/1.0 Modal/1.6.2'})
+                    with urllib.request.urlopen(request,timeout=120) as response:
                         if response.status!=200: raise RuntimeError('block status must be 200')
                         data=response.read(length+1)
                     if len(data)>length: raise ValueError('oversized block')
@@ -95,8 +98,12 @@ def download_blocks(blocks, size, expected_sha256, dest, workers=12):
                         n=len(state['completed'])
                         if n%64==0 or n==len(blocks): print(f'BLOCKS={n}/{len(blocks)}',flush=True)
                     return
-                except Exception:
-                    if attempt==2: raise RuntimeError('block download failed; retry to resume') from None
+                except Exception as exc:
+                    if attempt==2:
+                        # Numeric status and exception type are safe; URLs/bodies are not.
+                        code=getattr(exc,'code',None)
+                        print(f'BLOCK_FAILED={i} ERROR_TYPE={type(exc).__name__} HTTP_STATUS={code if isinstance(code,int) else "n/a"}',flush=True)
+                        raise RuntimeError('block download failed; retry to resume') from None
                     time.sleep(.5*(attempt+1))
         failures=0
         with ThreadPoolExecutor(max_workers=workers) as pool:

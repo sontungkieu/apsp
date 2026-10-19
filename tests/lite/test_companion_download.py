@@ -55,6 +55,6 @@ def test_wrong_final_hash_preserves_partial_and_resets_resume(tmp_path,monkeypat
         def read(self,n): return b'bad'
     monkeypatch.setattr(d.urllib.request,'urlopen',lambda *args,**kwargs:Response())
     with pytest.raises(ValueError,match='whole part SHA256'):
-        d.download_blocks([('private-url',4)],4,hashlib.sha256(b'good').hexdigest(),tmp_path/'part',12)
+        d.download_blocks([('https://example.invalid/block?signature=private-url',4)],4,hashlib.sha256(b'good').hexdigest(),tmp_path/'part',12)
     state=json.loads((tmp_path/'part.resume.json').read_text())
     assert state['completed']=={} and 'private-url' not in json.dumps(state)
