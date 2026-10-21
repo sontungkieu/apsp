@@ -6,6 +6,10 @@ branch `main`. Server tải cùng source commit qua Git bundle trên
 Xem [publish/update workflow](docs/lite/SOURCE_DISTRIBUTION.md); model/data/runtime
 giữ riêng, không rebuild theo mỗi thay đổi source.
 
+Lite2 bổ sung SD1.5/Hyper-SD15 CFG8 và MiniLM384:
+[model add-on và lệnh tải/restore](docs/lite/LITE2_MODEL_ADDON.md).
+Đã kiểm asset/CPU offline; collector V2 và B200 qualification vẫn là bước riêng.
+
 APSP Lite data/runtime amendment (2026-10-19): see [runbook](docs/lite/RUNBOOK_LITE.md)
 and [runtime decision](docs/lite/RUNTIME_DECISION.md). Lite uses a separate `env/lite`
 lock, 8/8/16 checkpoints and three pinned execution profiles. The sections below

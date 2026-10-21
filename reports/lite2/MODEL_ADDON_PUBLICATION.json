@@ -1,0 +1,65 @@
+{
+  "stage": "public_verified",
+  "pass": true,
+  "archive_file": "apsp-lite2-model-addon-v1.tar",
+  "archive_bytes": 4133734400,
+  "archive_sha256": "3ba6fc1a2cd47ee9e42b7857146c6f967ed56c4c9dbb6d28ae9cbffcdc306533",
+  "restore": {
+    "status": "already_restored",
+    "target": "/persist/lite2-model-addon-v1/restored"
+  },
+  "offline_cpu": {
+    "pass": true,
+    "stage": "offline_cpu_weight_load_lora_fuse_minilm_forward",
+    "sd15_loaded": true,
+    "lora_tensor_keys": 834,
+    "ddim_trailing_steps": [
+      999,
+      874,
+      749,
+      624,
+      499,
+      374,
+      249,
+      124
+    ],
+    "minilm_shape": [
+      1,
+      384
+    ],
+    "minilm_norm": 1.0,
+    "limitation": "No B200 generation, scorer rerun or Lite2 collector qualification; v1 runtime reused."
+  },
+  "runtime_rebuilt": false,
+  "new_files": 25,
+  "required_old_files": 6,
+  "hf_repo": "codemaivanngu/apsp-lite-b200-cu128",
+  "hf_revision": "246ca32ce4dcb287296a740ed7cbd17998d19024",
+  "anonymous_range_verified": true,
+  "published_files": {
+    "apsp-lite2-model-addon-v1.tar": {
+      "bytes": 4133734400,
+      "sha256": "3ba6fc1a2cd47ee9e42b7857146c6f967ed56c4c9dbb6d28ae9cbffcdc306533"
+    },
+    "LITE2_ADDON_DOWNLOAD.json": {
+      "bytes": 190,
+      "sha256": "a1c5af144605ba68feff92095453f52935e09e33cd168e35b5fd346c8ffec9f5"
+    },
+    "LITE2_ADDON_MANIFEST.json": {
+      "bytes": 16571,
+      "sha256": "0aa6be9eaa7483d9f29e7bfaabf8596283e313aae868da15932f98031d1cac14"
+    },
+    "PREPARATION.json": {
+      "bytes": 834,
+      "sha256": "f6d462a28c4621e0e06209b1e652eea6fc3b5415a50e3210172eaa13092ad324"
+    },
+    "restore_lite2_addon.py": {
+      "bytes": 7610,
+      "sha256": "15c18911a42260bf86c04ee8802df428a9eb24d6badc03736b3547539d536c89"
+    },
+    "LITE2_ADDON.SHA256SUMS": {
+      "bytes": 452,
+      "sha256": "4826fa1458c5433d697718adf28cbed2746df94041b0f108f3e0766c6778a1cf"
+    }
+  }
+}

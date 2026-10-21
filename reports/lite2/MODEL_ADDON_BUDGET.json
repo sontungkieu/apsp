@@ -1,0 +1,14 @@
+{
+  "profile": "billionaireproject8",
+  "observed_at_utc": "2026-10-21T20:19:36.412824+00:00",
+  "task_cap_usd": "7.00",
+  "observed_cumulative_task_cost_usd": "3.63131179",
+  "observed_addon_cost_usd": "0.01762730",
+  "by_addon_app_usd": {
+    "apsp-lite-lite2-addon-20261022-r3": "0.01024088",
+    "apsp-lite-lite2-addon-20261022-r2": "0.00450056",
+    "apsp-lite-lite2-addon-20261022": "0.00288586"
+  },
+  "all_addon_apps_stopped": true,
+  "limitation": "Usage API may lag; not final invoice or confirmed remaining credit. Persistent Volume retained."
+}

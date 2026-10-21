@@ -1,0 +1,11 @@
+{
+  "pass": true,
+  "revision": "246ca32ce4dcb287296a740ed7cbd17998d19024",
+  "anonymous_bootstrap_files_sha256_verified": [
+    "download_part_hf.sh",
+    "LITE2_ADDON_DOWNLOAD.json",
+    "restore_lite2_addon.py"
+  ],
+  "archive_range_status": 206,
+  "scope": "Controller-side anonymous HTTPS; company proxy/node not exercised."
+}

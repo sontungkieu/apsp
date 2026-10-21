@@ -24,13 +24,16 @@ def sha(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--publish', action='store_true')
+    parser.add_argument('--allow-untracked', action='store_true',
+                        help='Preserve unrelated untracked files; publish committed history only')
     args = parser.parse_args()
     root = Path(git(Path(__file__).parent, 'rev-parse', '--show-toplevel'))
     if git(root, 'branch', '--show-current') != BRANCH:
         raise ValueError('Publish only canonical main')
     if git(root, 'remote', 'get-url', '--push', 'origin') != GITHUB:
         raise ValueError('Unexpected GitHub origin')
-    if git(root, 'status', '--porcelain'):
+    status_args=['status','--porcelain'] + (['--untracked-files=no'] if args.allow_untracked else [])
+    if git(root, *status_args):
         raise ValueError('Commit source edits/untracked files first')
     if git(root, 'rev-parse', '--is-shallow-repository') != 'false':
         raise ValueError('Full source history required')

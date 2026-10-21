@@ -22,6 +22,12 @@ GitHub. Chỉ `DUAL_PUBLISH_PASS` mới hoàn tất. Receipt nằm trong
 `remote_artifacts/source-<commit>-*/receipt.json`; không commit receipt vào chính
 source nó mô tả, tránh vòng lặp commit/revision.
 
+Nếu có file untracked không thuộc milestone (ví dụ EDA handoff người dùng vừa
+đưa vào), bảo toàn file đó và dùng `--allow-untracked` có chủ ý. Publisher vẫn
+từ chối mọi tracked edit chưa commit; Git bundle chỉ chứa lịch sử đã commit,
+không đưa file untracked vào release. Mặc định vẫn chặn untracked để tránh
+quên stage source mới.
+
 Không đưa model/dataset/runtime vào GitHub. Chỉ đồng bộ source nhỏ mỗi lần;
 hai part model/data và runtime đã public giữ nguyên bytes và revision bàn giao.
 `APSP_RELEASE.json`/root `SHA256SUMS` mô tả payload cũ; source channel có manifest
