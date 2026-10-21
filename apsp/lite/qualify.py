@@ -19,6 +19,8 @@ def main(argv=None):
     from .validate import validate_task
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
+    ap.add_argument('--execution',help='Opt-in JSON execution policy, bound into runtime qualification identity')
+    ap.add_argument('--profiles',nargs='+',help='Qualify only selected existing registry profiles')
     a = ap.parse_args(argv)
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
@@ -27,13 +29,17 @@ def main(argv=None):
     z = torch.randn((256, 256), device="cuda", dtype=torch.bfloat16)
     if not bool(torch.isfinite(z @ z).all()):
         raise RuntimeError("CUDA BF16 check failed")
-    fp, registry = fingerprint(), load_registry()
+    from .performance import ExecutionPolicy
+    execution=ExecutionPolicy.load(a.execution) if a.execution else None
+    fp, registry = fingerprint(execution), load_registry()
     cuda_receipt = {"pass": True, "stage": "cuda", "runtime": fp}
     atomic_json(out / "cuda.json", cuda_receipt)
     text = "A red ceramic mug on a wooden table beside a blue book, natural window light."
     prompt = {"prompt_uid": uid(text), "text": text, "text_raw": text, "split": "calibration", "train_rank": None,
               "source": "qualification_authored", "group_id": "qualification-calibration-reserved-v1"}
-    tasks = [t for t in make_tasks([prompt]) if t["bank_id"] == 0]
+    selected=a.profiles or list(registry['profiles'])
+    if not selected or not set(selected)<=set(registry['profiles']):raise ValueError('Unknown qualification profiles')
+    tasks = [t for t in make_tasks([prompt]) if t["bank_id"] == 0 and t['profile'] in selected]
     result = {"cuda": cuda_receipt, "profiles": {}, "qualification_prompt_uid": uid(text),
               "scope": "one calibration prompt x eight seeds per profile; not 50-prompt replay-online qualification"}
     assets_path = out.parent / "assets.json"
@@ -50,7 +56,7 @@ def main(argv=None):
             if not assets.get(name, {}).get("pass"):
                 result["profiles"][name] = {"pass": False, "status": "blocked_by_generator_assets"}
                 continue
-            runtime = LiteRuntime(registry["profiles"][name], registry)
+            runtime = LiteRuntime(registry["profiles"][name], registry,execution=execution)
             stage = "scorer_load"
             runtime.load_scorers()
             stage = "collector"
@@ -73,7 +79,7 @@ def main(argv=None):
             del runtime
             gc.collect()
             torch.cuda.empty_cache()
-            result["pass"] = len(result["profiles"]) == 3 and all(r.get("pass") for r in result["profiles"].values())
+            result["pass"] = len(result["profiles"]) == len(selected) and all(r.get("pass") for r in result["profiles"].values())
             atomic_json(out / "summary.json", result)
     print("APSP_B200_JSON=" + json.dumps(result), flush=True)
 

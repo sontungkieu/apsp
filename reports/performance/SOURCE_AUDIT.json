@@ -1,0 +1,18 @@
+{
+  "pass": true,
+  "app_id": "ap-wlMjo0BJcQXx7Bc3055YiT",
+  "modal_volume": "apsp-lite-runtime-v1",
+  "remote_directory": "/persist/performance-qualified/1792615748521785429",
+  "archive": "resumed-measured-source.zip",
+  "archive_sha256": "b396f3047baee595bd713b1d0a9468ed8a4320729a8e3ec430e8ccfb1d57972d",
+  "core_source_sha256": "75c1109bbbb8ef95179d8d039b526723accca3284ddf590b113b1b3e737b2019",
+  "core_python_files": 100,
+  "lock_sha256": "e404558d31cc6befaa79aa693b99650eee3d269db3d8aec00517af1845aff793",
+  "harness_sha256": {
+    "env/lite/qualify_throughput.py": "8ac4cf6fbb78d88d9a74d7204a3f2406aecacb9fdadd417306cc4152b0cc7619",
+    "env/lite/benchmark_performance.py": "8935b718183425cbd195cae9ad46c12de18e3cc56701d2639b86d3656f0473ca",
+    "env/lite/check_performance_cpu.py": "cfce3c3130f223dc8fa5f7369abf484803064d68b5b0b3875434283c96808907",
+    "env/lite/modal_performance.py": "5e0aa0aa1f5601861db14aed9a48fdc4299604845b11f8544f669257645b9a3d"
+  },
+  "scope": "Measured source snapshot byte-identical to this checkout core, lock and listed harness files. Source commit recorded by publication receipt."
+}

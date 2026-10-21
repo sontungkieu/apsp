@@ -17,9 +17,10 @@ def old_module():
 
 
 class CleanTap:
-    def __init__(self, scheduler, capture):
+    def __init__(self, scheduler, capture, capture_on_gpu=False):
         self.scheduler = scheduler
         self.capture = set(capture)
+        self.capture_on_gpu = capture_on_gpu
         self.original = scheduler.step
         scheduler.step = self.step
         self.reset()
@@ -31,7 +32,7 @@ class CleanTap:
     def step(self, model_output, timestep, sample, *args, **kwargs):
         s = self.scheduler
         if self.n == 0:
-            self.initial = sample.detach().cpu().clone()
+            self.initial = sample.detach().clone() if self.capture_on_gpu else sample.detach().cpu().clone()
         want_dict = kwargs.pop("return_dict", True)
         if hasattr(s, "_init_step_index") and s.step_index is None:
             s._init_step_index(timestep)
@@ -49,7 +50,7 @@ class CleanTap:
                 x0 = sample.float() - sigma.to(sample.device).float() * model_output.float()
                 origin = "flow.x_sigma_minus_sigma_v"
             # Detach and move to CPU promptly: all K*J previews need not live on GPU.
-            self.x0[self.n] = x0.detach().cpu()
+            self.x0[self.n] = x0.detach().clone() if self.capture_on_gpu else x0.detach().cpu()
             next_sigma = sigmas[index + 1] if sigmas is not None and index is not None and index + 1 < len(sigmas) else None
             self.meta[self.n] = {"forward_idx": self.n, "timestep_input": float(timestep),
                 "sigma_input": None if sigma is None else float(sigma),
@@ -58,19 +59,22 @@ class CleanTap:
 
 
 class LiteRuntime:
-    def __init__(self, profile, registry, device="cuda"):
+    def __init__(self, profile, registry, device="cuda", execution=None):
         import torch
         import diffusers
         from huggingface_hub import hf_hub_download
         from safetensors.torch import load_file
 
         self.torch, self.spec, self.device = torch, dict(profile), device
+        self.execution = execution
         torch.set_num_threads(4)
         torch.backends.cuda.matmul.allow_tf32 = False
         torch.backends.cudnn.benchmark = False
         self.dtype = getattr(torch, profile["dtype"])
         kind = profile["pipeline"]
         kw = {"revision": profile["revision"], "torch_dtype": self.dtype}
+        if profile.get('disable_safety_checker'):
+            kw.update(safety_checker=None,feature_extractor=None,requires_safety_checker=False)
         adapter = profile.get("adapter")
         self.adapter_provenance = None
         if adapter and adapter["kind"] == "unet":
@@ -93,7 +97,7 @@ class LiteRuntime:
         self.vae_dtype = torch.float32 if getattr(self.pipe.vae.config, "force_upcast", False) and self.dtype == torch.float16 else self.dtype
         self.pipe.vae.to(dtype=self.vae_dtype)
         # Decoder chunks are fixed at one image, shared with re-decode and online.
-        self.decode_chunk = 1
+        self.decode_chunk = 1 if execution is None else execution.decode_batch
         vsf = self.pipe.vae_scale_factor
         self.H, self.W = profile["height"], profile["width"]
         self.flux = kind == "FluxPipeline"
@@ -124,6 +128,9 @@ class LiteRuntime:
         return self.pipe._unpack_latents(z, self.H, self.W, self.pipe.vae_scale_factor) if self.flux else z
 
     def decode_score(self, prompt, stored_latents):
+        if self.execution is not None:
+            from .performance import decode_score_batched
+            return decode_score_batched(self,prompt,stored_latents)
         import math
         import time
         torch = self.torch

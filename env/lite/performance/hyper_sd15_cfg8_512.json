@@ -1,0 +1,10 @@
+{
+  "cache_prompt_embedding": true,
+  "capture_on_gpu": true,
+  "decode_batch": 1,
+  "decode_streams": 4,
+  "fuse_checkpoints": true,
+  "png_compress_level": 1,
+  "schema": "apsp.lite.execution/v1",
+  "score_batch": 8
+}

@@ -19,16 +19,18 @@ from .prompts import read_jsonl
 from .storage import TaskBusy, atomic_json, backup_task, claim, commit_task, verify_complete
 
 
-def fingerprint():
+def fingerprint(execution=None):
     import torch
     root = Path(__file__).resolve().parents[2]
     packages = ("torch", "torchvision", "diffusers", "transformers", "peft", "safetensors", "image-reward")
     code = {p.relative_to(root).as_posix(): file_hash(p) for p in sorted((root / "apsp").rglob("*.py"))}
     commit = subprocess.run(["git", "-C", str(root), "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip() or None
-    return {"packages": {p: md.version(p) for p in packages}, "python": platform.python_version(),
+    result = {"packages": {p: md.version(p) for p in packages}, "python": platform.python_version(),
         "cuda": torch.version.cuda, "gpu": torch.cuda.get_device_name(0), "capability": torch.cuda.get_device_capability(0),
         "lock_sha256": file_hash(root / "env/lite/uv.lock"), "source_hash": canonical_hash(code),
         "source_commit": commit, "hostname": socket.gethostname(), "seed_scheme": SEED_SCHEME}
+    if execution is not None:result['execution']=execution.to_dict()
+    return result
 
 
 def runtime_identity(fp):
@@ -68,7 +70,7 @@ def collect_task(runtime, task, root, fp):
     initial = torch.cat(latents).to(runtime.dtype)
     if runtime.flux:
         initial = runtime.pipe._pack_latents(initial, 8, runtime.C, runtime.h, runtime.w)
-    tap = CleanTap(runtime.pipe.scheduler, ck)
+    tap = CleanTap(runtime.pipe.scheduler, ck, capture_on_gpu=bool(runtime.execution and runtime.execution.capture_on_gpu))
     before = runtime.denoiser_calls
     call = dict(prompt=task["prompt"]["text"], num_inference_steps=p["steps"], guidance_scale=p["guidance"],
                 height=runtime.H, width=runtime.W, latents=initial.to(runtime.device),
@@ -99,8 +101,16 @@ def collect_task(runtime, task, root, fp):
     dump_s = time.perf_counter() - t0
     seed_rows, preview_rows = [], []
     samples = {"generation_s": generation_s, "decode_s": 0., "imagereward_s": 0., "pickscore_s": 0., "artifact_dump_s": dump_s}
-    for j, tensor in [(i + 1, previews[:, i]) for i in range(len(ck))] + [(None, final)]:
-        images, flags, irs, pss, cost = runtime.decode_score(task["prompt"]["text"], tensor)
+    frames=[(i+1,previews[:,i]) for i in range(len(ck))]+[(None,final)]
+    fused=None
+    if runtime.execution and runtime.execution.fuse_checkpoints:
+        fused=runtime.decode_score(task['prompt']['text'],torch.cat([tensor for _,tensor in frames],0))
+    for index,(j,tensor) in enumerate(frames):
+        if fused is None:
+            images,flags,irs,pss,cost=runtime.decode_score(task['prompt']['text'],tensor)
+        else:
+            images,flags,irs,pss=[part[index*8:(index+1)*8] for part in fused[:4]]
+            cost=fused[4] if index==0 else {k:0. for k in fused[4]}
         for key, value in cost.items(): samples[key] += value
         for s in range(8):
             row = {"prompt_uid": task["prompt"]["prompt_uid"], "profile": task["profile"], "bank_id": task["bank_id"],
@@ -111,7 +121,9 @@ def collect_task(runtime, task, root, fp):
             else:
                 fn = stage / "images" / f"s{s}.png"
                 if images[s] is not None:
-                    t0 = time.perf_counter(); images[s].save(fn); samples["artifact_dump_s"] += time.perf_counter() - t0
+                    t0 = time.perf_counter()
+                    options={} if runtime.execution is None else {'compress_level':runtime.execution.png_compress_level}
+                    images[s].save(fn,**options); samples["artifact_dump_s"] += time.perf_counter() - t0
                 init_hash = __import__("hashlib").sha256(actual_initial[s].view(torch.uint8).numpy().tobytes()).hexdigest()
                 seed_rows.append({**row, "seed": expected_seeds[s], "cpu_fp32_noise_sha256": cpu_hashes[s],
                                   "actual_initial_sha256": init_hash, "png": f"images/s{s}.png" if fn.exists() else None})
@@ -120,7 +132,19 @@ def collect_task(runtime, task, root, fp):
         pe = runtime.registry["prompt_encoder"]
         _, runtime.embed = _clip_functions(pe["repo"], pe["revision"], device=str(runtime.device))
     t0 = time.perf_counter()
-    embedding = runtime.embed([task["prompt"]["text"]]).astype(np.float16)
+    cache=None
+    if runtime.execution and runtime.execution.cache_prompt_embedding:
+        from collections import OrderedDict
+        if not hasattr(runtime,'_prompt_embedding_cache'):runtime._prompt_embedding_cache=OrderedDict()
+        cache=runtime._prompt_embedding_cache
+    key=(runtime.registry['prompt_encoder']['repo'],runtime.registry['prompt_encoder']['revision'],task['prompt']['text'])
+    if cache is not None and key in cache:
+        embedding=cache[key];cache.move_to_end(key)
+    else:
+        embedding=runtime.embed([task['prompt']['text']]).astype(np.float16)
+        if cache is not None:
+            cache[key]=embedding
+            if len(cache)>4096:cache.popitem(last=False)
     if embedding.shape != (1, 768) or not np.isfinite(embedding).all():
         raise RuntimeError("common prompt encoder contract failed")
     np.save(stage / "prompt_emb.npy", embedding)
@@ -153,6 +177,7 @@ def main(argv=None):
     ap.add_argument("--workers", type=int, default=1)
     ap.add_argument("--max-wave", type=int, choices=[250, 1000, 2000], default=2000)
     ap.add_argument("--qualification", required=True)
+    ap.add_argument('--execution',help='Opt-in JSON execution policy; requires matching qualification and a new release root')
     a = ap.parse_args(argv)
     primary, backup = Path(a.out).resolve(), Path(a.backup_root).resolve()
     if primary == backup or primary in backup.parents or backup in primary.parents:
@@ -164,9 +189,11 @@ def main(argv=None):
     if not receipt.get("pass") or receipt.get("profile_hash") != canonical_hash(registry["profiles"][a.profile]):
         raise ValueError("real B200 profile qualification is required")
     from .runtime import LiteRuntime
-    runtime = LiteRuntime(registry["profiles"][a.profile], registry)
+    from .performance import ExecutionPolicy
+    execution=ExecutionPolicy.load(a.execution) if a.execution else None
+    runtime = LiteRuntime(registry["profiles"][a.profile], registry,execution=execution)
     runtime.load_scorers()
-    fp = fingerprint()
+    fp = fingerprint(execution)
     if receipt.get("runtime_identity_hash") != canonical_hash(runtime_identity(fp)):
         raise ValueError("qualification runtime/source differs from collector; requalify")
     tasks = [t for t in read_jsonl(a.tasks) if t["profile"] == a.profile and t["wave"] <= a.max_wave]

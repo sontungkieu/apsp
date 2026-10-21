@@ -8,7 +8,11 @@ giữ riêng, không rebuild theo mỗi thay đổi source.
 
 Lite2 bổ sung SD1.5/Hyper-SD15 CFG8 và MiniLM384:
 [model add-on và lệnh tải/restore](docs/lite/LITE2_MODEL_ADDON.md).
-Đã kiểm asset/CPU offline; collector V2 và B200 qualification vẫn là bước riêng.
+Đã kiểm asset/CPU offline. Collector V2 vẫn là bước riêng.
+
+[Tối ưu collector B200](docs/lite/B200_PERFORMANCE.md) đã qua calibration trên
+Modal cho Lightning8 và adapter Hyper-SD15; dùng policy opt-in và release root mới.
+Receipt này chưa thay qualification trên node công ty hoặc nghiệm thu schema V2.
 
 APSP Lite data/runtime amendment (2026-10-19): see [runbook](docs/lite/RUNBOOK_LITE.md)
 and [runtime decision](docs/lite/RUNTIME_DECISION.md). Lite uses a separate `env/lite`

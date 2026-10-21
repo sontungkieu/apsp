@@ -1,0 +1,2772 @@
+[
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.57
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614613.0192764
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.47
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614614.118028
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.46
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614615.2010736
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.42
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614616.286544
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.42
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614617.3987045
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.39
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614618.4932032
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.45
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614619.6384017
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.49
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614620.7075763
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.37
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614621.779587
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.46
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614622.8335552
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.47
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614623.9104476
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.45
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614624.9744205
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.39
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614626.040611
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.35
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614627.2390296
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.32
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614628.3030174
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.25
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614629.485123
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.25
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614631.6674483
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.25
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614633.824721
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.2
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614634.9012861
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.37
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614636.1570683
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.32
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614637.2496483
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.25
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614638.3257382
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.28
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614639.4068003
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.39
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614640.4594886
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.37
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614641.5558856
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.19
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614642.7722104
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.22
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614643.8466704
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      4.0,
+      201.26
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614645.157488
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      26.0,
+      204.99
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614646.3400695
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      18.0,
+      0.0,
+      4240.0,
+      266.42
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614647.4029346
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      7944.0,
+      266.66
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614648.4495547
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      7944.0,
+      265.18
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614649.5426335
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      7944.0,
+      265.43
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614650.6090252
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      7944.0,
+      265.3
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614651.6653724
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      7944.0,
+      265.38
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614652.720535
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      7944.0,
+      265.36
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614653.7972383
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      7944.0,
+      265.47
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614654.859048
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      16.0,
+      0.0,
+      9670.0,
+      266.11
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614655.9244976
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      9670.0,
+      265.55
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614656.9779441
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      9670.0,
+      265.4
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614658.048044
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      9670.0,
+      265.45
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614659.1696775
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      9670.0,
+      265.41
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614660.2575355
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      9.0,
+      0.0,
+      13136.0,
+      266.61
+    ],
+    "phase": "sdxl_lightning8/load",
+    "time": 1792614661.3337872
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      14898.0,
+      315.53
+    ],
+    "phase": "sdxl_lightning8/generate_cpu_capture",
+    "time": 1792614662.401703
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      79.0,
+      15.0,
+      15956.0,
+      907.13
+    ],
+    "phase": "sdxl_lightning8/generate_gpu_capture",
+    "time": 1792614663.4554844
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      1.0,
+      0.0,
+      23420.0,
+      760.05
+    ],
+    "phase": "sdxl_lightning8/generate_gpu_capture",
+    "time": 1792614664.5113235
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      81.0,
+      18.0,
+      23422.0,
+      503.7
+    ],
+    "phase": "sdxl_lightning8/generate_gpu_capture",
+    "time": 1792614665.599559
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      63.0,
+      6.0,
+      23422.0,
+      552.22
+    ],
+    "phase": "sdxl_lightning8/legacy",
+    "time": 1792614666.665867
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      61.0,
+      4.0,
+      23422.0,
+      556.85
+    ],
+    "phase": "sdxl_lightning8/legacy",
+    "time": 1792614667.749847
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      74.0,
+      15.0,
+      23422.0,
+      550.37
+    ],
+    "phase": "sdxl_lightning8/legacy",
+    "time": 1792614668.809938
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      99.0,
+      18.0,
+      23422.0,
+      542.55
+    ],
+    "phase": "sdxl_lightning8/legacy",
+    "time": 1792614669.8733215
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      99.0,
+      17.0,
+      23422.0,
+      550.3
+    ],
+    "phase": "sdxl_lightning8/legacy",
+    "time": 1792614670.934569
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      91.0,
+      18.0,
+      23422.0,
+      555.64
+    ],
+    "phase": "sdxl_lightning8/legacy",
+    "time": 1792614672.0230865
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      67.0,
+      11.0,
+      23422.0,
+      546.37
+    ],
+    "phase": "sdxl_lightning8/legacy",
+    "time": 1792614673.0835714
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      70.0,
+      7.0,
+      23422.0,
+      561.63
+    ],
+    "phase": "sdxl_lightning8/legacy",
+    "time": 1792614674.1554785
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      43.0,
+      4.0,
+      23422.0,
+      546.07
+    ],
+    "phase": "sdxl_lightning8/legacy",
+    "time": 1792614675.222582
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      78.0,
+      17.0,
+      23422.0,
+      525.74
+    ],
+    "phase": "sdxl_lightning8/legacy",
+    "time": 1792614676.2973351
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      79.0,
+      9.0,
+      23422.0,
+      532.21
+    ],
+    "phase": "sdxl_lightning8/legacy",
+    "time": 1792614677.3950055
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      47.0,
+      7.0,
+      23422.0,
+      453.82
+    ],
+    "phase": "sdxl_lightning8/legacy",
+    "time": 1792614678.4636018
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      67.0,
+      7.0,
+      23422.0,
+      543.16
+    ],
+    "phase": "sdxl_lightning8/legacy",
+    "time": 1792614679.6081703
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      91.0,
+      14.0,
+      23422.0,
+      553.85
+    ],
+    "phase": "sdxl_lightning8/legacy",
+    "time": 1792614680.67639
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      89.0,
+      14.0,
+      23422.0,
+      560.82
+    ],
+    "phase": "sdxl_lightning8/legacy",
+    "time": 1792614681.7812073
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      84.0,
+      18.0,
+      23422.0,
+      552.05
+    ],
+    "phase": "sdxl_lightning8/legacy",
+    "time": 1792614682.8380938
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      80.0,
+      17.0,
+      23422.0,
+      553.9
+    ],
+    "phase": "sdxl_lightning8/legacy",
+    "time": 1792614683.903524
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      74.0,
+      15.0,
+      23422.0,
+      552.37
+    ],
+    "phase": "sdxl_lightning8/legacy",
+    "time": 1792614684.9607794
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      67.0,
+      7.0,
+      23422.0,
+      555.43
+    ],
+    "phase": "sdxl_lightning8/legacy",
+    "time": 1792614686.0447376
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      69.0,
+      7.0,
+      23422.0,
+      565.73
+    ],
+    "phase": "sdxl_lightning8/legacy",
+    "time": 1792614687.1026225
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      69.0,
+      7.0,
+      23422.0,
+      559.5
+    ],
+    "phase": "sdxl_lightning8/legacy",
+    "time": 1792614688.2691927
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      95.0,
+      15.0,
+      23422.0,
+      562.25
+    ],
+    "phase": "sdxl_lightning8/legacy",
+    "time": 1792614689.3739424
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      11.0,
+      0.0,
+      23422.0,
+      518.17
+    ],
+    "phase": "sdxl_lightning8/legacy",
+    "time": 1792614690.4367857
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      85.0,
+      16.0,
+      23422.0,
+      518.2
+    ],
+    "phase": "sdxl_lightning8/d1s8",
+    "time": 1792614691.539171
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      99.0,
+      19.0,
+      23426.0,
+      553.46
+    ],
+    "phase": "sdxl_lightning8/d1s8",
+    "time": 1792614692.5874653
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      95.0,
+      18.0,
+      23426.0,
+      565.55
+    ],
+    "phase": "sdxl_lightning8/d1s8",
+    "time": 1792614693.6473207
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      86.0,
+      17.0,
+      23426.0,
+      579.37
+    ],
+    "phase": "sdxl_lightning8/d1s8",
+    "time": 1792614694.7036808
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      96.0,
+      18.0,
+      23426.0,
+      580.58
+    ],
+    "phase": "sdxl_lightning8/d1s8",
+    "time": 1792614695.797061
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      86.0,
+      16.0,
+      23426.0,
+      572.8
+    ],
+    "phase": "sdxl_lightning8/d1s8",
+    "time": 1792614696.8533888
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      31.0,
+      1.0,
+      23426.0,
+      568.83
+    ],
+    "phase": "sdxl_lightning8/d1s8",
+    "time": 1792614697.9102554
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      88.0,
+      18.0,
+      23426.0,
+      561.74
+    ],
+    "phase": "sdxl_lightning8/d1s8",
+    "time": 1792614698.9603648
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      91.0,
+      17.0,
+      23426.0,
+      605.65
+    ],
+    "phase": "sdxl_lightning8/d1s8",
+    "time": 1792614700.043995
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      84.0,
+      15.0,
+      23426.0,
+      575.45
+    ],
+    "phase": "sdxl_lightning8/d1s8",
+    "time": 1792614701.1119502
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      93.0,
+      17.0,
+      23426.0,
+      473.61
+    ],
+    "phase": "sdxl_lightning8/d1s8",
+    "time": 1792614702.2302809
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      84.0,
+      17.0,
+      23426.0,
+      567.65
+    ],
+    "phase": "sdxl_lightning8/d1s8",
+    "time": 1792614703.291795
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      99.0,
+      8.0,
+      23426.0,
+      573.72
+    ],
+    "phase": "sdxl_lightning8/d1s8",
+    "time": 1792614704.3769329
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      99.0,
+      10.0,
+      23426.0,
+      575.46
+    ],
+    "phase": "sdxl_lightning8/d1s8",
+    "time": 1792614705.443678
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      28.0,
+      1.0,
+      23426.0,
+      573.79
+    ],
+    "phase": "sdxl_lightning8/d1s8",
+    "time": 1792614706.4984198
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      85.0,
+      16.0,
+      23426.0,
+      580.29
+    ],
+    "phase": "sdxl_lightning8/d1s8",
+    "time": 1792614707.5624406
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      94.0,
+      18.0,
+      23426.0,
+      582.4
+    ],
+    "phase": "sdxl_lightning8/d1s8",
+    "time": 1792614708.6246977
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      85.0,
+      18.0,
+      23426.0,
+      563.78
+    ],
+    "phase": "sdxl_lightning8/d1s8",
+    "time": 1792614709.704372
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      85.0,
+      16.0,
+      23426.0,
+      580.23
+    ],
+    "phase": "sdxl_lightning8/d1s8",
+    "time": 1792614710.7737718
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      84.0,
+      18.0,
+      23426.0,
+      573.03
+    ],
+    "phase": "sdxl_lightning8/d1s8",
+    "time": 1792614711.8352015
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      3.0,
+      0.0,
+      23430.0,
+      457.85
+    ],
+    "phase": "sdxl_lightning8/d2s8",
+    "time": 1792614712.8889909
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      24.0,
+      1.0,
+      30600.0,
+      655.51
+    ],
+    "phase": "sdxl_lightning8/d2s8",
+    "time": 1792614713.948283
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      100.0,
+      40.0,
+      30600.0,
+      690.27
+    ],
+    "phase": "sdxl_lightning8/d2s8",
+    "time": 1792614715.0523226
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      84.0,
+      36.0,
+      30600.0,
+      702.01
+    ],
+    "phase": "sdxl_lightning8/d2s8",
+    "time": 1792614716.1170907
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      70.0,
+      13.0,
+      30600.0,
+      707.01
+    ],
+    "phase": "sdxl_lightning8/d2s8",
+    "time": 1792614717.186747
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      96.0,
+      27.0,
+      30600.0,
+      699.82
+    ],
+    "phase": "sdxl_lightning8/d2s8",
+    "time": 1792614718.2645617
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      100.0,
+      43.0,
+      30600.0,
+      667.42
+    ],
+    "phase": "sdxl_lightning8/d2s8",
+    "time": 1792614719.4075797
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      71.0,
+      21.0,
+      30600.0,
+      667.16
+    ],
+    "phase": "sdxl_lightning8/d2s8",
+    "time": 1792614720.4669092
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      96.0,
+      27.0,
+      30600.0,
+      657.65
+    ],
+    "phase": "sdxl_lightning8/d2s8",
+    "time": 1792614721.5745203
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      100.0,
+      46.0,
+      30600.0,
+      667.72
+    ],
+    "phase": "sdxl_lightning8/d2s8",
+    "time": 1792614722.6429954
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      100.0,
+      39.0,
+      30600.0,
+      514.66
+    ],
+    "phase": "sdxl_lightning8/d2s8",
+    "time": 1792614723.7023196
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      67.0,
+      2.0,
+      30600.0,
+      686.01
+    ],
+    "phase": "sdxl_lightning8/d2s8",
+    "time": 1792614724.7573137
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      28.0,
+      1.0,
+      30600.0,
+      664.77
+    ],
+    "phase": "sdxl_lightning8/d2s8",
+    "time": 1792614725.8237364
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      28.0,
+      1.0,
+      30600.0,
+      638.19
+    ],
+    "phase": "sdxl_lightning8/d2s8",
+    "time": 1792614726.879476
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      81.0,
+      34.0,
+      30600.0,
+      707.48
+    ],
+    "phase": "sdxl_lightning8/d2s8",
+    "time": 1792614727.9392774
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      70.0,
+      16.0,
+      30600.0,
+      696.85
+    ],
+    "phase": "sdxl_lightning8/d2s8",
+    "time": 1792614729.009317
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      100.0,
+      31.0,
+      30600.0,
+      691.99
+    ],
+    "phase": "sdxl_lightning8/d2s8",
+    "time": 1792614730.069599
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      84.0,
+      34.0,
+      30600.0,
+      651.7
+    ],
+    "phase": "sdxl_lightning8/d2s8",
+    "time": 1792614731.13956
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      68.0,
+      12.0,
+      30600.0,
+      653.14
+    ],
+    "phase": "sdxl_lightning8/d2s8",
+    "time": 1792614732.2334907
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      100.0,
+      39.0,
+      30600.0,
+      671.21
+    ],
+    "phase": "sdxl_lightning8/d2s8",
+    "time": 1792614733.2961257
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      85.0,
+      14.0,
+      52112.0,
+      543.97
+    ],
+    "phase": "sdxl_lightning8/d4s8",
+    "time": 1792614734.3820817
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      82.0,
+      2.0,
+      52112.0,
+      685.08
+    ],
+    "phase": "sdxl_lightning8/d4s8",
+    "time": 1792614735.4451382
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      100.0,
+      31.0,
+      52112.0,
+      687.71
+    ],
+    "phase": "sdxl_lightning8/d4s8",
+    "time": 1792614736.5010562
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      98.0,
+      15.0,
+      52112.0,
+      696.9
+    ],
+    "phase": "sdxl_lightning8/d4s8",
+    "time": 1792614737.590971
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      86.0,
+      3.0,
+      52112.0,
+      690.68
+    ],
+    "phase": "sdxl_lightning8/d4s8",
+    "time": 1792614738.662382
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      100.0,
+      31.0,
+      52112.0,
+      686.22
+    ],
+    "phase": "sdxl_lightning8/d4s8",
+    "time": 1792614739.722449
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      98.0,
+      18.0,
+      52112.0,
+      692.95
+    ],
+    "phase": "sdxl_lightning8/d4s8",
+    "time": 1792614740.7971191
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      100.0,
+      54.0,
+      52112.0,
+      697.64
+    ],
+    "phase": "sdxl_lightning8/d4s8",
+    "time": 1792614741.8806634
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      100.0,
+      43.0,
+      52112.0,
+      695.74
+    ],
+    "phase": "sdxl_lightning8/d4s8",
+    "time": 1792614742.9552696
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      52112.0,
+      527.16
+    ],
+    "phase": "sdxl_lightning8/d4s8",
+    "time": 1792614744.0231252
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      28.0,
+      1.0,
+      52112.0,
+      677.0
+    ],
+    "phase": "sdxl_lightning8/d4s8",
+    "time": 1792614745.0803022
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      52112.0,
+      714.03
+    ],
+    "phase": "sdxl_lightning8/d4s8",
+    "time": 1792614746.1575785
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      50.0,
+      26.0,
+      52112.0,
+      707.39
+    ],
+    "phase": "sdxl_lightning8/d4s8",
+    "time": 1792614747.213036
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      27.0,
+      1.0,
+      52112.0,
+      719.43
+    ],
+    "phase": "sdxl_lightning8/d4s8",
+    "time": 1792614748.291894
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      52112.0,
+      691.39
+    ],
+    "phase": "sdxl_lightning8/d4s8",
+    "time": 1792614749.4405115
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      26.0,
+      1.0,
+      52112.0,
+      695.98
+    ],
+    "phase": "sdxl_lightning8/d4s8",
+    "time": 1792614750.5098095
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      28.0,
+      1.0,
+      52112.0,
+      675.09
+    ],
+    "phase": "sdxl_lightning8/d4s8",
+    "time": 1792614751.5861762
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      52112.0,
+      693.95
+    ],
+    "phase": "sdxl_lightning8/d4s8",
+    "time": 1792614752.6577003
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      32.0,
+      1.0,
+      52112.0,
+      687.0
+    ],
+    "phase": "sdxl_lightning8/d4s8",
+    "time": 1792614753.746924
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      100.0,
+      54.0,
+      95128.0,
+      659.42
+    ],
+    "phase": "sdxl_lightning8/d8s8",
+    "time": 1792614754.810755
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      100.0,
+      53.0,
+      95128.0,
+      718.57
+    ],
+    "phase": "sdxl_lightning8/d8s8",
+    "time": 1792614755.8798668
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      95128.0,
+      702.96
+    ],
+    "phase": "sdxl_lightning8/d8s8",
+    "time": 1792614756.9296625
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      95128.0,
+      714.34
+    ],
+    "phase": "sdxl_lightning8/d8s8",
+    "time": 1792614757.9974942
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      95128.0,
+      713.83
+    ],
+    "phase": "sdxl_lightning8/d8s8",
+    "time": 1792614759.0736365
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      28.0,
+      1.0,
+      95128.0,
+      691.87
+    ],
+    "phase": "sdxl_lightning8/d8s8",
+    "time": 1792614760.1299753
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      3.0,
+      0.0,
+      95128.0,
+      713.61
+    ],
+    "phase": "sdxl_lightning8/d8s8",
+    "time": 1792614761.1885128
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      95128.0,
+      700.13
+    ],
+    "phase": "sdxl_lightning8/d8s8",
+    "time": 1792614762.270358
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      60.0,
+      1.0,
+      95128.0,
+      663.86
+    ],
+    "phase": "sdxl_lightning8/d8s8",
+    "time": 1792614763.3360395
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      12.0,
+      5.0,
+      95128.0,
+      675.67
+    ],
+    "phase": "sdxl_lightning8/d8s8",
+    "time": 1792614764.3984847
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      48.0,
+      29.0,
+      95128.0,
+      701.02
+    ],
+    "phase": "sdxl_lightning8/d8s8",
+    "time": 1792614765.445854
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      95128.0,
+      709.78
+    ],
+    "phase": "sdxl_lightning8/d8s8",
+    "time": 1792614766.5104742
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      95128.0,
+      694.23
+    ],
+    "phase": "sdxl_lightning8/d8s8",
+    "time": 1792614767.5710497
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      95128.0,
+      721.02
+    ],
+    "phase": "sdxl_lightning8/d8s8",
+    "time": 1792614768.6273515
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      34.0,
+      1.0,
+      95128.0,
+      712.87
+    ],
+    "phase": "sdxl_lightning8/d8s8",
+    "time": 1792614769.6997156
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      33.0,
+      1.0,
+      95128.0,
+      718.51
+    ],
+    "phase": "sdxl_lightning8/d8s8",
+    "time": 1792614770.7572203
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      28.0,
+      1.0,
+      95128.0,
+      722.13
+    ],
+    "phase": "sdxl_lightning8/d8s8",
+    "time": 1792614771.8173614
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      27.0,
+      1.0,
+      95128.0,
+      630.36
+    ],
+    "phase": "sdxl_lightning8/d8s8",
+    "time": 1792614772.868013
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      5.0,
+      0.0,
+      95128.0,
+      277.85
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614773.948118
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      99.0,
+      19.0,
+      95128.0,
+      896.46
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614775.0639036
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      66.0,
+      7.0,
+      95128.0,
+      566.25
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614776.1396687
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      65.0,
+      8.0,
+      95128.0,
+      569.52
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614777.2082124
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      66.0,
+      8.0,
+      95128.0,
+      559.66
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614778.2754798
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      67.0,
+      7.0,
+      95128.0,
+      562.92
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614779.4500332
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      88.0,
+      13.0,
+      95128.0,
+      563.12
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614780.5095923
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      89.0,
+      14.0,
+      95128.0,
+      553.96
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614781.5633392
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      89.0,
+      14.0,
+      95128.0,
+      564.91
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614782.6215134
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      89.0,
+      13.0,
+      95128.0,
+      556.29
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614783.6895313
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      93.0,
+      18.0,
+      95128.0,
+      566.43
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614784.7610967
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      97.0,
+      19.0,
+      95128.0,
+      565.81
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614785.8407414
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      68.0,
+      11.0,
+      95128.0,
+      538.4
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614786.9084523
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      95128.0,
+      276.38
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614787.970338
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      95128.0,
+      274.61
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614789.0750413
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      3.0,
+      0.0,
+      95128.0,
+      274.94
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614790.195849
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      80.0,
+      17.0,
+      95128.0,
+      403.75
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614791.2644653
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      95128.0,
+      503.73
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614792.3484352
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      99.0,
+      19.0,
+      95128.0,
+      914.17
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614793.4087772
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      76.0,
+      16.0,
+      95130.0,
+      555.58
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614794.4771242
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      94.0,
+      19.0,
+      95130.0,
+      601.77
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614795.5573037
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      85.0,
+      16.0,
+      95130.0,
+      575.45
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614797.4080172
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      99.0,
+      16.0,
+      95130.0,
+      574.7
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614798.4571817
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      99.0,
+      19.0,
+      95130.0,
+      580.26
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614799.5833902
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      28.0,
+      1.0,
+      95130.0,
+      560.27
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614800.6322844
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      83.0,
+      14.0,
+      95130.0,
+      559.07
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614801.6838174
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      85.0,
+      16.0,
+      95130.0,
+      596.74
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614802.7323613
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      84.0,
+      16.0,
+      95130.0,
+      576.24
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614803.7768967
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      95130.0,
+      359.32
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614804.8202877
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      95130.0,
+      274.44
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614805.866935
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      95130.0,
+      273.26
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614806.9056208
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      95130.0,
+      287.71
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614807.9493818
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      95.0,
+      18.0,
+      95130.0,
+      554.86
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614809.0823646
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      99.0,
+      20.0,
+      95130.0,
+      457.16
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614810.1731594
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      83.0,
+      15.0,
+      95130.0,
+      786.46
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614811.218588
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      82.0,
+      15.0,
+      95130.0,
+      567.17
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614812.274878
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      97.0,
+      21.0,
+      95130.0,
+      581.17
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614813.347161
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      98.0,
+      9.0,
+      95130.0,
+      566.21
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614814.393384
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      33.0,
+      1.0,
+      95130.0,
+      570.6
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614815.4447014
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      85.0,
+      16.0,
+      95130.0,
+      606.12
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614816.4896295
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      100.0,
+      20.0,
+      95130.0,
+      579.94
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614817.5685072
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      78.0,
+      17.0,
+      95130.0,
+      555.79
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614818.6522171
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      82.0,
+      15.0,
+      95130.0,
+      561.02
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614819.703189
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      79.0,
+      14.0,
+      95130.0,
+      565.25
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614820.7552516
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      95130.0,
+      500.93
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614821.8013837
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      95130.0,
+      273.84
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614822.8419154
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      95130.0,
+      272.79
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614823.8949933
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      95130.0,
+      272.51
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614824.9387128
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      81.0,
+      14.0,
+      95130.0,
+      541.67
+    ],
+    "phase": "sdxl_lightning8/collect-d1s8",
+    "time": 1792614826.010168
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      99.0,
+      20.0,
+      95130.0,
+      625.37
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614827.0907183
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      99.0,
+      18.0,
+      95130.0,
+      705.17
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614828.2021573
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      100.0,
+      20.0,
+      95130.0,
+      564.06
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614829.2473474
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      88.0,
+      12.0,
+      95130.0,
+      540.34
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614830.2979846
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      86.0,
+      11.0,
+      95130.0,
+      540.96
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614831.37365
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      50.0,
+      6.0,
+      95130.0,
+      534.46
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614832.426147
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      73.0,
+      14.0,
+      95130.0,
+      554.37
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614833.4733374
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      65.0,
+      6.0,
+      95130.0,
+      569.23
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614834.5634313
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      73.0,
+      15.0,
+      95130.0,
+      541.65
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614835.6123078
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      97.0,
+      20.0,
+      95130.0,
+      543.36
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614836.6579428
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      75.0,
+      7.0,
+      95130.0,
+      544.49
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614837.6979618
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      55.0,
+      2.0,
+      95130.0,
+      540.85
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614838.7426982
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      58.0,
+      11.0,
+      95130.0,
+      548.34
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614839.8304062
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      95130.0,
+      292.84
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614840.8827393
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      95130.0,
+      272.67
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614841.931676
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      95130.0,
+      272.32
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614842.9743485
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      61.0,
+      6.0,
+      95130.0,
+      403.27
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614844.0454326
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      47.0,
+      4.0,
+      95130.0,
+      525.73
+    ],
+    "phase": "sdxl_lightning8/collect-legacy",
+    "time": 1792614845.0985625
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      10.0,
+      5.0,
+      6706.0,
+      277.04
+    ],
+    "phase": "hyper_sd15_cfg8_512/load",
+    "time": 1792614846.2006555
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      6706.0,
+      271.66
+    ],
+    "phase": "hyper_sd15_cfg8_512/load",
+    "time": 1792614847.5818567
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      6706.0,
+      271.28
+    ],
+    "phase": "hyper_sd15_cfg8_512/load",
+    "time": 1792614848.6833422
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      6706.0,
+      271.08
+    ],
+    "phase": "hyper_sd15_cfg8_512/load",
+    "time": 1792614849.8814669
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      6706.0,
+      270.89
+    ],
+    "phase": "hyper_sd15_cfg8_512/load",
+    "time": 1792614850.9458218
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      6706.0,
+      270.73
+    ],
+    "phase": "hyper_sd15_cfg8_512/load",
+    "time": 1792614852.0339768
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      14.0,
+      0.0,
+      9990.0,
+      281.45
+    ],
+    "phase": "hyper_sd15_cfg8_512/generate_cpu_capture",
+    "time": 1792614853.1155002
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      77.0,
+      9.0,
+      11150.0,
+      729.12
+    ],
+    "phase": "hyper_sd15_cfg8_512/generate_gpu_capture",
+    "time": 1792614854.2209198
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      78.0,
+      9.0,
+      11150.0,
+      523.65
+    ],
+    "phase": "hyper_sd15_cfg8_512/legacy",
+    "time": 1792614855.2652073
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      81.0,
+      6.0,
+      11150.0,
+      536.69
+    ],
+    "phase": "hyper_sd15_cfg8_512/legacy",
+    "time": 1792614856.315188
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      82.0,
+      10.0,
+      11150.0,
+      535.11
+    ],
+    "phase": "hyper_sd15_cfg8_512/legacy",
+    "time": 1792614857.3851192
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      79.0,
+      6.0,
+      11150.0,
+      539.54
+    ],
+    "phase": "hyper_sd15_cfg8_512/legacy",
+    "time": 1792614858.4323585
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      75.0,
+      6.0,
+      11150.0,
+      499.49
+    ],
+    "phase": "hyper_sd15_cfg8_512/legacy",
+    "time": 1792614859.47077
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      78.0,
+      6.0,
+      11150.0,
+      518.27
+    ],
+    "phase": "hyper_sd15_cfg8_512/legacy",
+    "time": 1792614860.5127308
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      78.0,
+      9.0,
+      11150.0,
+      523.22
+    ],
+    "phase": "hyper_sd15_cfg8_512/legacy",
+    "time": 1792614861.5583668
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      79.0,
+      6.0,
+      11150.0,
+      532.86
+    ],
+    "phase": "hyper_sd15_cfg8_512/legacy",
+    "time": 1792614862.604438
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      77.0,
+      9.0,
+      11150.0,
+      534.97
+    ],
+    "phase": "hyper_sd15_cfg8_512/legacy",
+    "time": 1792614863.6498823
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      94.0,
+      6.0,
+      11156.0,
+      515.78
+    ],
+    "phase": "hyper_sd15_cfg8_512/d1s8",
+    "time": 1792614864.6944778
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      96.0,
+      6.0,
+      11156.0,
+      558.27
+    ],
+    "phase": "hyper_sd15_cfg8_512/d1s8",
+    "time": 1792614865.7832515
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      67.0,
+      9.0,
+      11156.0,
+      569.2
+    ],
+    "phase": "hyper_sd15_cfg8_512/d1s8",
+    "time": 1792614866.836042
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      60.0,
+      11.0,
+      11156.0,
+      565.89
+    ],
+    "phase": "hyper_sd15_cfg8_512/d1s8",
+    "time": 1792614867.8798373
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      70.0,
+      1.0,
+      11156.0,
+      594.11
+    ],
+    "phase": "hyper_sd15_cfg8_512/d1s8",
+    "time": 1792614868.925486
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      88.0,
+      13.0,
+      11156.0,
+      596.03
+    ],
+    "phase": "hyper_sd15_cfg8_512/d1s8",
+    "time": 1792614870.0426338
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      55.0,
+      1.0,
+      12180.0,
+      559.24
+    ],
+    "phase": "hyper_sd15_cfg8_512/d2s8",
+    "time": 1792614871.0962212
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      81.0,
+      3.0,
+      12950.0,
+      631.03
+    ],
+    "phase": "hyper_sd15_cfg8_512/d2s8",
+    "time": 1792614872.233433
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      75.0,
+      3.0,
+      12950.0,
+      643.66
+    ],
+    "phase": "hyper_sd15_cfg8_512/d2s8",
+    "time": 1792614873.2844965
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      79.0,
+      20.0,
+      12950.0,
+      625.66
+    ],
+    "phase": "hyper_sd15_cfg8_512/d2s8",
+    "time": 1792614874.4174519
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      81.0,
+      20.0,
+      12950.0,
+      644.54
+    ],
+    "phase": "hyper_sd15_cfg8_512/d2s8",
+    "time": 1792614875.4585125
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      78.0,
+      21.0,
+      12950.0,
+      633.33
+    ],
+    "phase": "hyper_sd15_cfg8_512/d2s8",
+    "time": 1792614876.4974287
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      64.0,
+      1.0,
+      18334.0,
+      583.75
+    ],
+    "phase": "hyper_sd15_cfg8_512/d4s8",
+    "time": 1792614877.5445333
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      83.0,
+      28.0,
+      18334.0,
+      668.0
+    ],
+    "phase": "hyper_sd15_cfg8_512/d4s8",
+    "time": 1792614878.5872343
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      47.0,
+      17.0,
+      18334.0,
+      652.26
+    ],
+    "phase": "hyper_sd15_cfg8_512/d4s8",
+    "time": 1792614879.6373715
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      78.0,
+      25.0,
+      18334.0,
+      615.64
+    ],
+    "phase": "hyper_sd15_cfg8_512/d4s8",
+    "time": 1792614880.711867
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      91.0,
+      22.0,
+      18334.0,
+      682.01
+    ],
+    "phase": "hyper_sd15_cfg8_512/d4s8",
+    "time": 1792614881.7843337
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      77.0,
+      24.0,
+      18334.0,
+      661.57
+    ],
+    "phase": "hyper_sd15_cfg8_512/d4s8",
+    "time": 1792614882.8641276
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      100.0,
+      37.0,
+      29094.0,
+      640.6
+    ],
+    "phase": "hyper_sd15_cfg8_512/d8s8",
+    "time": 1792614883.9144423
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      72.0,
+      31.0,
+      29094.0,
+      703.67
+    ],
+    "phase": "hyper_sd15_cfg8_512/d8s8",
+    "time": 1792614884.962832
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      67.0,
+      1.0,
+      29094.0,
+      690.66
+    ],
+    "phase": "hyper_sd15_cfg8_512/d8s8",
+    "time": 1792614886.0161529
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      33.0,
+      1.0,
+      29094.0,
+      690.85
+    ],
+    "phase": "hyper_sd15_cfg8_512/d8s8",
+    "time": 1792614887.074483
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      99.0,
+      18.0,
+      29094.0,
+      676.14
+    ],
+    "phase": "hyper_sd15_cfg8_512/d8s8",
+    "time": 1792614888.121937
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      7.0,
+      0.0,
+      29094.0,
+      522.9
+    ],
+    "phase": "hyper_sd15_cfg8_512/d8s8",
+    "time": 1792614889.1720073
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      68.0,
+      6.0,
+      29094.0,
+      623.58
+    ],
+    "phase": "hyper_sd15_cfg8_512/collect-legacy",
+    "time": 1792614890.2277882
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      82.0,
+      7.0,
+      29094.0,
+      515.03
+    ],
+    "phase": "hyper_sd15_cfg8_512/collect-legacy",
+    "time": 1792614891.2762477
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      78.0,
+      8.0,
+      29094.0,
+      546.03
+    ],
+    "phase": "hyper_sd15_cfg8_512/collect-legacy",
+    "time": 1792614892.321567
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      79.0,
+      9.0,
+      29094.0,
+      531.1
+    ],
+    "phase": "hyper_sd15_cfg8_512/collect-legacy",
+    "time": 1792614893.3686595
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      76.0,
+      9.0,
+      29094.0,
+      538.49
+    ],
+    "phase": "hyper_sd15_cfg8_512/collect-legacy",
+    "time": 1792614894.4094548
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      57.0,
+      6.0,
+      29094.0,
+      317.21
+    ],
+    "phase": "hyper_sd15_cfg8_512/collect-legacy",
+    "time": 1792614895.4477205
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      85.0,
+      16.0,
+      29096.0,
+      633.63
+    ],
+    "phase": "hyper_sd15_cfg8_512/collect-d1s8",
+    "time": 1792614896.4883888
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      91.0,
+      8.0,
+      29096.0,
+      591.07
+    ],
+    "phase": "hyper_sd15_cfg8_512/collect-d1s8",
+    "time": 1792614897.5381024
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      79.0,
+      14.0,
+      29096.0,
+      611.46
+    ],
+    "phase": "hyper_sd15_cfg8_512/collect-d1s8",
+    "time": 1792614898.5813258
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      61.0,
+      1.0,
+      29096.0,
+      563.86
+    ],
+    "phase": "hyper_sd15_cfg8_512/collect-d1s8",
+    "time": 1792614899.6270723
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      79.0,
+      14.0,
+      29096.0,
+      378.22
+    ],
+    "phase": "hyper_sd15_cfg8_512/collect-d1s8",
+    "time": 1792614900.6869574
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      69.0,
+      8.0,
+      29096.0,
+      633.66
+    ],
+    "phase": "hyper_sd15_cfg8_512/collect-d1s8",
+    "time": 1792614901.7533803
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      86.0,
+      5.0,
+      29096.0,
+      599.72
+    ],
+    "phase": "hyper_sd15_cfg8_512/collect-d1s8",
+    "time": 1792614902.7947922
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      67.0,
+      9.0,
+      29096.0,
+      573.8
+    ],
+    "phase": "hyper_sd15_cfg8_512/collect-d1s8",
+    "time": 1792614903.8394501
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      29096.0,
+      497.07
+    ],
+    "phase": "hyper_sd15_cfg8_512/collect-d1s8",
+    "time": 1792614904.9067848
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      66.0,
+      1.0,
+      29096.0,
+      435.58
+    ],
+    "phase": "hyper_sd15_cfg8_512/collect-legacy",
+    "time": 1792614905.958916
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      70.0,
+      6.0,
+      29096.0,
+      593.02
+    ],
+    "phase": "hyper_sd15_cfg8_512/collect-legacy",
+    "time": 1792614907.0485125
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      78.0,
+      6.0,
+      29096.0,
+      534.66
+    ],
+    "phase": "hyper_sd15_cfg8_512/collect-legacy",
+    "time": 1792614908.103686
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      67.0,
+      6.0,
+      29096.0,
+      518.78
+    ],
+    "phase": "hyper_sd15_cfg8_512/collect-legacy",
+    "time": 1792614909.158187
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      72.0,
+      5.0,
+      29096.0,
+      514.09
+    ],
+    "phase": "hyper_sd15_cfg8_512/collect-legacy",
+    "time": 1792614910.2424157
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      0.0,
+      0.0,
+      29096.0,
+      455.11
+    ],
+    "phase": "hyper_sd15_cfg8_512/collect-legacy",
+    "time": 1792614911.2941778
+  },
+  {
+    "gpu_pct_memory_pct_mib_w": [
+      77.0,
+      9.0,
+      29096.0,
+      408.14
+    ],
+    "phase": "hyper_sd15_cfg8_512/collect-legacy",
+    "time": 1792614912.3354564
+  }
+]

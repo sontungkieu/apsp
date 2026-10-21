@@ -1,0 +1,47 @@
+{
+  "pass": true,
+  "profile": "sdxl_lightning8",
+  "profile_hash": "1a9e1a87d4b15ab62cbc577b7b6c4bff7bd55b666b0f2d6ec04d2125ca8a5ba0",
+  "runtime": {
+    "capability": [
+      10,
+      0
+    ],
+    "cuda": "12.8",
+    "execution": {
+      "cache_prompt_embedding": true,
+      "capture_on_gpu": true,
+      "decode_batch": 1,
+      "decode_streams": 4,
+      "fuse_checkpoints": true,
+      "png_compress_level": 1,
+      "schema": "apsp.lite.execution/v1",
+      "score_batch": 8
+    },
+    "gpu": "NVIDIA B200",
+    "hostname": "modal",
+    "lock_sha256": "e404558d31cc6befaa79aa693b99650eee3d269db3d8aec00517af1845aff793",
+    "packages": {
+      "diffusers": "0.39.0",
+      "image-reward": "1.5",
+      "peft": "0.17.1",
+      "safetensors": "0.8.0",
+      "torch": "2.9.1+cu128",
+      "torchvision": "0.24.1+cu128",
+      "transformers": "4.57.6"
+    },
+    "python": "3.11.6",
+    "seed_scheme": "apsp-v2-sha256-cpu",
+    "source_commit": null,
+    "source_hash": "75c1109bbbb8ef95179d8d039b526723accca3284ddf590b113b1b3e737b2019"
+  },
+  "runtime_identity_hash": "d3932000781fadc8dd7f83d93fd905721f15513befc7d6fbfcf5cca60e9c5ec3",
+  "scope": "Throughput/native-batch qualification, legacy Lite storage dtype. Not Lite2 Core schema or full EDA/online-controller acceptance.",
+  "validation": {
+    "all_valid": true,
+    "candidates": 160,
+    "preview_rows": 1280,
+    "reference_checked_tasks": 12,
+    "tasks": 20
+  }
+}

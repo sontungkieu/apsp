@@ -1,0 +1,24 @@
+{
+  "release": "apsp-lite-throughput-v1",
+  "status": "modal_b200_calibration_pass_company_node_pending",
+  "qualified_core_source_sha256": "75c1109bbbb8ef95179d8d039b526723accca3284ddf590b113b1b3e737b2019",
+  "lock_sha256": "e404558d31cc6befaa79aa693b99650eee3d269db3d8aec00517af1845aff793",
+  "profiles": [
+    "hyper_sd15_cfg8_512",
+    "sdxl_lightning8"
+  ],
+  "reference_compared_images": 1584,
+  "max_pixel_abs": 0,
+  "max_ir_abs": 4.780292510986328e-05,
+  "max_pickscore_abs": 7.62939453125e-06,
+  "receipts_sha256": {
+    "reports/performance/BUDGET.json": "11cfbee4ba20011ca1b460b7292d0cecd41884ce9f015c4cd8cd2e8e90cd75d3",
+    "reports/performance/CONFIRMATION.json": "ddbf48e66b4ac60dcf1520cac8322182079a79f1321489411cff7366f2dc6b3c",
+    "reports/performance/hyper_sd15_cfg8_512-qualification.json": "0e067b05e56023c0b3c4632baf0145a94b2f29255c3a4b1b5237c21f58c6e7df",
+    "reports/performance/ROUND1.json": "d000f7ece07bc3ed9a8856bdd855ee83ce17a627ce376970aaf7a23f0174bb1e",
+    "reports/performance/ROUND1_TELEMETRY.json": "ba27d0e11e857d3eb8962be2080931e3842b215c834b0f8dff1ba015968308b2",
+    "reports/performance/ROUND2.json": "1cb904adfbf987b6b5b7126d0e299456d4cc7dcd89ad2165325c978581cd58e0",
+    "reports/performance/sdxl_lightning8-qualification.json": "2b5ee57451553fd84b1e10a7e3d7b16c73d54fa5189187999e12a0832762dce4",
+    "reports/performance/SOURCE_AUDIT.json": "7f72c0fbbb7704dba69d79bc6236c4240b294765b5659024f652ea4ec08ae5d8"
+  }
+}

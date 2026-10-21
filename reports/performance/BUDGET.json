@@ -1,0 +1,100 @@
+{
+  "profile": "billionaireproject8",
+  "observed_at_utc": "2026-10-21T21:06:01.888888+00:00",
+  "task_cap_usd": "7.00",
+  "observed_cumulative_task_cost_usd": "6.09046091",
+  "observed_performance_cost_usd": "2.45914912",
+  "conservative_performance_unreported_usd": "0.5815170400000001",
+  "observed_plus_performance_bound_usd": "6.6719779500000001",
+  "by_task_app_usd": {
+    "apsp-lite-lite2-addon-20261022-r3": "0.01024088",
+    "apsp-lite-png-diagnostic-20261019": "0.00056264",
+    "apsp-lite-companion-restore-20261020": "0.01602666",
+    "apsp-lite-assets-20261019-r2": "0.03551915",
+    "apsp-lite-companion-hf-publish-20261020-r4": "0.00239377",
+    "apsp-lite-restore-cpu-20261019": "0.00881108",
+    "apsp-lite-performance-20261022-r2": "0.00452966",
+    "apsp-lite-prompts-20261019-r2": "0.00089752",
+    "apsp-lite-companion-split-20261020-r2": "0.09480192",
+    "apsp-lite-companion-hf-helper-fix-20261020-r2": "0.00014196",
+    "apsp-lite-companion-hf-publish-20261020-r3": "0.00259089",
+    "apsp-lite-restore-20261019": "0.47235790",
+    "apsp-lite-prompts-20261019": "0.00091742",
+    "apsp-lite-cpu-20261019-r3": "0.00666828",
+    "apsp-lite-export-20261019": "0.01565218",
+    "apsp-lite-companion-split-20261020": "0.01364468",
+    "apsp-lite-resolve-lock": "0.00006973",
+    "apsp-lite-lite2-addon-20261022-r2": "0.00450056",
+    "apsp-lite-cpu-math-20261019": "0.00086563",
+    "apsp-lite-b200-20261019-r2": "0.31478150",
+    "apsp-lite-cpu-math-20261019-r3": "0.00111295",
+    "apsp-lite-b200-20261019-r3": "0.51202010",
+    "apsp-lite-performance-20261022": "0.60351138",
+    "apsp-lite-performance-confirm-20261022-r2": "0.49791264",
+    "apsp-lite-companion-inventory-20261020": "0.00007031",
+    "apsp-lite-cpu-20261019-r2": "0.00002394",
+    "apsp-lite-companion-hf-helper-fix-20261020": "0.00009721",
+    "apsp-lite-performance-confirm-20261022": "0.09473611",
+    "apsp-lite-cpu-math-20261019-r2": "0.00123663",
+    "apsp-lite-companion-preserve-20261020": "0.00003073",
+    "apsp-lite-companion-pack-20261020-r3": "0.01095418",
+    "apsp-lite-b200-20261019": "0.00800615",
+    "apsp-lite-companion-hf-publish-20261020-r5": "1.90331107",
+    "apsp-lite-prompts-20261019-r3": "0.00272075",
+    "apsp-lite-assets-20261019": "0.17898688",
+    "apsp-lite-cpu-20261019": "0.00082108",
+    "apsp-lite-cpu-20261019-r4": "0.00123670",
+    "apsp-lite-performance-confirm-20261022-r3": "0.78283539",
+    "apsp-lite-companion-hf-publish-20261020-r2": "0.00269559",
+    "apsp-lite-lite2-addon-20261022": "0.00288586",
+    "apsp-lite-companion-pack-20261020-r2": "0.00365731",
+    "apsp-lite-performance-20261022-r3": "0.47562394"
+  },
+  "performance_apps": [
+    {
+      "app_id": "ap-wlMjo0BJcQXx7Bc3055YiT",
+      "description": "apsp-lite-performance-confirm-20261022-r3",
+      "state": "stopped",
+      "observed_cost_usd": "0.78283539",
+      "duration_bound_usd": "0.9476829200000001"
+    },
+    {
+      "app_id": "ap-Zl9gBGnj5MCJSDK4mN9sLg",
+      "description": "apsp-lite-performance-confirm-20261022-r2",
+      "state": "stopped",
+      "observed_cost_usd": "0.49791264",
+      "duration_bound_usd": "0.58961048"
+    },
+    {
+      "app_id": "ap-j87hWYvYQN82O7XeGX2OiD",
+      "description": "apsp-lite-performance-confirm-20261022",
+      "state": "stopped",
+      "observed_cost_usd": "0.09473611",
+      "duration_bound_usd": "0.17870768"
+    },
+    {
+      "app_id": "ap-zApwyx0A6T0mcmERPWdLap",
+      "description": "apsp-lite-performance-20261022-r3",
+      "state": "stopped",
+      "observed_cost_usd": "0.47562394",
+      "duration_bound_usd": "0.55439024"
+    },
+    {
+      "app_id": "ap-AomIU7qbFnlTwUNnxwgLTI",
+      "description": "apsp-lite-performance-20261022-r2",
+      "state": "stopped",
+      "observed_cost_usd": "0.00452966",
+      "duration_bound_usd": "0.08674372"
+    },
+    {
+      "app_id": "ap-U4PaQ5xxkR3oZTr5LWNX9i",
+      "description": "apsp-lite-performance-20261022",
+      "state": "stopped",
+      "observed_cost_usd": "0.60351138",
+      "duration_bound_usd": "0.68353112"
+    }
+  ],
+  "all_performance_apps_stopped": true,
+  "pricing_url": "https://modal.com/pricing",
+  "limitation": "Usage API can lag; not final invoice or confirmed remaining credit. Runtime/models/results Volume retained."
+}

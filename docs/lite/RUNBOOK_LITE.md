@@ -10,6 +10,10 @@ bank thì archive companion chỉ chứa text/task/raw metadata hiện có.
 
 ## Runtime
 
+Policy throughput B200 opt-in, receipt gắn source và giới hạn áp dụng được ghi ở
+[B200_PERFORMANCE.md](B200_PERFORMANCE.md). Qualification v1 bên dưới là provenance
+của source cũ; source/policy mới phải dùng receipt tương ứng và release root mới.
+
 Dựng runtime mới từ lock B200 của bundle, thêm PEFT 0.17.1. Không dùng TTS làm
 dependency base: TTS là Python 3.10 / Transformers 4.38.2 / Diffusers git cũ,
 trong khi bundle dùng Python 3.11 / Transformers 4.57.6 / Diffusers 0.39.0.
