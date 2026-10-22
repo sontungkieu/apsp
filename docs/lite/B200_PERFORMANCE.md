@@ -4,6 +4,9 @@
 step count, runtime dependency lock hoặc bank v1 đang chạy. Runtime không rebuild.
 Core source SHA256: `75c1109bbbb8ef95179d8d039b526723accca3284ddf590b113b1b3e737b2019`.
 
+Bàn giao cập nhật HF, kiểm B200 và rollout cho job mới:
+[COMPANY_B200_OPTIMIZATION_HANDOFF_20261022.md](COMPANY_B200_OPTIMIZATION_HANDOFF_20261022.md).
+
 ## Kết quả đo thật
 
 Modal `billionaireproject8`, một NVIDIA B200 sm_100,6 CPU cores,64GiB RAM.
