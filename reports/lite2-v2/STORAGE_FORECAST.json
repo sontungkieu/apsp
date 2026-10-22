@@ -1,0 +1,157 @@
+{
+  "cap_bytes": 80000000000,
+  "core_upper_bytes": 401713080,
+  "full_upper_with_reserve_bytes": 56788805480,
+  "limitations": "Forecast, not actual final size; native retained externally if core_qa; retention must be confirmed.",
+  "native_upper_bytes": 49745944800,
+  "profiles": {
+    "hyper_sd15_cfg8_512": {
+      "calibration_native_bytes": 157430880,
+      "core_upper_bytes": 200812260,
+      "cost_profile": {
+        "limitation": "Cost measurements do not establish replay-online trajectory equivalence",
+        "method": "native-batch real GPU wall times, synchronization included",
+        "samples": [
+          {
+            "L_per_forward_s": 0.025119808374999053,
+            "V_IR_s": 0.06108446399997547,
+            "decode_s": 0.03766971999999669,
+            "generation_8_forwards_s": 0.20095846699999242,
+            "ir_s": 0.023414743999978782,
+            "k": 2,
+            "pickscore_diagnostic_s": 0.03075863699999104,
+            "repeat": 0
+          },
+          {
+            "L_per_forward_s": 0.017196792500001834,
+            "V_IR_s": 0.05426262899999301,
+            "decode_s": 0.03657292099998699,
+            "generation_8_forwards_s": 0.13757434000001467,
+            "ir_s": 0.01768970800000602,
+            "k": 2,
+            "pickscore_diagnostic_s": 0.030175409000008813,
+            "repeat": 1
+          },
+          {
+            "L_per_forward_s": 0.02979402025000155,
+            "V_IR_s": 0.08939246000002754,
+            "decode_s": 0.062174092000020664,
+            "generation_8_forwards_s": 0.2383521620000124,
+            "ir_s": 0.027218368000006876,
+            "k": 4,
+            "pickscore_diagnostic_s": 0.050435125999996444,
+            "repeat": 0
+          },
+          {
+            "L_per_forward_s": 0.02536319975000012,
+            "V_IR_s": 0.08804356600003871,
+            "decode_s": 0.06129267900001878,
+            "generation_8_forwards_s": 0.20290559800000096,
+            "ir_s": 0.02675088700001993,
+            "k": 4,
+            "pickscore_diagnostic_s": 0.05017831000000683,
+            "repeat": 1
+          },
+          {
+            "L_per_forward_s": 0.04269994899999929,
+            "V_IR_s": 0.16399623100002714,
+            "decode_s": 0.11974242300001947,
+            "generation_8_forwards_s": 0.34159959199999435,
+            "ir_s": 0.044253808000007666,
+            "k": 8,
+            "pickscore_diagnostic_s": 0.08198091599999202,
+            "repeat": 0
+          },
+          {
+            "L_per_forward_s": 0.04282024912500049,
+            "V_IR_s": 0.1665318549999597,
+            "decode_s": 0.12135124399998176,
+            "generation_8_forwards_s": 0.3425619930000039,
+            "ir_s": 0.045180610999977944,
+            "k": 8,
+            "pickscore_diagnostic_s": 0.08169398300000807,
+            "repeat": 1
+          }
+        ]
+      },
+      "main_native_bytes": 5668089600,
+      "method": "max observed file bytes/task, no compression assumption",
+      "qa_png_upper_bytes": 387048480
+    },
+    "sdxl_lightning8_1024": {
+      "calibration_native_bytes": 1132609920,
+      "core_upper_bytes": 200900820,
+      "cost_profile": {
+        "limitation": "Cost measurements do not establish replay-online trajectory equivalence",
+        "method": "native-batch real GPU wall times, synchronization included",
+        "samples": [
+          {
+            "L_per_forward_s": 0.03934201162500983,
+            "V_IR_s": 0.17475877300000775,
+            "decode_s": 0.15103137599999172,
+            "generation_8_forwards_s": 0.31473609300007865,
+            "ir_s": 0.023727397000016026,
+            "k": 2,
+            "pickscore_diagnostic_s": 0.038154208000037215,
+            "repeat": 0
+          },
+          {
+            "L_per_forward_s": 0.037048132875000306,
+            "V_IR_s": 0.17670038200003546,
+            "decode_s": 0.15166865200001212,
+            "generation_8_forwards_s": 0.29638506300000245,
+            "ir_s": 0.025031730000023344,
+            "k": 2,
+            "pickscore_diagnostic_s": 0.03929345500000636,
+            "repeat": 1
+          },
+          {
+            "L_per_forward_s": 0.061001138750000905,
+            "V_IR_s": 0.29184498999995867,
+            "decode_s": 0.25309711199997764,
+            "generation_8_forwards_s": 0.48800911000000724,
+            "ir_s": 0.03874787799998103,
+            "k": 4,
+            "pickscore_diagnostic_s": 0.06599593399994319,
+            "repeat": 0
+          },
+          {
+            "L_per_forward_s": 0.06049780712498887,
+            "V_IR_s": 0.2952371359999688,
+            "decode_s": 0.25713803700000426,
+            "generation_8_forwards_s": 0.48398245699991094,
+            "ir_s": 0.038099098999964554,
+            "k": 4,
+            "pickscore_diagnostic_s": 0.06548546199996963,
+            "repeat": 1
+          },
+          {
+            "L_per_forward_s": 0.10797586199998932,
+            "V_IR_s": 0.5839149170000155,
+            "decode_s": 0.5177019590000782,
+            "generation_8_forwards_s": 0.8638068959999146,
+            "ir_s": 0.06621295799993732,
+            "k": 8,
+            "pickscore_diagnostic_s": 0.11020536099999845,
+            "repeat": 0
+          },
+          {
+            "L_per_forward_s": 0.10795245587500801,
+            "V_IR_s": 0.5815489550000166,
+            "decode_s": 0.5153207770000563,
+            "generation_8_forwards_s": 0.8636196470000641,
+            "ir_s": 0.06622817799996028,
+            "k": 8,
+            "pickscore_diagnostic_s": 0.10904543399999511,
+            "repeat": 1
+          }
+        ]
+      },
+      "main_native_bytes": 42787814400,
+      "method": "max observed file bytes/task, no compression assumption",
+      "qa_png_upper_bytes": 1254099120
+    }
+  },
+  "qa_upper_bytes": 1641147600,
+  "recommended_mode": "core_latent_qa"
+}

@@ -1,0 +1,32 @@
+{
+  "pass": true,
+  "stage": "real_torch_cpu_synthetic_denoiser_not_model_qualification",
+  "native_dtypes": {
+    "hyper_sd15_cfg8_512": {
+      "x0_01": "torch.float32",
+      "x0_02": "torch.float32",
+      "x0_03": "torch.float32",
+      "x0_04": "torch.float32",
+      "x0_05": "torch.float32",
+      "x0_06": "torch.float32",
+      "x0_07": "torch.float32",
+      "x0_08": "torch.float32",
+      "final": "torch.float16",
+      "initial": "torch.float16"
+    },
+    "sdxl_lightning8_1024": {
+      "x0_01": "torch.float32",
+      "x0_02": "torch.float32",
+      "x0_03": "torch.float32",
+      "x0_04": "torch.float32",
+      "x0_05": "torch.float32",
+      "x0_06": "torch.float32",
+      "x0_07": "torch.float32",
+      "x0_08": "torch.float32",
+      "final": "torch.float16",
+      "initial": "torch.float16"
+    }
+  },
+  "export_bytes": 23712147,
+  "core_only_replay": true
+}

@@ -1,0 +1,10 @@
+{
+  "pass": true,
+  "core_source_sha256": "0fe3d02d408041ef446cac53e17ee5257346a07ebf6ccd052eb32c4ea7962179",
+  "core_python_files": 113,
+  "measured_source_zip_sha256": "74376372b295ad0de53597261eb9bf199e48a8628599bce51e31c8a02a55e690",
+  "app_id": "ap-4YyaGD5n8awWPAHy7iFp2K",
+  "modal_volume": "apsp-lite-runtime-v1",
+  "remote_root": "/persist/lite2-collector-v2/1792694671676417379",
+  "scope": "Byte-identical measured core and env/lite2 helpers. Eight-GPU company execution not performed here."
+}

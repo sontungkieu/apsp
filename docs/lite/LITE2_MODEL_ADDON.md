@@ -77,7 +77,8 @@ DDIM trailing8 timesteps và MiniLM forward `[1,384]` L2-normalized. HF đọc n
 metadata size/LFS SHA, anonymous one-byte206 và hash toàn bộ helper/manifest.
 Không tải model về laptop. Runtime/dependency lock giữ nguyên.
 
-**Đây là add-on model sẵn sàng nạp, chưa phải collector V2 đã qualification.**
-Hyper-SD15 B200 generation/scorer, native-dtype preview, V2 manifests/features và
-20 calibration task/profile vẫn cần triển khai/kiểm trước bulk. Không chạy task
-v1 để giả V2 hoặc dùng `hyper_flux8` cho checkpoint SD15.
+**Receipt trong tài liệu này chỉ nghiệm thu add-on model.** Collector V2 hiện
+đã có; xem [RUNBOOK_LITE2.md](RUNBOOK_LITE2.md) và
+[qualification của source V2](B200_LITE2_QUALIFICATION.md). Node công ty vẫn phải
+chạy qualification V2 riêng trước bulk. Không dùng receipt model/collector v1
+thay V2 hoặc dùng `hyper_flux8` cho checkpoint SD15.

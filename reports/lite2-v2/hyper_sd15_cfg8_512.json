@@ -1,0 +1,3123 @@
+{
+  "core_only_replay_pass": true,
+  "cost_profile": {
+    "limitation": "Cost measurements do not establish replay-online trajectory equivalence",
+    "method": "native-batch real GPU wall times, synchronization included",
+    "samples": [
+      {
+        "L_per_forward_s": 0.025119808374999053,
+        "V_IR_s": 0.06108446399997547,
+        "decode_s": 0.03766971999999669,
+        "generation_8_forwards_s": 0.20095846699999242,
+        "ir_s": 0.023414743999978782,
+        "k": 2,
+        "pickscore_diagnostic_s": 0.03075863699999104,
+        "repeat": 0
+      },
+      {
+        "L_per_forward_s": 0.017196792500001834,
+        "V_IR_s": 0.05426262899999301,
+        "decode_s": 0.03657292099998699,
+        "generation_8_forwards_s": 0.13757434000001467,
+        "ir_s": 0.01768970800000602,
+        "k": 2,
+        "pickscore_diagnostic_s": 0.030175409000008813,
+        "repeat": 1
+      },
+      {
+        "L_per_forward_s": 0.02979402025000155,
+        "V_IR_s": 0.08939246000002754,
+        "decode_s": 0.062174092000020664,
+        "generation_8_forwards_s": 0.2383521620000124,
+        "ir_s": 0.027218368000006876,
+        "k": 4,
+        "pickscore_diagnostic_s": 0.050435125999996444,
+        "repeat": 0
+      },
+      {
+        "L_per_forward_s": 0.02536319975000012,
+        "V_IR_s": 0.08804356600003871,
+        "decode_s": 0.06129267900001878,
+        "generation_8_forwards_s": 0.20290559800000096,
+        "ir_s": 0.02675088700001993,
+        "k": 4,
+        "pickscore_diagnostic_s": 0.05017831000000683,
+        "repeat": 1
+      },
+      {
+        "L_per_forward_s": 0.04269994899999929,
+        "V_IR_s": 0.16399623100002714,
+        "decode_s": 0.11974242300001947,
+        "generation_8_forwards_s": 0.34159959199999435,
+        "ir_s": 0.044253808000007666,
+        "k": 8,
+        "pickscore_diagnostic_s": 0.08198091599999202,
+        "repeat": 0
+      },
+      {
+        "L_per_forward_s": 0.04282024912500049,
+        "V_IR_s": 0.1665318549999597,
+        "decode_s": 0.12135124399998176,
+        "generation_8_forwards_s": 0.3425619930000039,
+        "ir_s": 0.045180610999977944,
+        "k": 8,
+        "pickscore_diagnostic_s": 0.08169398300000807,
+        "repeat": 1
+      }
+    ]
+  },
+  "execution": {
+    "cache_prompt_embedding": true,
+    "capture_on_gpu": true,
+    "decode_batch": 1,
+    "decode_streams": 4,
+    "fuse_checkpoints": true,
+    "png_compress_level": 1,
+    "schema": "apsp.lite.execution/v1",
+    "score_batch": 8
+  },
+  "export_bytes": 191725904,
+  "mean_paired_speedup": 1.645664828143321,
+  "pairs": [
+    {
+      "canonical_wall_s": 5.375350138000002,
+      "fast_wall_s": 3.317401375000003,
+      "native_tensors_identical": true,
+      "speedup": 1.6203496443055514,
+      "task_id": "8365397ebe2a0f70d8460df492d91c827232f79d226874a19b620b8b1d59fbb2"
+    },
+    {
+      "canonical_wall_s": 5.594943233000002,
+      "fast_wall_s": 3.3483005139999946,
+      "native_tensors_identical": true,
+      "speedup": 1.6709800119810905,
+      "task_id": "faeb4b05b58a0a0461ecf9088107b7a96a10d5dad8df733e2c4479e6f47db769"
+    }
+  ],
+  "parts_bytes": 192512000,
+  "pass": true,
+  "performance_enabled": true,
+  "profile": "hyper_sd15_cfg8_512",
+  "registry_hash": "e0e06526ccfbc58d94b8d10f7123c22198035c5c213155a63da4d528250b340c",
+  "restore_independent_process": true,
+  "runtime": {
+    "capability": [
+      10,
+      0
+    ],
+    "cuda": "12.8",
+    "execution": {
+      "cache_prompt_embedding": true,
+      "capture_on_gpu": true,
+      "decode_batch": 1,
+      "decode_streams": 4,
+      "fuse_checkpoints": true,
+      "png_compress_level": 1,
+      "schema": "apsp.lite.execution/v1",
+      "score_batch": 8
+    },
+    "gpu": "NVIDIA B200",
+    "hostname": "modal",
+    "lock_sha256": "e404558d31cc6befaa79aa693b99650eee3d269db3d8aec00517af1845aff793",
+    "packages": {
+      "diffusers": "0.39.0",
+      "image-reward": "1.5",
+      "peft": "0.17.1",
+      "safetensors": "0.8.0",
+      "torch": "2.9.1+cu128",
+      "torchvision": "0.24.1+cu128",
+      "transformers": "4.57.6"
+    },
+    "python": "3.11.6",
+    "registry_sha256": "e0e06526ccfbc58d94b8d10f7123c22198035c5c213155a63da4d528250b340c",
+    "schema": "apsp-core-lite2-v1",
+    "seed_scheme": "apsp-v2-sha256-cpu",
+    "source_commit": null,
+    "source_hash": "0fe3d02d408041ef446cac53e17ee5257346a07ebf6ccd052eb32c4ea7962179"
+  },
+  "runtime_identity_hash": "e390f34ff54f0422a1cebb04b2ab10990201389864877b2f4b22f702d77cdbb6",
+  "schema": "apsp-core-lite2-v1",
+  "scope": "20 calibration tasks/profile, native dtype, Core384; not full company bulk collection",
+  "tasks": [
+    {
+      "bytes_by_file": {
+        "COMPLETE.json": 4061,
+        "candidates.parquet": 7132,
+        "delivered.parquet": 8917,
+        "final-s0.png": 496063,
+        "final-s1.png": 438331,
+        "final-s2.png": 479778,
+        "final-s3.png": 476552,
+        "final-s4.png": 434006,
+        "final-s5.png": 460738,
+        "final-s6.png": 483287,
+        "final-s7.png": 460569,
+        "j1-s0.png": 587920,
+        "j1-s1.png": 512176,
+        "j1-s2.png": 563413,
+        "j1-s3.png": 510799,
+        "j1-s4.png": 465168,
+        "j1-s5.png": 590313,
+        "j1-s6.png": 516525,
+        "j1-s7.png": 459881,
+        "j4-s0.png": 479950,
+        "j4-s1.png": 413226,
+        "j4-s2.png": 443387,
+        "j4-s3.png": 469212,
+        "j4-s4.png": 412975,
+        "j4-s5.png": 445622,
+        "j4-s6.png": 458516,
+        "j4-s7.png": 427097,
+        "j8-s0.png": 495117,
+        "j8-s1.png": 436800,
+        "j8-s2.png": 478712,
+        "j8-s3.png": 475556,
+        "j8-s4.png": 432759,
+        "j8-s5.png": 459372,
+        "j8-s6.png": 481290,
+        "j8-s7.png": 459870,
+        "latents.safetensors": 2623848,
+        "previews.parquet": 20115,
+        "prompt_features.safetensors": 1616,
+        "prompts.parquet": 16608,
+        "provenance.json": 8827,
+        "task.json": 1766,
+        "tasks.parquet": 5686,
+        "timings.json": 220
+      },
+      "native_tensors": {
+        "final": {
+          "dtype": "float16",
+          "sha256": "426a4b10644c53b88aa56f0258a9a5ebfc5c14ebd66fdd86323a668ec7a5aa73",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "initial": {
+          "dtype": "float16",
+          "sha256": "8cdab28c72a01b1ed6cfafe47579f457a1e1aba96339bb841a4b45d4c72e4afa",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_01": {
+          "dtype": "float16",
+          "sha256": "203da4f5be1d086485fe8e0a5a5ba1830258f3d04d3fc03f7cf6d09431be7bad",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_02": {
+          "dtype": "float16",
+          "sha256": "73dbb68e85fc05bfdec4d5917cc028e2002b1e86229bab0b199cc0fbc3d22f6e",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_03": {
+          "dtype": "float16",
+          "sha256": "23c5e3fd49e9869e45c8fe5ff2214d3e888fd0ddac4e7883cd0e5644cbcb2fd4",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_04": {
+          "dtype": "float16",
+          "sha256": "b48a699a9270b3ea1a60b86ee1384d0828145fa97da8b6365faef14b5f54ed47",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_05": {
+          "dtype": "float16",
+          "sha256": "61b24ac202a0dbfbccc2201cef651921667b52739f3c57b024388dcf9677ad2b",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_06": {
+          "dtype": "float16",
+          "sha256": "4b948d3af62c3f79c59ed671d74777532bbd95523f95aecd45d109d4c2c3fa9d",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_07": {
+          "dtype": "float16",
+          "sha256": "655623cd88938738282f031174423afdfe0adce656d211c5b85f0c69233b98b7",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_08": {
+          "dtype": "float16",
+          "sha256": "b80d922783ffa7315c816302b5be910b72a68455d8be9113ded48838297dad9e",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        }
+      },
+      "parity": {
+        "identical_images": 72,
+        "image_count": 72,
+        "ir_max_abs": 1.3113021850585938e-06,
+        "ir_winner_equal": true,
+        "max_pixel_abs": 0,
+        "mean_pixel_abs": 0.0,
+        "pass": true,
+        "pickscore_max_abs": 7.62939453125e-06,
+        "validity_equal": true
+      },
+      "task_id": "461f4d09ce567c3bd399b0c9a0921ed2fc2ba18e8807e7d94a97a388459ec934",
+      "validation": {
+        "all_valid": true,
+        "n_candidates": 8,
+        "n_previews": 64,
+        "native_checked": true,
+        "pass": true,
+        "redecode_pixels_identical": true,
+        "schema": "apsp-core-lite2-v1"
+      }
+    },
+    {
+      "bytes_by_file": {
+        "COMPLETE.json": 1221,
+        "candidates.parquet": 7125,
+        "delivered.parquet": 8769,
+        "latents.safetensors": 2623848,
+        "previews.parquet": 19855,
+        "prompt_features.safetensors": 1616,
+        "prompts.parquet": 16608,
+        "provenance.json": 8827,
+        "task.json": 1768,
+        "tasks.parquet": 5686,
+        "timings.json": 221
+      },
+      "native_tensors": {
+        "final": {
+          "dtype": "float16",
+          "sha256": "280877495a0a9f883d8acf5e51b40d30cb148e0a4762630e6f0f755ef8d962e1",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "initial": {
+          "dtype": "float16",
+          "sha256": "21f6c23a36016d6ea1ab928b174cbfc6f373f560c540d2d29041a51f55ca6771",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_01": {
+          "dtype": "float16",
+          "sha256": "9bf16036c5263df09be1ec324b37da5120412f108f30f2a54fd3c152e92e1f8f",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_02": {
+          "dtype": "float16",
+          "sha256": "4179afcd98c31ba205df984cb61108a878e33cd46cf2dff0495b01e5bcef790e",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_03": {
+          "dtype": "float16",
+          "sha256": "3a5e90ed46abd39ea14606c1d512eb072a26fa1a79d335bc43d6a1a83fc16fda",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_04": {
+          "dtype": "float16",
+          "sha256": "c7610daddabefeba0e163e519b93678a1d6a605850d5b98d195097c0c3f4bf1d",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_05": {
+          "dtype": "float16",
+          "sha256": "08968ffd1f95572175ad835d2e8bb82601d2c530a066474604835de41637e455",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_06": {
+          "dtype": "float16",
+          "sha256": "63905397d578b82fe33cb6efcfebea439ad0552cbaed737abde5fd0213806e52",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_07": {
+          "dtype": "float16",
+          "sha256": "3d7177b03cb1ebdb09527ea5500e276b0f085f27d5d98a70e471396f4b3ee473",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_08": {
+          "dtype": "float16",
+          "sha256": "4753a184f2c8428e9203189c1d66dfcd35420ecba84d90b99fd8139b54b74601",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        }
+      },
+      "parity": null,
+      "task_id": "d3f5518f87049e46eadc8dfa9784b3c4f066ac814fc24fdc91ce92cb83cbde9a",
+      "validation": {
+        "all_valid": true,
+        "n_candidates": 8,
+        "n_previews": 64,
+        "native_checked": true,
+        "pass": true,
+        "redecode_pixels_identical": true,
+        "schema": "apsp-core-lite2-v1"
+      }
+    },
+    {
+      "bytes_by_file": {
+        "COMPLETE.json": 4061,
+        "candidates.parquet": 7132,
+        "delivered.parquet": 8922,
+        "final-s0.png": 389134,
+        "final-s1.png": 423122,
+        "final-s2.png": 359759,
+        "final-s3.png": 408405,
+        "final-s4.png": 357161,
+        "final-s5.png": 417298,
+        "final-s6.png": 408774,
+        "final-s7.png": 351252,
+        "j1-s0.png": 310167,
+        "j1-s1.png": 344061,
+        "j1-s2.png": 304783,
+        "j1-s3.png": 312271,
+        "j1-s4.png": 327505,
+        "j1-s5.png": 329592,
+        "j1-s6.png": 362072,
+        "j1-s7.png": 264780,
+        "j4-s0.png": 355202,
+        "j4-s1.png": 376080,
+        "j4-s2.png": 337612,
+        "j4-s3.png": 357058,
+        "j4-s4.png": 327681,
+        "j4-s5.png": 376772,
+        "j4-s6.png": 372331,
+        "j4-s7.png": 320061,
+        "j8-s0.png": 386161,
+        "j8-s1.png": 419318,
+        "j8-s2.png": 357129,
+        "j8-s3.png": 404543,
+        "j8-s4.png": 355426,
+        "j8-s5.png": 413984,
+        "j8-s6.png": 407205,
+        "j8-s7.png": 348396,
+        "latents.safetensors": 2623848,
+        "previews.parquet": 20086,
+        "prompt_features.safetensors": 1616,
+        "prompts.parquet": 21408,
+        "provenance.json": 8827,
+        "task.json": 2921,
+        "tasks.parquet": 5686,
+        "timings.json": 222
+      },
+      "native_tensors": {
+        "final": {
+          "dtype": "float16",
+          "sha256": "09574e1555ca4ccd1d1834c2b04faf5603ee79faa8f0218a5090bbf18a507fdf",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "initial": {
+          "dtype": "float16",
+          "sha256": "3f39c32878fe6ad85b834ad7354425a4bf1bf7b02933b1c08034fda9809a64de",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_01": {
+          "dtype": "float16",
+          "sha256": "c6249b4e21c43e6dd787a38502cc1f1be0047395c1f108cf9ec1667e6aa5e7d8",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_02": {
+          "dtype": "float16",
+          "sha256": "73668f01783f7c3fce2ed00b78116a4df5030d8eeb1ccf688f4cba41c0ef9a7f",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_03": {
+          "dtype": "float16",
+          "sha256": "6075921c7088b1157b7902934099e762d9aca502bc060a4aa54d381b829d8cc0",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_04": {
+          "dtype": "float16",
+          "sha256": "f3ead2845a1a1aa5c398032b84e34fced0231df83a952da9d00521edbbe81bc1",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_05": {
+          "dtype": "float16",
+          "sha256": "aa652d890cb6a090ade9b51c33a9aed11fb9418209d90e664d31a1a7b46a7cda",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_06": {
+          "dtype": "float16",
+          "sha256": "cb533486007621ab663190468747b01c532620b919bf964b450ee0592a5341db",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_07": {
+          "dtype": "float16",
+          "sha256": "eb72a98ffbc17d9b3bc722a0621be088e06aa0d6279a42449fe914f79548f123",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_08": {
+          "dtype": "float16",
+          "sha256": "d3c6aa63e4ff875875d7fe9c6b10d735140b08e983d4592c9e78a9ca519d6daf",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        }
+      },
+      "parity": {
+        "identical_images": 72,
+        "image_count": 72,
+        "ir_max_abs": 1.4603137969970703e-06,
+        "ir_winner_equal": true,
+        "max_pixel_abs": 0,
+        "mean_pixel_abs": 0.0,
+        "pass": true,
+        "pickscore_max_abs": 5.7220458984375e-06,
+        "validity_equal": true
+      },
+      "task_id": "8365397ebe2a0f70d8460df492d91c827232f79d226874a19b620b8b1d59fbb2",
+      "validation": {
+        "all_valid": true,
+        "n_candidates": 8,
+        "n_previews": 64,
+        "native_checked": true,
+        "pass": true,
+        "redecode_pixels_identical": true,
+        "schema": "apsp-core-lite2-v1"
+      }
+    },
+    {
+      "bytes_by_file": {
+        "COMPLETE.json": 1221,
+        "candidates.parquet": 7132,
+        "delivered.parquet": 8768,
+        "latents.safetensors": 2623848,
+        "previews.parquet": 19854,
+        "prompt_features.safetensors": 1616,
+        "prompts.parquet": 21408,
+        "provenance.json": 8827,
+        "task.json": 2923,
+        "tasks.parquet": 5686,
+        "timings.json": 218
+      },
+      "native_tensors": {
+        "final": {
+          "dtype": "float16",
+          "sha256": "a65835cdc12cdab069bfeb06cf29cb80df2fa1b81c2e03af0c1c71cca2494fdd",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "initial": {
+          "dtype": "float16",
+          "sha256": "a333e03bab92d2fc02938d70fd988a96f40c6c101f8a51a323f1aad9002942e8",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_01": {
+          "dtype": "float16",
+          "sha256": "38a18bbb4a2337cc3a14fa0d0cc408f3fc7f54a9848c7c127466d30dcee789be",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_02": {
+          "dtype": "float16",
+          "sha256": "023393186e110e476699e25303c099cce0cb6d74b61d328d348f223e254e6288",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_03": {
+          "dtype": "float16",
+          "sha256": "398db6d337ee25a195730b60b423209acf4c2b19b44346f25fee27c5555c16a5",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_04": {
+          "dtype": "float16",
+          "sha256": "bc21ede63fc3bd7723600ced74c6ac57bd630a647db56db74b453b63768ab299",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_05": {
+          "dtype": "float16",
+          "sha256": "a030e57e0b4fa902864cd6275a09cc4bf675268bc26d89ece667c69d298485bb",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_06": {
+          "dtype": "float16",
+          "sha256": "4e3bb7769b6929bdd60f80512515e429c5ad6c8a3b0683b1f9ca3fcca836567f",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_07": {
+          "dtype": "float16",
+          "sha256": "127d2ec82d7120bc532fd38d0e73f07cf9dc0ece84ac12a2c0c516210ad7711f",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_08": {
+          "dtype": "float16",
+          "sha256": "89a5dce5a8a134091e523eab7f6e2b16a6e21e6602e2347c98f19577dae92b91",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        }
+      },
+      "parity": null,
+      "task_id": "351ade6de7ecc7028ddae189b7f82250b1d0c260632f2de0b967e838e2532183",
+      "validation": {
+        "all_valid": true,
+        "n_candidates": 8,
+        "n_previews": 64,
+        "native_checked": true,
+        "pass": true,
+        "redecode_pixels_identical": true,
+        "schema": "apsp-core-lite2-v1"
+      }
+    },
+    {
+      "bytes_by_file": {
+        "COMPLETE.json": 4061,
+        "candidates.parquet": 7132,
+        "delivered.parquet": 8921,
+        "final-s0.png": 489477,
+        "final-s1.png": 458487,
+        "final-s2.png": 449980,
+        "final-s3.png": 474602,
+        "final-s4.png": 464768,
+        "final-s5.png": 424310,
+        "final-s6.png": 473539,
+        "final-s7.png": 447579,
+        "j1-s0.png": 381305,
+        "j1-s1.png": 376492,
+        "j1-s2.png": 436835,
+        "j1-s3.png": 375028,
+        "j1-s4.png": 393982,
+        "j1-s5.png": 382169,
+        "j1-s6.png": 390490,
+        "j1-s7.png": 357306,
+        "j4-s0.png": 429279,
+        "j4-s1.png": 430343,
+        "j4-s2.png": 417704,
+        "j4-s3.png": 408803,
+        "j4-s4.png": 410311,
+        "j4-s5.png": 392718,
+        "j4-s6.png": 421797,
+        "j4-s7.png": 419900,
+        "j8-s0.png": 488066,
+        "j8-s1.png": 456592,
+        "j8-s2.png": 448255,
+        "j8-s3.png": 472749,
+        "j8-s4.png": 462396,
+        "j8-s5.png": 422426,
+        "j8-s6.png": 471909,
+        "j8-s7.png": 448982,
+        "latents.safetensors": 2623848,
+        "previews.parquet": 20100,
+        "prompt_features.safetensors": 1616,
+        "prompts.parquet": 19761,
+        "provenance.json": 8827,
+        "task.json": 2174,
+        "tasks.parquet": 5686,
+        "timings.json": 220
+      },
+      "native_tensors": {
+        "final": {
+          "dtype": "float16",
+          "sha256": "0cb2347dd00fcff866b2fa09fef0e44918a55525501d5e8d254bb2585ca3e733",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "initial": {
+          "dtype": "float16",
+          "sha256": "4ce212e85defd7a2c19f36485df3244288f8ce465c7bbdf71b246114d5802f59",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_01": {
+          "dtype": "float16",
+          "sha256": "f07158887b25dacdadd8daa20773cc664d29e7d27967addaedf3d6d37c147b07",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_02": {
+          "dtype": "float16",
+          "sha256": "82c8d3154b712d5bb0070c6123a30dacf8b0c6d12da3522a301eb7bbfa8acfce",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_03": {
+          "dtype": "float16",
+          "sha256": "844124e074e36acf547bd2a810d564d6e2f878654e980227e02c3dccd590249e",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_04": {
+          "dtype": "float16",
+          "sha256": "9213dec8ae9edd58c67f68910adea6417af90aea778f578c4055be722f9c475d",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_05": {
+          "dtype": "float16",
+          "sha256": "11bbf9ee5b8f95fe87509ea9dcbe9812a7543292f8db08d0bc7ffa8c4d49ac8a",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_06": {
+          "dtype": "float16",
+          "sha256": "120e29b8c6701d6f4e07ff57c1a1216dd4aa9e4cdb71ac0241667dea016d01f3",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_07": {
+          "dtype": "float16",
+          "sha256": "4652a114a0fc0dcfd0c035f68a41d2ccb5d8826cabb7d9d59be0b75345b32a09",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_08": {
+          "dtype": "float16",
+          "sha256": "bd4b6936941fcfe3f0bb0e1c4488970a6c07485173354d1b229570bcee17f357",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        }
+      },
+      "parity": {
+        "identical_images": 72,
+        "image_count": 72,
+        "ir_max_abs": 1.3709068298339844e-06,
+        "ir_winner_equal": true,
+        "max_pixel_abs": 0,
+        "mean_pixel_abs": 0.0,
+        "pass": true,
+        "pickscore_max_abs": 5.7220458984375e-06,
+        "validity_equal": true
+      },
+      "task_id": "faeb4b05b58a0a0461ecf9088107b7a96a10d5dad8df733e2c4479e6f47db769",
+      "validation": {
+        "all_valid": true,
+        "n_candidates": 8,
+        "n_previews": 64,
+        "native_checked": true,
+        "pass": true,
+        "redecode_pixels_identical": true,
+        "schema": "apsp-core-lite2-v1"
+      }
+    },
+    {
+      "bytes_by_file": {
+        "COMPLETE.json": 1221,
+        "candidates.parquet": 7132,
+        "delivered.parquet": 8767,
+        "latents.safetensors": 2623848,
+        "previews.parquet": 19877,
+        "prompt_features.safetensors": 1616,
+        "prompts.parquet": 19761,
+        "provenance.json": 8827,
+        "task.json": 2174,
+        "tasks.parquet": 5686,
+        "timings.json": 219
+      },
+      "native_tensors": {
+        "final": {
+          "dtype": "float16",
+          "sha256": "aa6b18edd6136a62b58c6d75bba450e50e13a8bec95e2af0f668fdf9e7ea58ed",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "initial": {
+          "dtype": "float16",
+          "sha256": "527963a7e5857e3ccf2c5501af56631a8d16013fab932a9ebc3b41ab85ecd23e",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_01": {
+          "dtype": "float16",
+          "sha256": "c916d499bc6c01a82e9359784eae98c94af96bc37cb55612a630724383767a59",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_02": {
+          "dtype": "float16",
+          "sha256": "5e50c09099978c82558b46b6104fd2299394c1813124881f4ae6728f3c63a0b3",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_03": {
+          "dtype": "float16",
+          "sha256": "885a835df54b455caa19e95461a97a8468d15d1e7ea919dc8563dd274b0a242d",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_04": {
+          "dtype": "float16",
+          "sha256": "8c260b401fd3d770121faf8bb8b9a89f11a2f23ceb7a95101ca0951172102821",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_05": {
+          "dtype": "float16",
+          "sha256": "07a12cb2c463d9b957d6f624e96203916b0f4211905ee12652b15d58719fd6ea",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_06": {
+          "dtype": "float16",
+          "sha256": "358a5abd7e13c26666c710cb72454afca463a932b1db01ba8d029965a8648ec8",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_07": {
+          "dtype": "float16",
+          "sha256": "5a7302598fdc3b3bc838d9cde25a31cb280eba0988b4be4c95510de7cc233b25",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_08": {
+          "dtype": "float16",
+          "sha256": "5991555a87e5a1e1e70d3e14441aa73d0a8660a2fbc03dbc6996ce9d902c21b5",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        }
+      },
+      "parity": null,
+      "task_id": "60324febac1786c74ee4eadf155380cd1ba5877c8c591a7fb4365aa820e3e9f4",
+      "validation": {
+        "all_valid": true,
+        "n_candidates": 8,
+        "n_previews": 64,
+        "native_checked": true,
+        "pass": true,
+        "redecode_pixels_identical": true,
+        "schema": "apsp-core-lite2-v1"
+      }
+    },
+    {
+      "bytes_by_file": {
+        "COMPLETE.json": 4061,
+        "candidates.parquet": 7132,
+        "delivered.parquet": 8921,
+        "final-s0.png": 411154,
+        "final-s1.png": 405723,
+        "final-s2.png": 361525,
+        "final-s3.png": 430534,
+        "final-s4.png": 455027,
+        "final-s5.png": 418730,
+        "final-s6.png": 430430,
+        "final-s7.png": 497462,
+        "j1-s0.png": 377380,
+        "j1-s1.png": 349845,
+        "j1-s2.png": 317320,
+        "j1-s3.png": 346112,
+        "j1-s4.png": 310242,
+        "j1-s5.png": 362550,
+        "j1-s6.png": 330085,
+        "j1-s7.png": 398121,
+        "j4-s0.png": 377118,
+        "j4-s1.png": 387698,
+        "j4-s2.png": 340637,
+        "j4-s3.png": 386277,
+        "j4-s4.png": 388394,
+        "j4-s5.png": 387268,
+        "j4-s6.png": 388875,
+        "j4-s7.png": 434132,
+        "j8-s0.png": 409018,
+        "j8-s1.png": 404067,
+        "j8-s2.png": 359282,
+        "j8-s3.png": 426945,
+        "j8-s4.png": 452511,
+        "j8-s5.png": 415448,
+        "j8-s6.png": 427125,
+        "j8-s7.png": 493786,
+        "latents.safetensors": 2623848,
+        "previews.parquet": 20122,
+        "prompt_features.safetensors": 1616,
+        "prompts.parquet": 21662,
+        "provenance.json": 8827,
+        "task.json": 2958,
+        "tasks.parquet": 5686,
+        "timings.json": 222
+      },
+      "native_tensors": {
+        "final": {
+          "dtype": "float16",
+          "sha256": "9ac64b8ece6bd94c38d169c2ad24249679fd3eb605b49155e623a79f9b38ac65",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "initial": {
+          "dtype": "float16",
+          "sha256": "f13b80cfa490ac532921b69fa0eae592086d26e8fc5ba4f9733795ea9966dfb5",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_01": {
+          "dtype": "float16",
+          "sha256": "cae6fe1d583921701a667f35e0eeeb32d0a8c4b401b7394ca8565e5afc6a5db2",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_02": {
+          "dtype": "float16",
+          "sha256": "79b38b21ff9226f75957bc93814e1a987926364221fbed15b42fdf4c84c10d1a",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_03": {
+          "dtype": "float16",
+          "sha256": "d51c645cd5cf4a349fe1da28eb375dcefe4605853e8a908203f8ca8c786f21a7",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_04": {
+          "dtype": "float16",
+          "sha256": "85ef3d14e4344c4e9edf77dafea9ccd7d0f102df4b4dca82a3d8a0fa22961753",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_05": {
+          "dtype": "float16",
+          "sha256": "3f6fd010574b0f536086d6bb8788cd68786e54e849890fe0e8bdefec83242c55",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_06": {
+          "dtype": "float16",
+          "sha256": "f84b1738e56b1e0ddd6784b2c29467a324b25bea1b5ceb07735e397abfade848",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_07": {
+          "dtype": "float16",
+          "sha256": "275669e737063db7daeef7fa6dbd10cda03fe10a87ce57747ef84df743884508",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_08": {
+          "dtype": "float16",
+          "sha256": "6394ae2f42331806709f8fd58281458f14e961f7476bed285a0b36011b136e16",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        }
+      },
+      "parity": {
+        "identical_images": 72,
+        "image_count": 72,
+        "ir_max_abs": 1.4901161193847656e-06,
+        "ir_winner_equal": true,
+        "max_pixel_abs": 0,
+        "mean_pixel_abs": 0.0,
+        "pass": true,
+        "pickscore_max_abs": 5.7220458984375e-06,
+        "validity_equal": true
+      },
+      "task_id": "2e5e0e6ebe9eafa252dfe9985dfcd6bd5a6f86aa43416fcc705fbf7e6c1057a8",
+      "validation": {
+        "all_valid": true,
+        "n_candidates": 8,
+        "n_previews": 64,
+        "native_checked": true,
+        "pass": true,
+        "redecode_pixels_identical": true,
+        "schema": "apsp-core-lite2-v1"
+      }
+    },
+    {
+      "bytes_by_file": {
+        "COMPLETE.json": 1221,
+        "candidates.parquet": 7132,
+        "delivered.parquet": 8772,
+        "latents.safetensors": 2623848,
+        "previews.parquet": 19848,
+        "prompt_features.safetensors": 1616,
+        "prompts.parquet": 21662,
+        "provenance.json": 8827,
+        "task.json": 2959,
+        "tasks.parquet": 5686,
+        "timings.json": 219
+      },
+      "native_tensors": {
+        "final": {
+          "dtype": "float16",
+          "sha256": "ae28505d7ad4a25c54c3bca77969f118b8cc14e96560da6327d1f770d8be3315",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "initial": {
+          "dtype": "float16",
+          "sha256": "47e6b46f13d2ca8a225340d54968fb7a1e56a84cc8f1239df77f3ce7e128ca86",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_01": {
+          "dtype": "float16",
+          "sha256": "41ec8b7aa49a6e5361a3185a0bad5ada537ab48f9d736903df4d579033d4669c",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_02": {
+          "dtype": "float16",
+          "sha256": "99a48dfa7a0db27965acf7884d3c611d2278f06f717d08a841a1a50f76d67b37",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_03": {
+          "dtype": "float16",
+          "sha256": "72161bff14582616522ea47fd2a635659284ad22715fbda1b1affe90c7693aaf",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_04": {
+          "dtype": "float16",
+          "sha256": "2cba947ed21c907881d335627e3045e48980694d827c18327be841ee87a62107",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_05": {
+          "dtype": "float16",
+          "sha256": "3a9f80437f3e934f3db14c1f0b33cc08291fb0e8d12f03212d7089b630f3cb0e",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_06": {
+          "dtype": "float16",
+          "sha256": "fa3644efd7d3dc3b91d24db564b9e42b499db6396db5b817b36865933f896df3",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_07": {
+          "dtype": "float16",
+          "sha256": "dc8d8885f547cd40703f49acef8e76dde53ef069f1eb919737ac1c6f30075ad9",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_08": {
+          "dtype": "float16",
+          "sha256": "302ce8a449cf993ee39372ca6a2632d43c7b57d2e56afc6c97beda6432bc5776",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        }
+      },
+      "parity": null,
+      "task_id": "bdf0d85c077ae09d53540fd7febb5f79e83db4fd1b3accd2538b13458d620266",
+      "validation": {
+        "all_valid": true,
+        "n_candidates": 8,
+        "n_previews": 64,
+        "native_checked": true,
+        "pass": true,
+        "redecode_pixels_identical": true,
+        "schema": "apsp-core-lite2-v1"
+      }
+    },
+    {
+      "bytes_by_file": {
+        "COMPLETE.json": 4061,
+        "candidates.parquet": 7132,
+        "delivered.parquet": 8923,
+        "final-s0.png": 428413,
+        "final-s1.png": 406692,
+        "final-s2.png": 440201,
+        "final-s3.png": 423032,
+        "final-s4.png": 451897,
+        "final-s5.png": 431937,
+        "final-s6.png": 456824,
+        "final-s7.png": 456152,
+        "j1-s0.png": 317547,
+        "j1-s1.png": 284616,
+        "j1-s2.png": 390076,
+        "j1-s3.png": 343123,
+        "j1-s4.png": 357365,
+        "j1-s5.png": 298806,
+        "j1-s6.png": 376800,
+        "j1-s7.png": 357388,
+        "j4-s0.png": 399430,
+        "j4-s1.png": 365613,
+        "j4-s2.png": 382455,
+        "j4-s3.png": 389948,
+        "j4-s4.png": 411888,
+        "j4-s5.png": 393856,
+        "j4-s6.png": 401941,
+        "j4-s7.png": 385841,
+        "j8-s0.png": 426249,
+        "j8-s1.png": 404646,
+        "j8-s2.png": 438218,
+        "j8-s3.png": 421515,
+        "j8-s4.png": 450329,
+        "j8-s5.png": 430635,
+        "j8-s6.png": 455243,
+        "j8-s7.png": 453881,
+        "latents.safetensors": 2623848,
+        "previews.parquet": 20101,
+        "prompt_features.safetensors": 1616,
+        "prompts.parquet": 20673,
+        "provenance.json": 8827,
+        "task.json": 2312,
+        "tasks.parquet": 5686,
+        "timings.json": 221
+      },
+      "native_tensors": {
+        "final": {
+          "dtype": "float16",
+          "sha256": "a25aee97832d5814834db82d1b6e5fb00c8375da004202fc431fbc2c82a2c2a6",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "initial": {
+          "dtype": "float16",
+          "sha256": "2a9677907b50b3c0e9ce74c7fd8df9c2806f198e0202919c68bc3c067673026e",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_01": {
+          "dtype": "float16",
+          "sha256": "7996707295bb71a261ab87164ff14c8c71a41b07fa1b980e71bc3bca4bfdf3aa",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_02": {
+          "dtype": "float16",
+          "sha256": "ba843d2f04d00893b6f8865227ec5d61a21af93945c2d5bbcdb483c9d9f3e4d1",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_03": {
+          "dtype": "float16",
+          "sha256": "c7bb48357ddbb3fca42695beccfc453aa6c70b679322e58d87e257c6cb1643be",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_04": {
+          "dtype": "float16",
+          "sha256": "bba5dc38a22e53db8e407efb9fca9368c8f35f4b21aa3526769fa8f7c73401ae",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_05": {
+          "dtype": "float16",
+          "sha256": "91f2dc48ac9240fc836aec6e78e6faebc9a6438fa21133d5fb031c12cecd27de",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_06": {
+          "dtype": "float16",
+          "sha256": "f23f77584722d4eb501e176f09748fe7fe4d41fa5b33662ca39b5e99c995ae25",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_07": {
+          "dtype": "float16",
+          "sha256": "7374d81092d082a8a09cef49f1073c91d0c3ae4227a806f81f781edde2cdbeab",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_08": {
+          "dtype": "float16",
+          "sha256": "13275557a615f4b58ca8871bcfd4c0a701ffe20273d33a0807113662210a7199",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        }
+      },
+      "parity": {
+        "identical_images": 72,
+        "image_count": 72,
+        "ir_max_abs": 1.6093254089355469e-06,
+        "ir_winner_equal": true,
+        "max_pixel_abs": 0,
+        "mean_pixel_abs": 0.0,
+        "pass": true,
+        "pickscore_max_abs": 7.62939453125e-06,
+        "validity_equal": true
+      },
+      "task_id": "45e45ac8921d641190513e903ce2d745e6cfd66dc2b50dd5ef1c9068faa54a58",
+      "validation": {
+        "all_valid": true,
+        "n_candidates": 8,
+        "n_previews": 64,
+        "native_checked": true,
+        "pass": true,
+        "redecode_pixels_identical": true,
+        "schema": "apsp-core-lite2-v1"
+      }
+    },
+    {
+      "bytes_by_file": {
+        "COMPLETE.json": 1221,
+        "candidates.parquet": 7131,
+        "delivered.parquet": 8770,
+        "latents.safetensors": 2623848,
+        "previews.parquet": 19860,
+        "prompt_features.safetensors": 1616,
+        "prompts.parquet": 20673,
+        "provenance.json": 8827,
+        "task.json": 2314,
+        "tasks.parquet": 5686,
+        "timings.json": 221
+      },
+      "native_tensors": {
+        "final": {
+          "dtype": "float16",
+          "sha256": "44696e04db81adea163d8cd47382334081c6da008ac2118e52edc2653d8d8114",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "initial": {
+          "dtype": "float16",
+          "sha256": "978d3fda998983c65f8bf2ca823b52d10fc0655e6022c69e795a2296363ddbed",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_01": {
+          "dtype": "float16",
+          "sha256": "ba804168209e3a20fac9150858e1d1594e39efa0570aa85652b83495fc2b2a33",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_02": {
+          "dtype": "float16",
+          "sha256": "b6e518f2c144334a072f2dc891d400fff7a81f01d7f589b828cf53c0cf945c95",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_03": {
+          "dtype": "float16",
+          "sha256": "e880e91bc9c786ad447295c3be3f99ecb6b031bed93e46555fc5128569dd62e8",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_04": {
+          "dtype": "float16",
+          "sha256": "d1fc44004367426db39bf5f01a1bf3d5d2a1f8a61337cac35cccd50cfeef3a3b",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_05": {
+          "dtype": "float16",
+          "sha256": "25d4edc6257c2f42232b21de39eb0cd3b64377e14fb4f7692d4d4965d342fe83",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_06": {
+          "dtype": "float16",
+          "sha256": "d8d00b974a50f910e2013af77406fd77b3a4885b84150039d52661e719d4118a",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_07": {
+          "dtype": "float16",
+          "sha256": "3d7ae003197b825cc6174fec231d30c4c0886b1feab5502db897e99b60b5f06f",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_08": {
+          "dtype": "float16",
+          "sha256": "e44bf08951afecb6f843dba4b1dbeba976d153ba367f512bec159fc38867f6e0",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        }
+      },
+      "parity": null,
+      "task_id": "dcc7d3b2031fc2229cd5bf8d9da54ef20c50451b95b23a96c9271fe70f3c853d",
+      "validation": {
+        "all_valid": true,
+        "n_candidates": 8,
+        "n_previews": 64,
+        "native_checked": true,
+        "pass": true,
+        "redecode_pixels_identical": true,
+        "schema": "apsp-core-lite2-v1"
+      }
+    },
+    {
+      "bytes_by_file": {
+        "COMPLETE.json": 4061,
+        "candidates.parquet": 7132,
+        "delivered.parquet": 8925,
+        "final-s0.png": 553755,
+        "final-s1.png": 537547,
+        "final-s2.png": 498935,
+        "final-s3.png": 540861,
+        "final-s4.png": 489493,
+        "final-s5.png": 515500,
+        "final-s6.png": 513434,
+        "final-s7.png": 532118,
+        "j1-s0.png": 427164,
+        "j1-s1.png": 436489,
+        "j1-s2.png": 385650,
+        "j1-s3.png": 329940,
+        "j1-s4.png": 391545,
+        "j1-s5.png": 426520,
+        "j1-s6.png": 436943,
+        "j1-s7.png": 372260,
+        "j4-s0.png": 463378,
+        "j4-s1.png": 443660,
+        "j4-s2.png": 403224,
+        "j4-s3.png": 447442,
+        "j4-s4.png": 398805,
+        "j4-s5.png": 431656,
+        "j4-s6.png": 437346,
+        "j4-s7.png": 438022,
+        "j8-s0.png": 550873,
+        "j8-s1.png": 534810,
+        "j8-s2.png": 494640,
+        "j8-s3.png": 537593,
+        "j8-s4.png": 485296,
+        "j8-s5.png": 512465,
+        "j8-s6.png": 509422,
+        "j8-s7.png": 528889,
+        "latents.safetensors": 2623848,
+        "previews.parquet": 20102,
+        "prompt_features.safetensors": 1616,
+        "prompts.parquet": 17522,
+        "provenance.json": 8827,
+        "task.json": 1880,
+        "tasks.parquet": 5686,
+        "timings.json": 220
+      },
+      "native_tensors": {
+        "final": {
+          "dtype": "float16",
+          "sha256": "3207ed38806f698de892f70ac9db7549a06448015d16fb74335c82ecade67c42",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "initial": {
+          "dtype": "float16",
+          "sha256": "81b02cb8f8e63ee84caf71d1d088bde396d1617c773510e1a4d391e697e910c2",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_01": {
+          "dtype": "float16",
+          "sha256": "15e32c533af70d5d005e76b63082e2870a2815b06587545710a7dc3c1b9df13c",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_02": {
+          "dtype": "float16",
+          "sha256": "2cbf5dbaf3ec952e21ca3a31449f4c6f5e2ef3b59b7c0ee8f3a4db6ef6dd9b38",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_03": {
+          "dtype": "float16",
+          "sha256": "56813f1cd7c4aa8fc08dc67b267a508cb552a6c85e6c98f5f0cbe90d98e70e6a",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_04": {
+          "dtype": "float16",
+          "sha256": "44ba119f45cb44de2a9ce9d5667b96926cb6b17eed9909e25ad8342530b7a05f",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_05": {
+          "dtype": "float16",
+          "sha256": "695bcf670e691dfa820185517464600e344917fba69f3b69fe45fe8b9d28f363",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_06": {
+          "dtype": "float16",
+          "sha256": "c56cfcbb3f01cd23d81131be10b1755dff6ec228f9f6266659cc14e78bb41725",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_07": {
+          "dtype": "float16",
+          "sha256": "39d7fbe2996e8fae4b193f080f361881e4f3e092bf86b7e9daa911fb3008cd04",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_08": {
+          "dtype": "float16",
+          "sha256": "ee503cfa33e1e62a87a649c7042f6b566fab94a0d2f52985d5fd70f82f5d5ef5",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        }
+      },
+      "parity": {
+        "identical_images": 72,
+        "image_count": 72,
+        "ir_max_abs": 5.960464477539062e-07,
+        "ir_winner_equal": true,
+        "max_pixel_abs": 0,
+        "mean_pixel_abs": 0.0,
+        "pass": true,
+        "pickscore_max_abs": 5.7220458984375e-06,
+        "validity_equal": true
+      },
+      "task_id": "d9d6585b02551962c4c4c13f55853586f6e70c9ee06e416b3d41b827b9c4bcee",
+      "validation": {
+        "all_valid": true,
+        "n_candidates": 8,
+        "n_previews": 64,
+        "native_checked": true,
+        "pass": true,
+        "redecode_pixels_identical": true,
+        "schema": "apsp-core-lite2-v1"
+      }
+    },
+    {
+      "bytes_by_file": {
+        "COMPLETE.json": 1221,
+        "candidates.parquet": 7130,
+        "delivered.parquet": 8767,
+        "latents.safetensors": 2623848,
+        "previews.parquet": 19856,
+        "prompt_features.safetensors": 1616,
+        "prompts.parquet": 17522,
+        "provenance.json": 8827,
+        "task.json": 1882,
+        "tasks.parquet": 5686,
+        "timings.json": 220
+      },
+      "native_tensors": {
+        "final": {
+          "dtype": "float16",
+          "sha256": "fee46d89a5f11cc574bb47919f738adb90a81c8e49b90c6edfcdbca43fc6d61c",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "initial": {
+          "dtype": "float16",
+          "sha256": "39dbfa105a33e53954544a89977b997214572867452bdf125f84b517769ae4bd",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_01": {
+          "dtype": "float16",
+          "sha256": "6303d30b6de67a2fe9c25f06b056f258deb4f5283c86c5f7340d2bebeeddbeb9",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_02": {
+          "dtype": "float16",
+          "sha256": "0e683396265010f8dda3982151ff8ea6e163d3fd35b9fd2ec38eeac23d942167",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_03": {
+          "dtype": "float16",
+          "sha256": "0d408e000022308a4d817d002a8297b4fb82effb0f51b47a3efa66d63029c196",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_04": {
+          "dtype": "float16",
+          "sha256": "011a0e9bdf901a77329b61f320e94711147ec096a6a565000497aedbf3062c27",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_05": {
+          "dtype": "float16",
+          "sha256": "72452a7ab28ab0f1c281aaf6983f489b42d5bef48d155ae26c2dad4f40f952ba",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_06": {
+          "dtype": "float16",
+          "sha256": "62cc17d7ce1954912c9101c5901d56077b31294e1ca3c512f0a6be3f7f42f2c4",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_07": {
+          "dtype": "float16",
+          "sha256": "aaf7a6b1b9f078c10ebe9b915dc7807d9d99e80e3c05a67b3c56a2d1eb54ea90",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_08": {
+          "dtype": "float16",
+          "sha256": "82ef5ed4334d6c5e126955df8e5c680f8a0b5750307525737f72854d3cfc40a1",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        }
+      },
+      "parity": null,
+      "task_id": "87a672260d35848b606630a3deaf8058b4631d874819a4330fed718b7bd34451",
+      "validation": {
+        "all_valid": true,
+        "n_candidates": 8,
+        "n_previews": 64,
+        "native_checked": true,
+        "pass": true,
+        "redecode_pixels_identical": true,
+        "schema": "apsp-core-lite2-v1"
+      }
+    },
+    {
+      "bytes_by_file": {
+        "COMPLETE.json": 4061,
+        "candidates.parquet": 7132,
+        "delivered.parquet": 8921,
+        "final-s0.png": 404060,
+        "final-s1.png": 388367,
+        "final-s2.png": 410568,
+        "final-s3.png": 390463,
+        "final-s4.png": 413793,
+        "final-s5.png": 402418,
+        "final-s6.png": 373526,
+        "final-s7.png": 367672,
+        "j1-s0.png": 344763,
+        "j1-s1.png": 316536,
+        "j1-s2.png": 336426,
+        "j1-s3.png": 298611,
+        "j1-s4.png": 356156,
+        "j1-s5.png": 331301,
+        "j1-s6.png": 324654,
+        "j1-s7.png": 284672,
+        "j4-s0.png": 377675,
+        "j4-s1.png": 359235,
+        "j4-s2.png": 382343,
+        "j4-s3.png": 365873,
+        "j4-s4.png": 372794,
+        "j4-s5.png": 371353,
+        "j4-s6.png": 352326,
+        "j4-s7.png": 346413,
+        "j8-s0.png": 400800,
+        "j8-s1.png": 385783,
+        "j8-s2.png": 407572,
+        "j8-s3.png": 387916,
+        "j8-s4.png": 409782,
+        "j8-s5.png": 398721,
+        "j8-s6.png": 370200,
+        "j8-s7.png": 364790,
+        "latents.safetensors": 2623848,
+        "previews.parquet": 20113,
+        "prompt_features.safetensors": 1616,
+        "prompts.parquet": 21750,
+        "provenance.json": 8827,
+        "task.json": 2959,
+        "tasks.parquet": 5686,
+        "timings.json": 219
+      },
+      "native_tensors": {
+        "final": {
+          "dtype": "float16",
+          "sha256": "8981f418951bdc71547abc90e99fd8beaedc783228013828ba5638e704a2be75",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "initial": {
+          "dtype": "float16",
+          "sha256": "460e2ad3ed25911c9f9865cf3e4d5c9bb8cf8371845cac029164278fec30f1e5",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_01": {
+          "dtype": "float16",
+          "sha256": "9a6ab857f011fd9f0da33b0e87fe81becec2dbda1951e8b3d7a355209ab1f726",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_02": {
+          "dtype": "float16",
+          "sha256": "5e9a547afa60f601110201d41844ae2f4c9cdb607e793c33429fd66ee863c4e8",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_03": {
+          "dtype": "float16",
+          "sha256": "b23fade8933aeddbdaabeef22a5ca780c8e3fb04f0fbee429a498d218c6f7f91",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_04": {
+          "dtype": "float16",
+          "sha256": "1a76e5acd7df644a609e1d3999e4c5b5c7219b2ec7135d780adfeb02656c000c",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_05": {
+          "dtype": "float16",
+          "sha256": "213ba844289e2fe93421f0da297f123feb5875539cf28cf4a9a5a61510181794",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_06": {
+          "dtype": "float16",
+          "sha256": "457b792497c52681d66ccc54d9ef44c8734a6d2c1371172c4890fb760ffb0dd0",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_07": {
+          "dtype": "float16",
+          "sha256": "40dfc05a486bbada3c3e3c317879b472357337b92d4862bb03302d1822b9909b",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_08": {
+          "dtype": "float16",
+          "sha256": "42f61565a59232c69eebe1aeea15a086cdc3fa03ab3979b4d2a5027d356e460e",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        }
+      },
+      "parity": {
+        "identical_images": 72,
+        "image_count": 72,
+        "ir_max_abs": 1.3113021850585938e-06,
+        "ir_winner_equal": true,
+        "max_pixel_abs": 0,
+        "mean_pixel_abs": 0.0,
+        "pass": true,
+        "pickscore_max_abs": 5.7220458984375e-06,
+        "validity_equal": true
+      },
+      "task_id": "e66b07d7f0ac36535966904b913ccc78c6624664f7b778dab90ce1483dea53c6",
+      "validation": {
+        "all_valid": true,
+        "n_candidates": 8,
+        "n_previews": 64,
+        "native_checked": true,
+        "pass": true,
+        "redecode_pixels_identical": true,
+        "schema": "apsp-core-lite2-v1"
+      }
+    },
+    {
+      "bytes_by_file": {
+        "COMPLETE.json": 1221,
+        "candidates.parquet": 7130,
+        "delivered.parquet": 8771,
+        "latents.safetensors": 2623848,
+        "previews.parquet": 19866,
+        "prompt_features.safetensors": 1616,
+        "prompts.parquet": 21750,
+        "provenance.json": 8827,
+        "task.json": 2962,
+        "tasks.parquet": 5686,
+        "timings.json": 220
+      },
+      "native_tensors": {
+        "final": {
+          "dtype": "float16",
+          "sha256": "b0d69bac79939fbafe466b6d33c998f87b5f15592e1cd79d1c4782299b851912",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "initial": {
+          "dtype": "float16",
+          "sha256": "5ed2b1dfb6748fda35e978c9b6b61c22bef1b060d3937722ccdf2714311ff186",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_01": {
+          "dtype": "float16",
+          "sha256": "95c6603f4f2757094cdc066ff347ffeba4b8669cea08e8c3c776f37cee3c6652",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_02": {
+          "dtype": "float16",
+          "sha256": "b762b816c4455f7ed52e1b6b5bea58f7c9ba2ef4ee9a9e5c91273e93d88406c3",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_03": {
+          "dtype": "float16",
+          "sha256": "ef2b5af441050d127d9afa6ee10e5f84ce73e89c2c1fd9012f2239fe6b8b01ed",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_04": {
+          "dtype": "float16",
+          "sha256": "28bc8cc4f646a57d9a3eb074568e83fe5fd5ff9e66a054bf3702420870e356af",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_05": {
+          "dtype": "float16",
+          "sha256": "c983b407182e9a55f064c9d55b6abf76ea057f37c96d2023243cd584721681fc",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_06": {
+          "dtype": "float16",
+          "sha256": "ffbe624fb1dec172957786e2f7c9c30fcc4a297fbd5f6520adf4de18ab2cf027",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_07": {
+          "dtype": "float16",
+          "sha256": "1bdbf411f2352dc6ad324f5171cdbe8dddbd1d8b06d26b6c66f98fbc19a92484",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_08": {
+          "dtype": "float16",
+          "sha256": "dcaadd6b77b95e310000379f06a0a5a578687b4fd4455809d91792ead23d365b",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        }
+      },
+      "parity": null,
+      "task_id": "27bb0862081cc9e8c05263cecaee58c2d090376fae2e122b2cbfc0cc9835f07a",
+      "validation": {
+        "all_valid": true,
+        "n_candidates": 8,
+        "n_previews": 64,
+        "native_checked": true,
+        "pass": true,
+        "redecode_pixels_identical": true,
+        "schema": "apsp-core-lite2-v1"
+      }
+    },
+    {
+      "bytes_by_file": {
+        "COMPLETE.json": 4061,
+        "candidates.parquet": 7131,
+        "delivered.parquet": 8918,
+        "final-s0.png": 480544,
+        "final-s1.png": 562425,
+        "final-s2.png": 513336,
+        "final-s3.png": 454067,
+        "final-s4.png": 520880,
+        "final-s5.png": 489921,
+        "final-s6.png": 503892,
+        "final-s7.png": 543661,
+        "j1-s0.png": 480857,
+        "j1-s1.png": 576329,
+        "j1-s2.png": 545875,
+        "j1-s3.png": 460859,
+        "j1-s4.png": 486684,
+        "j1-s5.png": 476254,
+        "j1-s6.png": 511363,
+        "j1-s7.png": 469226,
+        "j4-s0.png": 435615,
+        "j4-s1.png": 466932,
+        "j4-s2.png": 454969,
+        "j4-s3.png": 406388,
+        "j4-s4.png": 448232,
+        "j4-s5.png": 434154,
+        "j4-s6.png": 425587,
+        "j4-s7.png": 480451,
+        "j8-s0.png": 479816,
+        "j8-s1.png": 558823,
+        "j8-s2.png": 509612,
+        "j8-s3.png": 450767,
+        "j8-s4.png": 518033,
+        "j8-s5.png": 486499,
+        "j8-s6.png": 500444,
+        "j8-s7.png": 540991,
+        "latents.safetensors": 2623848,
+        "previews.parquet": 20094,
+        "prompt_features.safetensors": 1616,
+        "prompts.parquet": 15657,
+        "provenance.json": 8827,
+        "task.json": 1689,
+        "tasks.parquet": 5686,
+        "timings.json": 219
+      },
+      "native_tensors": {
+        "final": {
+          "dtype": "float16",
+          "sha256": "4ca03653aaf06616f6890e9a07287264afe77c52e98c3f7e9d4c487d3b444cb2",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "initial": {
+          "dtype": "float16",
+          "sha256": "1433a8e9624fc48903335be7579466e8b7b8e3e7ca7cf224825b7fd337421406",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_01": {
+          "dtype": "float16",
+          "sha256": "7470ce6acccffd87670db1f665cca6cf559a6c358687a6e1600b23869a846999",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_02": {
+          "dtype": "float16",
+          "sha256": "3cb562d91912415bbc2672dc75e3997b7005546fea1c84bb232b1f850a6d5354",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_03": {
+          "dtype": "float16",
+          "sha256": "9896f585d6e48d33f7c49349e4e06113dd8e352ef5cd347344d036d43b905f9a",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_04": {
+          "dtype": "float16",
+          "sha256": "2756f18ded4385fc0468c9d87c73a85c44043a5ebfcd67049f95d838aafa7a0d",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_05": {
+          "dtype": "float16",
+          "sha256": "bf583c1fe081056f4adb8189a22f508fba72a2b8a0516c4d76c0bf925b2ac053",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_06": {
+          "dtype": "float16",
+          "sha256": "2014f9427b7e624c4eccc7ce525717fcd91221cf11b3b545083c362ef10439c6",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_07": {
+          "dtype": "float16",
+          "sha256": "4bb67bff181fe92f9847dcf983263e640b7f545052fdfe5b5121d00a4fe60736",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_08": {
+          "dtype": "float16",
+          "sha256": "df25df9e46b0bf7d443173f9dd1cb443b1e6f507a6b56c1deb6eb40e2d8d4db3",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        }
+      },
+      "parity": {
+        "identical_images": 72,
+        "image_count": 72,
+        "ir_max_abs": 9.5367431640625e-07,
+        "ir_winner_equal": true,
+        "max_pixel_abs": 0,
+        "mean_pixel_abs": 0.0,
+        "pass": true,
+        "pickscore_max_abs": 5.7220458984375e-06,
+        "validity_equal": true
+      },
+      "task_id": "6d050f2584868e0687bb2e646bc60f623149b862dcbfffe314d1282c212b0fb7",
+      "validation": {
+        "all_valid": true,
+        "n_candidates": 8,
+        "n_previews": 64,
+        "native_checked": true,
+        "pass": true,
+        "redecode_pixels_identical": true,
+        "schema": "apsp-core-lite2-v1"
+      }
+    },
+    {
+      "bytes_by_file": {
+        "COMPLETE.json": 1221,
+        "candidates.parquet": 7132,
+        "delivered.parquet": 8766,
+        "latents.safetensors": 2623848,
+        "previews.parquet": 19836,
+        "prompt_features.safetensors": 1616,
+        "prompts.parquet": 15657,
+        "provenance.json": 8827,
+        "task.json": 1690,
+        "tasks.parquet": 5686,
+        "timings.json": 220
+      },
+      "native_tensors": {
+        "final": {
+          "dtype": "float16",
+          "sha256": "f7b1b0d8f2c3661fdba66e02ff1967b31e427132f4a3d3037b9673d4a311913e",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "initial": {
+          "dtype": "float16",
+          "sha256": "3f600f63431a8aac6669950abe0403a8d51aa640193585a280b45d0f8dc5a145",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_01": {
+          "dtype": "float16",
+          "sha256": "b8ca379402231d283d18e663dff5d2179542d1432092b0144dfb6140f35f8200",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_02": {
+          "dtype": "float16",
+          "sha256": "5d5feac12ad26da820fbacba3f4ecfb44a1cee10e9959055ff0df7a73b5f8ece",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_03": {
+          "dtype": "float16",
+          "sha256": "2af88e7011e71f0db4e7bf7aaf72757e977b5b7aa5a7ba75681489bd3795a78d",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_04": {
+          "dtype": "float16",
+          "sha256": "a6159e38a48f741d201d70883c5098839c39cc357d061d5d7819921d92e6fb10",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_05": {
+          "dtype": "float16",
+          "sha256": "4396df07629d5680474e52c1badcc4d2dbfa53ce7ad419e0c87e403d254d3528",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_06": {
+          "dtype": "float16",
+          "sha256": "a749a946e7038bf1afcf8e7146dcdf9d4009707ffdb4bcd46c3ca176f70bfb3f",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_07": {
+          "dtype": "float16",
+          "sha256": "bbbff526d8cf784b4b66a8119d5494967c7c7a0d90274f3d64dfae5877c71126",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_08": {
+          "dtype": "float16",
+          "sha256": "0db72b6c05ea5359865e285405f7b7196dcd4468b9421ffe54580366b1ea2f39",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        }
+      },
+      "parity": null,
+      "task_id": "f1b07ebcd0072ab206d0bfce39d1fea8b1b813b065ffbbac2830d453588def96",
+      "validation": {
+        "all_valid": true,
+        "n_candidates": 8,
+        "n_previews": 64,
+        "native_checked": true,
+        "pass": true,
+        "redecode_pixels_identical": true,
+        "schema": "apsp-core-lite2-v1"
+      }
+    },
+    {
+      "bytes_by_file": {
+        "COMPLETE.json": 4061,
+        "candidates.parquet": 7132,
+        "delivered.parquet": 8921,
+        "final-s0.png": 520177,
+        "final-s1.png": 519442,
+        "final-s2.png": 562897,
+        "final-s3.png": 604926,
+        "final-s4.png": 559892,
+        "final-s5.png": 480269,
+        "final-s6.png": 577858,
+        "final-s7.png": 484374,
+        "j1-s0.png": 364331,
+        "j1-s1.png": 437422,
+        "j1-s2.png": 425912,
+        "j1-s3.png": 435160,
+        "j1-s4.png": 469774,
+        "j1-s5.png": 417284,
+        "j1-s6.png": 361113,
+        "j1-s7.png": 422673,
+        "j4-s0.png": 468036,
+        "j4-s1.png": 499341,
+        "j4-s2.png": 517492,
+        "j4-s3.png": 571307,
+        "j4-s4.png": 530311,
+        "j4-s5.png": 492456,
+        "j4-s6.png": 541337,
+        "j4-s7.png": 434509,
+        "j8-s0.png": 518191,
+        "j8-s1.png": 516671,
+        "j8-s2.png": 559891,
+        "j8-s3.png": 604492,
+        "j8-s4.png": 557978,
+        "j8-s5.png": 506323,
+        "j8-s6.png": 575278,
+        "j8-s7.png": 481003,
+        "latents.safetensors": 2623848,
+        "previews.parquet": 20100,
+        "prompt_features.safetensors": 1616,
+        "prompts.parquet": 19121,
+        "provenance.json": 8827,
+        "task.json": 2085,
+        "tasks.parquet": 5686,
+        "timings.json": 220
+      },
+      "native_tensors": {
+        "final": {
+          "dtype": "float16",
+          "sha256": "13614a2097b64b5e75b39967ebd2041ce061053cbddaf1ed938d97528d82eaa1",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "initial": {
+          "dtype": "float16",
+          "sha256": "b9b5344f18bfa73c89beed3cc5cbeb696711b4b1d642a9aa36b7dd6441a6e04e",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_01": {
+          "dtype": "float16",
+          "sha256": "9f49e7a6725697c6bc8a038b1fe0bbf95a1607dac6b633ef781e4a3214a54a36",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_02": {
+          "dtype": "float16",
+          "sha256": "1c84c3f8245173a4fa7b52af992b1b167e93945df69c1fe1e13c820aae1ddda5",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_03": {
+          "dtype": "float16",
+          "sha256": "98f96ba4fef6dfe34f8642fc2d1b7aca7e0a97cebe57642700b46bc9fa167511",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_04": {
+          "dtype": "float16",
+          "sha256": "c89a4dd873547913ca5da9f4826f290bff5ecadbf8d0c944f5d88b68e16f1241",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_05": {
+          "dtype": "float16",
+          "sha256": "7525a33eacbd1f763c3b2a72b0b5d7bb2cbcd2ccf2fc779333b3216ce04fafb3",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_06": {
+          "dtype": "float16",
+          "sha256": "8512ba7dab663b1b6d48b1b37ed768f617c681a97e886ff8138c35709b526da6",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_07": {
+          "dtype": "float16",
+          "sha256": "2b0cfe36cd6a047c6a4e8bea58ef4a633b75a2248135b74fccd384080f4ca0a3",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_08": {
+          "dtype": "float16",
+          "sha256": "72acf656a13d756cff60e9431aee63219e942df560e7482b8352162da0ac7035",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        }
+      },
+      "parity": {
+        "identical_images": 72,
+        "image_count": 72,
+        "ir_max_abs": 1.0132789611816406e-06,
+        "ir_winner_equal": true,
+        "max_pixel_abs": 0,
+        "mean_pixel_abs": 0.0,
+        "pass": true,
+        "pickscore_max_abs": 5.7220458984375e-06,
+        "validity_equal": true
+      },
+      "task_id": "05a39f7635cd85fcb7520fcee19e65deeb45a69561ee9c386c9470060c80568a",
+      "validation": {
+        "all_valid": true,
+        "n_candidates": 8,
+        "n_previews": 64,
+        "native_checked": true,
+        "pass": true,
+        "redecode_pixels_identical": true,
+        "schema": "apsp-core-lite2-v1"
+      }
+    },
+    {
+      "bytes_by_file": {
+        "COMPLETE.json": 1221,
+        "candidates.parquet": 7132,
+        "delivered.parquet": 8765,
+        "latents.safetensors": 2623848,
+        "previews.parquet": 19846,
+        "prompt_features.safetensors": 1616,
+        "prompts.parquet": 19121,
+        "provenance.json": 8827,
+        "task.json": 2088,
+        "tasks.parquet": 5686,
+        "timings.json": 220
+      },
+      "native_tensors": {
+        "final": {
+          "dtype": "float16",
+          "sha256": "8b1321341108a0c900cc3a249924357527f58cd450331903b259dc93e2648874",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "initial": {
+          "dtype": "float16",
+          "sha256": "57d20afc51b7d80e161057f00ff88a7f59aeb750b6118e4610a44c49c66bb249",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_01": {
+          "dtype": "float16",
+          "sha256": "565af790abaf6fa10a92f8f282ed1a153763dfff957f940aae9fb8cecebccce7",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_02": {
+          "dtype": "float16",
+          "sha256": "5239d9a103ae09c36606309b38cc296546b315b81bb080ab8510b73e9d2c7a28",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_03": {
+          "dtype": "float16",
+          "sha256": "b3a963ae1638a4a44794919c84df9a1d4c74cad8f58f3aee4b9857ab604239c1",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_04": {
+          "dtype": "float16",
+          "sha256": "a04b6826d136c69fd9bf4bb012d189ea7f24534f10b7528304613d577e306565",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_05": {
+          "dtype": "float16",
+          "sha256": "e18285de56084cf8d2360b31d1f1438a77874400a4327f754fb815bb82e5c492",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_06": {
+          "dtype": "float16",
+          "sha256": "6f1ca3d0bca7dc3101689c4560b15df03ef5d6814bd89fb4197f5ec34a8cb81d",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_07": {
+          "dtype": "float16",
+          "sha256": "8bd2f764591f1952c0385aa4143f638e1cd6afa96a4c39674e9fb4151c94f75b",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_08": {
+          "dtype": "float16",
+          "sha256": "209c588a9421fefed7dc4c8db151d518d3eaf3cb50dcdc8564ef67a98a0eb293",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        }
+      },
+      "parity": null,
+      "task_id": "e892fe31766752f1a32165116bdb8a355c6e06acb3cf48886997a3400be2ed2b",
+      "validation": {
+        "all_valid": true,
+        "n_candidates": 8,
+        "n_previews": 64,
+        "native_checked": true,
+        "pass": true,
+        "redecode_pixels_identical": true,
+        "schema": "apsp-core-lite2-v1"
+      }
+    },
+    {
+      "bytes_by_file": {
+        "COMPLETE.json": 4061,
+        "candidates.parquet": 7125,
+        "delivered.parquet": 8923,
+        "final-s0.png": 498135,
+        "final-s1.png": 514737,
+        "final-s2.png": 498045,
+        "final-s3.png": 420433,
+        "final-s4.png": 507879,
+        "final-s5.png": 433519,
+        "final-s6.png": 465760,
+        "final-s7.png": 399418,
+        "j1-s0.png": 384748,
+        "j1-s1.png": 455427,
+        "j1-s2.png": 444997,
+        "j1-s3.png": 333135,
+        "j1-s4.png": 457288,
+        "j1-s5.png": 427045,
+        "j1-s6.png": 375006,
+        "j1-s7.png": 349658,
+        "j4-s0.png": 431871,
+        "j4-s1.png": 463707,
+        "j4-s2.png": 442217,
+        "j4-s3.png": 374165,
+        "j4-s4.png": 449274,
+        "j4-s5.png": 382886,
+        "j4-s6.png": 400989,
+        "j4-s7.png": 365781,
+        "j8-s0.png": 494054,
+        "j8-s1.png": 512176,
+        "j8-s2.png": 494103,
+        "j8-s3.png": 417911,
+        "j8-s4.png": 505435,
+        "j8-s5.png": 429645,
+        "j8-s6.png": 461678,
+        "j8-s7.png": 395075,
+        "latents.safetensors": 2623848,
+        "previews.parquet": 20082,
+        "prompt_features.safetensors": 1616,
+        "prompts.parquet": 22068,
+        "provenance.json": 8827,
+        "task.json": 3024,
+        "tasks.parquet": 5686,
+        "timings.json": 219
+      },
+      "native_tensors": {
+        "final": {
+          "dtype": "float16",
+          "sha256": "be5278628b6553519fdfcfed46779cd55ce93b8c970648b9c1eb51a33ab21444",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "initial": {
+          "dtype": "float16",
+          "sha256": "278253429df831b8b279de26d4f7f78f48977cf20bc80382735c84652389df4d",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_01": {
+          "dtype": "float16",
+          "sha256": "eac9f2b7a6cb8b3fe6c66467c237c16c6d7e1f50475d4ae18da3d02da22aed85",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_02": {
+          "dtype": "float16",
+          "sha256": "8cd7014984cabfc0a48583d4ecf1ec31503bfc86c5cfc1a8327a395fe413eec1",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_03": {
+          "dtype": "float16",
+          "sha256": "d0ffb872a0a56922bf8dd978247e9610b1171e23601c40f7aacf7d4df9ee4524",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_04": {
+          "dtype": "float16",
+          "sha256": "5d5c17dc0299d2f9fac7175b3b039750422e87bce6ad55f79ef9215071078924",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_05": {
+          "dtype": "float16",
+          "sha256": "168b99a7c690698fc6d296e7f13ee8050b6056ebb923e5c1358215f490252c11",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_06": {
+          "dtype": "float16",
+          "sha256": "a4a35b76e2f56ff76888b1ccd72f89b66252c109f92e320354c2e43ec6f5899c",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_07": {
+          "dtype": "float16",
+          "sha256": "dcedbe5ea1c4809c93e0a1d83f810815bf66c63faef47e82fed0aa5f9ea14826",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_08": {
+          "dtype": "float16",
+          "sha256": "cf4a6a9d588bbd229acd7bc11d04a7825975be9da2c196cdc370cbcca9778733",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        }
+      },
+      "parity": {
+        "identical_images": 72,
+        "image_count": 72,
+        "ir_max_abs": 1.9550323486328125e-05,
+        "ir_winner_equal": true,
+        "max_pixel_abs": 0,
+        "mean_pixel_abs": 0.0,
+        "pass": true,
+        "pickscore_max_abs": 5.7220458984375e-06,
+        "validity_equal": true
+      },
+      "task_id": "85f90f43fd484b3fb7928ec2128c1bd365ff6e615613ce0bea886b3bce89b92e",
+      "validation": {
+        "all_valid": true,
+        "n_candidates": 8,
+        "n_previews": 64,
+        "native_checked": true,
+        "pass": true,
+        "redecode_pixels_identical": true,
+        "schema": "apsp-core-lite2-v1"
+      }
+    },
+    {
+      "bytes_by_file": {
+        "COMPLETE.json": 1221,
+        "candidates.parquet": 7132,
+        "delivered.parquet": 8770,
+        "latents.safetensors": 2623848,
+        "previews.parquet": 19858,
+        "prompt_features.safetensors": 1616,
+        "prompts.parquet": 22068,
+        "provenance.json": 8827,
+        "task.json": 3027,
+        "tasks.parquet": 5686,
+        "timings.json": 221
+      },
+      "native_tensors": {
+        "final": {
+          "dtype": "float16",
+          "sha256": "444b7cd3bcb24efe6f81cff36e3d9a23eea9372d19152d963662b3651f542bf3",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "initial": {
+          "dtype": "float16",
+          "sha256": "b57c5a5660758650c234745049de1ea45277933be57afd820caef03336bef7fc",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_01": {
+          "dtype": "float16",
+          "sha256": "34f946b0669fae097c41810b5a5eaa636865c187561233bcb45ac547970185f7",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_02": {
+          "dtype": "float16",
+          "sha256": "578de427449368b341888cb5896499ed3af3130aeaf4b10f228fc57066dedecf",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_03": {
+          "dtype": "float16",
+          "sha256": "2ddd208f2ac7747cd188d5af0993d665915bde14285d8a366d4c1be64dd0e42b",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_04": {
+          "dtype": "float16",
+          "sha256": "c7522a752ef9a241c4ad0b87b89b799ff631426262272ecc27c5b19f86e58a44",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_05": {
+          "dtype": "float16",
+          "sha256": "301c82004c7aeb58cb984be19b0b3bca6593a309d2c1f461ebcf26dcee8e13fe",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_06": {
+          "dtype": "float16",
+          "sha256": "ca19677f50f1753bd576b01c9a1b23f897c4d4c5320779e406c8d05856a1aed7",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_07": {
+          "dtype": "float16",
+          "sha256": "9d1bb627c9ca7748694e4364a4351c431e5492dc2604ccca2c654c3b387e5c7a",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        },
+        "x0_08": {
+          "dtype": "float16",
+          "sha256": "81c8ea9d52ef79c3035f3546fe600155e3190931409221187efd804ee6c59693",
+          "shape": [
+            8,
+            4,
+            64,
+            64
+          ]
+        }
+      },
+      "parity": null,
+      "task_id": "0ae53173f25f66a68698f0ea2b9f59956a9c1d69ccd72a06dc131c8d2a29829f",
+      "validation": {
+        "all_valid": true,
+        "n_candidates": 8,
+        "n_previews": 64,
+        "native_checked": true,
+        "pass": true,
+        "redecode_pixels_identical": true,
+        "schema": "apsp-core-lite2-v1"
+      }
+    }
+  ]
+}

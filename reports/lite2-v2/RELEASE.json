@@ -1,0 +1,29 @@
+{
+  "schema": "apsp.lite2.source-release/v1",
+  "status": "modal_single_b200_qualified_company_eight_gpu_gate_pending",
+  "core_source_sha256": "0fe3d02d408041ef446cac53e17ee5257346a07ebf6ccd052eb32c4ea7962179",
+  "lock_sha256": "e404558d31cc6befaa79aa693b99650eee3d269db3d8aec00517af1845aff793",
+  "reference_images": 1440,
+  "max_pixel_abs": 0,
+  "max_ir_abs": 5.4195523262023926e-05,
+  "max_pickscore_abs": 7.62939453125e-06,
+  "files_sha256": {
+    "env/lite/profiles.json": "68f090a230bef17104cfc6d0821e9683d3fcb180301fc248ba413037556f435b",
+    "env/lite2/check_cpu.py": "f9111eb7d0aa2c32859d47f858c2a82139acdd9abca3a1a94f278e8363af13f5",
+    "env/lite2/check_pairs_worker.py": "a8ca7bc34c6ef899da1dde9056491f06231327d2c74503456aeae24151665fd0",
+    "env/lite2/forecast.py": "cb3ce563dbd1d0daa9e8b773a3dbb9548f4ee15ad93c7345e4290d78bc171ef9",
+    "env/lite2/modal_qualify.py": "ef05eba7961992eb0c0e0c61d51fd10a87c1b9d1681401c6363899376137cc14",
+    "env/lite2/run-node.sh": "f2b3640991d619dcbc0cac3f497269b5bed60f7f298bfab84e701ba1eda1079c",
+    "env/lite2/run_node.py": "89040c9237efeaf571b63366d767107a1305c8e385c2eb18d6d3c1c94daffd8f",
+    "env/lite2/verify_release.py": "23ec522d5e53dd543acf6d45badb4e31d41640edb51887e3963cc5bd2667a7b0",
+    "reports/lite2-v2/BUDGET.json": "f78f2f924efa0ba2645d4fff62c5f41f8c404304ba19b0135855d934ed91bcca",
+    "reports/lite2-v2/CPU.json": "695b615d5c6e691394cd70bfd4ac9ea3b1e4b9c5fd7899448ca86fc5368b2e72",
+    "reports/lite2-v2/CROSSOVER_WORKER.json": "a32cbb45dc1e56ebf1088da94ef0f73920087f10d32cd063333922903f861308",
+    "reports/lite2-v2/hyper_sd15_cfg8_512.json": "23a650f05aca69ef09a3b248ef741956aa48ab9f9762f5eba1f9c37c8abea4f0",
+    "reports/lite2-v2/MANIFEST.json": "99f7d7957e0c7399046d8988521d20355135eed540a5f330e4d6f43289b3d834",
+    "reports/lite2-v2/QUALIFICATION.json": "ebc4d66c189f734d2ca56c7d318dc660f2e5ef76f49f0ba91318e933fe3a2301",
+    "reports/lite2-v2/sdxl_lightning8_1024.json": "71c6391330274772f250dfa44385a152b3c59d3e1ed992862537a9891e52d824",
+    "reports/lite2-v2/SOURCE_AUDIT.json": "17c148346ce23af174ec43d8e039e8bc8b437c68c2750477907921a37433f82a",
+    "reports/lite2-v2/STORAGE_FORECAST.json": "538d281a2ffdc48eaee9635a795bd95bca38361f6ebbf61dcc4e142545655eb9"
+  }
+}

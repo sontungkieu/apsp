@@ -13,7 +13,11 @@ và rollout riêng; giữ nguyên job v1 đang chạy. Handoff tối ưu v1 khô
 
 Lite2 bổ sung SD1.5/Hyper-SD15 CFG8 và MiniLM384:
 [model add-on và lệnh tải/restore](docs/lite/LITE2_MODEL_ADDON.md).
-Đã kiểm asset/CPU offline. Collector V2 vẫn là bước riêng.
+Collector V2 đã có trong `apsp.lite2`: Core384, native-dtype checkpoints,
+manifests/reuse audit, export/parts/restore và launcher 8 B200.
+Agent công ty dùng [RUNBOOK_LITE2.md](docs/lite/RUNBOOK_LITE2.md),
+không cần tự viết collector. Receipt của source phát hành và giới hạn nghiệm thu
+ở [B200_LITE2_QUALIFICATION.md](docs/lite/B200_LITE2_QUALIFICATION.md).
 
 [Tối ưu collector B200](docs/lite/B200_PERFORMANCE.md) đã qua calibration trên
 Modal cho Lightning8 và adapter Hyper-SD15; dùng policy opt-in và release root mới.

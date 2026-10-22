@@ -1,0 +1,29 @@
+{
+  "calibration_union_tasks": 120,
+  "dedup_coverage": "inherits supplied v1 group/exclusion audit; does not claim semantic coverage",
+  "files_sha256": {
+    "calibration-prompts.jsonl": "a39196f770f6d7eff5395a30a8efa731ac8162f859ded3f8c6ce5e3ec8cd292d",
+    "calibration.jsonl": "4118e09b6843cc0e5f6e50c29e6b35d213590033dd65fd0ec92838ee5284de1d",
+    "dev.jsonl": "c4fd32b3f44f2c642a4c7b3f0fa03cf5729fdc90d7325287b0125e240e09fdfa",
+    "main.jsonl": "79c4102a08c81fadde3285c83f325e420a500dafb7ecaa7fdb49385e968c5455",
+    "qualification.jsonl": "5fd4c1f029c15196d586351a2311e026041b2444d9c7d1ddea5ece2795eb2fbf",
+    "test-locked.jsonl": "7867adb5cd67ab9df0d0d4edd5003e251d6f58ed02cb01173aea7f45bc164a38",
+    "train.jsonl": "37e5c559da481d70d7377a306fbc60e230d7851368af4896be4e84f9f9fa5053"
+  },
+  "input_sha256": {
+    "calibration": "1e3663b5c050e7bebf78a30c14ef7a5e3143a0a483dbb6a10b5f38901ef854ec",
+    "dev": "d19b8dac82ddabf7a8e52be08fa013727ec0c3331b503899041243d409260bc8",
+    "test_id": "bc4497e08e5e0c79c9ca00edda702313a58ccef15a84a23e2a771c2b9defe7af",
+    "test_shift": "dac7f726c8fa933305266e3a42d4765c082def3e352f099f3cf5275d1b616468",
+    "train": "37e5c559da481d70d7377a306fbc60e230d7851368af4896be4e84f9f9fa5053"
+  },
+  "main_candidates": 38400,
+  "main_preview_rows": 307200,
+  "main_tasks": 4800,
+  "qa_final_png": 800,
+  "qa_preview_png": 480,
+  "qualification_tasks": 40,
+  "schema": "apsp-core-lite2-v1",
+  "selection": "v1 disjoint source groups; dev UID order before reward; v1 train ranks retained",
+  "test_status": "locked_manifest_only_no_generation"
+}

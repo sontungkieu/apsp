@@ -1,0 +1,24 @@
+{
+  "profile": "billionaireproject8",
+  "observed_at_utc": "2026-10-22T18:58:55.591815+00:00",
+  "additional_v2_cap_usd": "5",
+  "observed_v2_usd": "2.45938788",
+  "conservative_duration_upper_usd": "2.7043410800000002",
+  "all_v2_apps_stopped": true,
+  "apps": {
+    "apsp-lite-v2-collector-20261023-r2": {
+      "app_id": "ap-4YyaGD5n8awWPAHy7iFp2K",
+      "state": "stopped",
+      "observed_usd": "1.43514395",
+      "duration_upper_usd": "1.5546869200000002"
+    },
+    "apsp-lite-v2-collector-20261023-r1": {
+      "app_id": "ap-Mi3lvQK0ORNuEOvDdtPjnh",
+      "state": "stopped",
+      "observed_usd": "1.02424393",
+      "duration_upper_usd": "1.14965416"
+    }
+  },
+  "scope": "Two measured code revisions; r1 pass retained, r2 qualifies final export/status code plus crossover/worker resume. No separate post app launched.",
+  "limitation": "Billing API may lag, not final invoice or confirmed remaining credit; persistent Volume retained."
+}

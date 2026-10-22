@@ -1,0 +1,19 @@
+{
+  "pass": true,
+  "profiles": {
+    "hyper_sd15_cfg8_512": {
+      "export_bytes": 191725904,
+      "mean_paired_speedup": 1.645664828143321,
+      "pass": true,
+      "performance_enabled": true
+    },
+    "sdxl_lightning8_1024": {
+      "export_bytes": 870975651,
+      "mean_paired_speedup": 1.513932241311579,
+      "pass": true,
+      "performance_enabled": true
+    }
+  },
+  "schema": "apsp-core-lite2-v1",
+  "tasks_sha256": "5fd4c1f029c15196d586351a2311e026041b2444d9c7d1ddea5ece2795eb2fbf"
+}

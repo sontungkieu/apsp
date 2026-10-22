@@ -3,6 +3,14 @@
 Ngày 23/10/2026, giờ Việt Nam. Người nhận: agent công ty đang giữ queue và shared
 storage của Tung. Đọc tài liệu này **trước** handoff tối ưu v1 ngày 22/10.
 
+**Bổ sung triển khai:** collector V2 và các CLI đã được viết trong `apsp.lite2`.
+Agent công ty chạy [RUNBOOK_LITE2.md](RUNBOOK_LITE2.md) và
+`env/lite2/run-node.sh`; không còn phải tự implement collector/schema.
+Các mục bên dưới giữ vai trò checklist hợp đồng và vận hành;
+trạng thái code/kiểm chứng hiện tại theo
+[B200_LITE2_QUALIFICATION.md](B200_LITE2_QUALIFICATION.md). Luôn lấy Git/HF pins
+trong tin nhắn phát hành mới nhất, không quay lại bundle chỉ có handoff f83ba32.
+
 ## 1. Mục tiêu và thứ tự tài liệu
 
 Yêu cầu đã được Tung giao: triển khai plan mới trên 8 B200 thuộc node
@@ -66,25 +74,23 @@ Không kèm model/cache/runtime, không xuất toàn bộ preview/train-dev PNG.
 forecast, giữ Core và báo latent optional/retention; không cast/xóa raw. Mode 40GB
 là Core+QA, không tự giảm 2,000 train. Working disk có dự toán riêng, lớn hơn 80GB.
 
-## 3. Trạng thái implementation: đã có gì, còn thiếu gì
+## 3. Trạng thái implementation hiện tại
 
-| Thành phần | Bằng chứng đã có | Việc agent công ty phải làm trước bulk V2 |
+| Thành phần | Source hiện đã có | Việc agent công ty phải làm trước bulk V2 |
 |---|---|---|
 | Runtime | Python 3.11.6, Torch 2.9.1+cu128; lock hiện có | Restore/verify node nếu thiếu; reuse dependency, không pip upgrade |
-| Lightning8 v1 | Production collector + execution policy, Modal calibration | Tạo profile/contract V2, native-dtype + features/export; qualify lại source thực |
-| Hyper-SD15 | Model add-on, benchmark generation/decode/2 scorers qua adapter trên Modal | Tích hợp production adapter/registry/task/schema V2, không alias hyper_flux8 |
-| MiniLM384 | Add-on CPU load/forward đã kiểm | Nối common encoder và index/features V2, batch/cache theo UID |
-| Performance | VAE batch1 + 4 streams reuse, scorer8, GPU capture, fused checkpoints, PNG1 | Recheck với đường native-dtype V2 và local B200; không mượn receipt v1 |
-| Core/manifests/export | Spec đầy đủ trong plan | Implement + validator/replay/no-leak/restore + forecast thật |
-| Source baseline | v1 core SHA 75c1109… đã có receipt | Source V2 mới phải commit/hash/freeze và có receipt mới trước bulk |
+| Lightning V2 | `apsp.lite2.contracts/collector` có profile riêng, native storage, features | Node qualification bằng CLI V2, không dùng receipt v1 |
+| Hyper-SD15 V2 | Production profile/adapter và collector chung, không alias hyper_flux8 | Restore add-on nếu thiếu, node gate 20 task |
+| MiniLM384 | `apsp.lite2.encoder` có masked mean/L2/truncation/index | Activate cache view đúng, không đổi common encoder |
+| Performance | VAE batch1 + 4 streams reuse, scorer8, GPU capture/fusion | Recheck native path tại node; giữ policy đã khóa |
+| Core/manifests/export | `apsp.lite2.manifests/validate/replay/export/pack` | Chạy CLI có sẵn; Core replay/no-leak/restore và forecast trước bulk |
+| Source phát hành | Receipt/binding tại `reports/lite2-v2/`, verifier `env/lite2/verify_release.py` | Source commit/HF pins mới nhất, node qualification riêng |
 
-**Đây là handoff triển khai V2, không phải tuyên bố code V2 đã xong.** Agent công
-ty được giao thực hiện phần engineering trong checkout riêng: adapter, manifests,
-native storage, Core features, collector, validator/accessor, profiler, export/
-resume/restore và runbook. Không dừng ở YAML hoặc gọi CLI chưa tồn tại. Nếu agent
-chỉ có quyền vận hành, không có khả năng sửa code, báo chính xác thiếu capability;
-không chạy v1 thay V2 để lấp số task. Các recipe khoa học đã chốt không được đổi
-ngầm trong bulk; routine engineering được tự giải quyết trong scope này.
+**Agent công ty chỉ tải source/runtime/model đúng hash và chạy các CLI thật theo
+RUNBOOK_LITE2.** Không còn nhiệm vụ viết lại collector/schema. Nếu gặp bug/missing
+asset thì giữ log, báo exception đầu tiên và làm tiếp phần độc lập; không chạy
+v1 thay V2 để lấp số task. Không đổi scientific recipe, schema hoặc policy ngầm
+giữa bulk. Xem receipt phát hành để phân biệt kiểm chứng Modal với node công ty.
 
 ## 4. Nhận source/handoff đầy đủ từ HF, vào checkout riêng
 
@@ -271,19 +277,21 @@ v1 chỉ có giá trị đúng source/policy/schema đã đo. Exit code 0 không
 
 ## 7. Thứ tự triển khai và gate bắt buộc
 
-### A. Inventory + code trước khi mở 8 GPU
+### A. Inventory và kiểm source trước khi mở 8 GPU
 
 Ghi old-job snapshot, mount/runtime/weights, prompt/data inventory; clone source
-mới qua §4. Đọc full spec, implement phần còn thiếu trong checkout Lite2 riêng.
-Không sửa `apsp/*.py` trong checkout v1 đang được dùng. Không đổi dependency trừ
-khi có blocker đã chứng minh; báo constraint thay vì pip install đè runtime.
+mới qua §4. Đọc full spec và chạy entry point trong RUNBOOK_LITE2, không yêu cầu
+operator tự viết collector nữa. Không sửa `apsp/*.py` trong checkout v1 đang dùng.
+Không đổi dependency khi không có blocker đã chứng minh; báo constraint thay vì
+pip install đè runtime.
 Không dùng script Modal `/persist/...` làm node launcher, không tạo CLI tưởng tượng.
 
-Freeze adapter/model/scorer/tokenizer/scheduler/VAE revisions, precision/attention
-backend, execution policy, native tensor semantics, prompt manifests/schema và
-code commit. Viết CLI thật + `RUNBOOK_LITE2.md`, CPU tests/validator/accessor/no-leak
-phù hợp, import từ đúng source. Một thay đổi `apsp/*.py` làm core source hash đổi:
-Modal/node receipts cũ không còn qualify cho source V2 đó.
+Release đã khóa adapter/model/scorer/tokenizer/scheduler/VAE revisions,
+precision/attention backend, execution policy và native tensor semantics.
+Agent giữ các giá trị này, dùng CLI thật trong `RUNBOOK_LITE2.md`, kiểm binding
+và import từ source mới; launcher freeze prompt manifests tại node. Một thay đổi
+`apsp/*.py` làm core source hash đổi: receipt phát hành/node không còn qualify
+cho source sửa đó; không patch nóng giữa bulk.
 
 ### B. Calibration V2 và forecast trước bulk
 

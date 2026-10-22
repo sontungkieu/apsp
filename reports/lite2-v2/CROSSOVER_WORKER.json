@@ -1,0 +1,62 @@
+{
+  "pass": true,
+  "profiles": {
+    "hyper_sd15_cfg8_512": {
+      "mean_paired_speedup": 1.622915569378138,
+      "pairs": [
+        {
+          "canonical_wall_s": 5.475475650000021,
+          "fast_wall_s": 3.406983240000045,
+          "native_identical": true,
+          "order": [
+            "canonical",
+            "fast"
+          ],
+          "speedup": 1.6071331334168668,
+          "task_id": "8365397ebe2a0f70d8460df492d91c827232f79d226874a19b620b8b1d59fbb2"
+        },
+        {
+          "canonical_wall_s": 5.522620644999961,
+          "fast_wall_s": 3.370127153999988,
+          "native_identical": true,
+          "order": [
+            "fast",
+            "canonical"
+          ],
+          "speedup": 1.6386980053394093,
+          "task_id": "faeb4b05b58a0a0461ecf9088107b7a96a10d5dad8df733e2c4479e6f47db769"
+        }
+      ]
+    },
+    "sdxl_lightning8_1024": {
+      "mean_paired_speedup": 1.5035144621908416,
+      "pairs": [
+        {
+          "canonical_wall_s": 14.104723823000086,
+          "fast_wall_s": 9.403573746000006,
+          "native_identical": true,
+          "order": [
+            "canonical",
+            "fast"
+          ],
+          "speedup": 1.499932281490301,
+          "task_id": "8f5a2b906379483724cc694db556cf4200ba328b776d8bc4fd1f61311cb5e753"
+        },
+        {
+          "canonical_wall_s": 14.254678475999981,
+          "fast_wall_s": 9.458370532000004,
+          "native_identical": true,
+          "order": [
+            "fast",
+            "canonical"
+          ],
+          "speedup": 1.5070966428913821,
+          "task_id": "15fcf55355c5b544aae8efa45a0c8e82969cbbe6286cb26aba33604e1e03cab2"
+        }
+      ]
+    }
+  },
+  "resume_marker_unchanged": true,
+  "source_hash": "0fe3d02d408041ef446cac53e17ee5257346a07ebf6ccd052eb32c4ea7962179",
+  "worker_cli_profiles": 2
+}
