@@ -1,5 +1,11 @@
 # Handoff công ty: HF source → B200 gate → tối ưu job mới
 
+**Cập nhật 23/10/2026:** đây chỉ là handoff tối ưu collector v1. Để triển khai
+**plan Lite2 80GB trên 8 B200**, đọc
+[COMPANY_LITE2_80GB_HANDOFF_20261023.md](COMPANY_LITE2_80GB_HANDOFF_20261023.md)
+và [full plan](PLAN_DATA_CONTROLLER_LITE_V2_80GB.md) trước. Không dùng các lệnh
+collector v1 bên dưới thay cho việc tích hợp/qualification schema V2.
+
 Ngày 22/10/2026, giờ Việt Nam. Người nhận: agent đang vận hành APSP ở công ty.
 Yêu cầu của Tung: cập nhật source từ HF, kiểm tra trên B200 rồi bật tối ưu cho
 job mới; giữ nguyên mọi job đang chạy. Đây là hướng dẫn thực thi cho agent công

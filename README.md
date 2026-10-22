@@ -6,6 +6,11 @@ branch `main`. Server tải cùng source commit qua Git bundle trên
 Xem [publish/update workflow](docs/lite/SOURCE_DISTRIBUTION.md); model/data/runtime
 giữ riêng, không rebuild theo mỗi thay đổi source.
 
+**Triển khai mới: [handoff Lite2 80GB trên 8 B200](docs/lite/COMPANY_LITE2_80GB_HANDOFF_20261023.md)**
+và [toàn văn plan](docs/lite/PLAN_DATA_CONTROLLER_LITE_V2_80GB.md). Bao gồm reuse
+audit dữ liệu cũ, phần collector V2 còn phải triển khai, gate native-dtype/Core384
+và rollout riêng; giữ nguyên job v1 đang chạy. Handoff tối ưu v1 không thay plan này.
+
 Lite2 bổ sung SD1.5/Hyper-SD15 CFG8 và MiniLM384:
 [model add-on và lệnh tải/restore](docs/lite/LITE2_MODEL_ADDON.md).
 Đã kiểm asset/CPU offline. Collector V2 vẫn là bước riêng.
