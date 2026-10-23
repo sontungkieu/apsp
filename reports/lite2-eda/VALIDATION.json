@@ -1,0 +1,42 @@
+{
+  "schema": "apsp.lite2.eda-validation/v1",
+  "date": "2026-10-23",
+  "scope": "Notebook and CPU analysis verification on synthetic sealed V2 exports; company-data EDA not executed here",
+  "notebook": "notebooks/APSP_LITE2_EDA_COMPANY.ipynb",
+  "cells": 45,
+  "code_cells": 22,
+  "all_code_cells_executed_on_fixture": true,
+  "suite": "python -m pytest tests/lite2 tests/lite/test_lite2_addon.py -q --disable-warnings --maxfail=1",
+  "passed": 30,
+  "skipped": 1,
+  "warnings": 4,
+  "coverage": [
+    "export file hashes and tamper rejection before statistics",
+    "exact seed/checkpoint and foreign keys, duplicate checkpoint rejection",
+    "read-only input and separate immutable output path",
+    "native header dtype/shape and raw-byte hashes without Torch",
+    "nonfinite native values remain visible",
+    "frozen planned task metadata, live source marker and backup ACK",
+    "backup payload tamper under explicit full-hash mode",
+    "qualification calibration reuse and its local copy without fabricated worker ACK",
+    "all saved QA PNG pixel hashes",
+    "exact subset best-of-k, masked policy counters",
+    "paired profile/bank contrasts on two independent source groups",
+    "Core-only input and all-null Lightning CFG feature columns",
+    "notebook executes without nbformat or nbclient",
+    "static plot layout inspected on synthetic data"
+  ],
+  "collector_release_binding": "LITE2_RELEASE_BINDING_PASS",
+  "core_source_sha256": "0fe3d02d408041ef446cac53e17ee5257346a07ebf6ccd052eb32c4ea7962179",
+  "runtime_lock_sha256": "e404558d31cc6befaa79aa693b99650eee3d269db3d8aec00517af1845aff793",
+  "runtime_rebuilt": false,
+  "modal_gpu_launched": false,
+  "company_jobs_modified": false,
+  "company_collection_receipt": {
+    "source": "Operator message, not re-read remotely by this author",
+    "main_tasks": 4800,
+    "calibration_tasks": 120,
+    "mode": "core_latent_qa",
+    "export": "/workspace/storage-shared/nlp/tungks/apsp_all/apsp-lite2-fast2/lite2-r1/release/exports/1792706875990190337"
+  }
+}

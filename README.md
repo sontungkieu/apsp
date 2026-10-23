@@ -8,7 +8,7 @@ giữ riêng, không rebuild theo mỗi thay đổi source.
 
 **Triển khai mới: [handoff Lite2 80GB trên 8 B200](docs/lite/COMPANY_LITE2_80GB_HANDOFF_20261023.md)**
 và [toàn văn plan](docs/lite/PLAN_DATA_CONTROLLER_LITE_V2_80GB.md). Bao gồm reuse
-audit dữ liệu cũ, phần collector V2 còn phải triển khai, gate native-dtype/Core384
+audit dữ liệu cũ, collector V2 đã triển khai, gate native-dtype/Core384
 và rollout riêng; giữ nguyên job v1 đang chạy. Handoff tối ưu v1 không thay plan này.
 
 Lite2 bổ sung SD1.5/Hyper-SD15 CFG8 và MiniLM384:
@@ -18,6 +18,11 @@ manifests/reuse audit, export/parts/restore và launcher 8 B200.
 Agent công ty dùng [RUNBOOK_LITE2.md](docs/lite/RUNBOOK_LITE2.md),
 không cần tự viết collector. Receipt của source phát hành và giới hạn nghiệm thu
 ở [B200_LITE2_QUALIFICATION.md](docs/lite/B200_LITE2_QUALIFICATION.md).
+
+Sau collection, dùng [notebook EDA Lite2 trên công ty](notebooks/APSP_LITE2_EDA_COMPANY.ipynb)
+và [hướng dẫn EDA](docs/lite/EDA_LITE2.md). Đã điền export `lite2-r1` operator cung cấp;
+audit CPU chỉ đọc Core/native/QA, manifests và backup, không rebuild runtime hay
+đụng worker. Có lệnh headless cùng phân tích nếu node chưa có Jupyter kernel.
 
 [Tối ưu collector B200](docs/lite/B200_PERFORMANCE.md) đã qua calibration trên
 Modal cho Lightning8 và adapter Hyper-SD15; dùng policy opt-in và release root mới.
